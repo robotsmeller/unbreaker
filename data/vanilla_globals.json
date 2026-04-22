@@ -1,0 +1,127 @@
+{
+  "version": "0.1.0",
+  "last_updated": "2026-04-22",
+  "description": "Module path -> global name redirects for PZ B42. All entries require verified=true before shipping.",
+  "redirects": [
+    {
+      "module": "ISUI/ISInventoryPaneContextMenu",
+      "global": "ISInventoryPaneContextMenu",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "Confirmed present in B42.17 ISUI/ folder. require() fails but global exists."
+    },
+    {
+      "module": "ISUI/ISVehicleMenu",
+      "global": "ISVehicleMenu",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": ""
+    },
+    {
+      "module": "ISUI/ISContextMenu",
+      "global": "ISContextMenu",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": ""
+    },
+    {
+      "module": "ISUI/ISHotbar",
+      "global": "ISHotbar",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": ""
+    },
+    {
+      "module": "ISUI/ISWorldMap",
+      "global": "ISWorldMap",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": ""
+    },
+    {
+      "module": "ISUI/PlayerData/ISPlayerData",
+      "global": "ISPlayerData",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": ""
+    },
+    {
+      "module": "ISUI/InventoryWindow/ISLootWindowControlHandler",
+      "global": "ISLootWindowControlHandler",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": ""
+    },
+    {
+      "module": "BuildingObjects/ISAnimalPickMateCursor",
+      "global": "ISAnimalPickMateCursor",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": ""
+    },
+    {
+      "module": "TimedActions/ISInventoryTransferAction",
+      "global": "ISInventoryTransferAction",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "Confirmed still exists in B42. Mods using require() instead of global access fail."
+    },
+    {
+      "module": "Vehicles/Vehicles",
+      "global": "Vehicles",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "Needs verification — global name may differ"
+    },
+    {
+      "module": "Vehicles/VehicleUtils",
+      "global": "VehicleUtils",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "Needs verification"
+    },
+    {
+      "module": "Vehicles/Distributions",
+      "global": "VehicleDistributions",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "Global name unverified — may be different"
+    },
+    {
+      "module": "BodyLocations",
+      "global": "BodyLocations",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": ""
+    },
+    {
+      "module": "SimpleSilencersModelTable",
+      "global": "SimpleSilencersModelTable",
+      "category": "filename_mismatch",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "Simple Silencers mod. File is SimpleSilencers_ModelTable.lua (underscore), required as SimpleSilencersModelTable (no underscore). Global is set by the file."
+    },
+    {
+      "module": "SimpleSilencersCraftedSilencerBlacklist",
+      "global": "SimpleSilencersCraftedSilencerBlacklist",
+      "category": "filename_mismatch",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "Simple Silencers mod. Same filename/require mismatch pattern."
+    }
+  ]
+}
