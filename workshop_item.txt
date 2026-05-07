@@ -1,0 +1,11 @@
+"workshopitem"
+{
+    "appid"            "108600"
+    "publishedfileid"  "0"
+    "contentfolder"    "C:\\xampp\\htdocs\\unbreaker\\build\\workshop"
+    "previewfile"      "C:\\xampp\\htdocs\\unbreaker\\build\\workshop\\preview.png"
+    "visibility"       "2"
+    "title"            "Unbreaker"
+    "description"      "Polyfill for PZ mods broken by weekly patches. Fixes broken require() calls so mods load instead of crashing silently. Real modules always win, redirects only fire when the original fails. Paste your console.txt at https://robotsmeller.github.io/unbreaker/ to see what's covered. Single-player only."
+    "changenote"       "Initial release v1.2.0 — 134 verified redirects."
+}
