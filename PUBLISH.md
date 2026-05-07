@@ -38,9 +38,13 @@ Open `workshop_item.txt` and confirm:
 
 ### 3. Run SteamCMD
 
+Point it at the **generated** VDF in `build/`, not the template at the repo root:
+
 ```powershell
-& C:\steamcmd\steamcmd.exe +login YOUR_STEAM_USERNAME +workshop_build_item C:\xampp\htdocs\unbreaker\workshop_item.txt +quit
+& C:\steamcmd\steamcmd.exe +login YOUR_STEAM_USERNAME +workshop_build_item C:\xampp\htdocs\unbreaker\build\workshop_item.txt +quit
 ```
+
+The generated VDF carries the full BBCode description from `assets/workshop-description.txt`. Pointing SteamCMD at the bare template instead would push a placeholder string and wipe your description on the Workshop page.
 
 SteamCMD will prompt for your Steam password and a Steam Guard 2FA code. Type them when prompted.
 
