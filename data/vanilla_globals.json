@@ -1,126 +1,214 @@
 {
-  "version": "0.1.0",
-  "last_updated": "2026-04-22",
-  "description": "Module path -> global name redirects for PZ B42. All entries require verified=true before shipping.",
+  "version": "0.2.0",
+  "last_updated": "2026-05-06",
+  "description": "Module path -> global name redirects for PZ B42. Entries with verified:true were confirmed live in B42.17 via PZ Test Pilot probes.",
   "redirects": [
     {
       "module": "ISUI/ISInventoryPaneContextMenu",
       "global": "ISInventoryPaneContextMenu",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": "Confirmed present in B42.17 ISUI/ folder. require() fails but global exists."
+      "verified": true,
+      "notes": "Verified live B42.17 — _G.ISInventoryPaneContextMenu is a table."
     },
     {
       "module": "ISUI/ISVehicleMenu",
       "global": "ISVehicleMenu",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": "File confirmed at media/lua/client/Vehicles/ISUI/ISVehicleMenu.lua. Required by CommonSense, damnlib, AutotsarTrailers, tsarslib, [B42]PumpsHavePropane."
+      "verified": true,
+      "notes": "File at media/lua/client/Vehicles/ISUI/ISVehicleMenu.lua. Required by CommonSense, damnlib, AutotsarTrailers, tsarslib, [B42]PumpsHavePropane."
+    },
+    {
+      "module": "Vehicles/ISUI/ISVehicleMenu",
+      "global": "ISVehicleMenu",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Alternate require path some mods use."
     },
     {
       "module": "ISUI/ISContextMenu",
       "global": "ISContextMenu",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": ""
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISContextMenu",
+      "global": "ISContextMenu",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Bare-name alias some mods use without the ISUI/ prefix."
     },
     {
       "module": "ISUI/ISHotbar",
       "global": "ISHotbar",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": ""
+      "verified": true,
+      "notes": "Verified live B42.17."
     },
     {
       "module": "ISUI/ISWorldMap",
       "global": "ISWorldMap",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": "File confirmed at media/lua/client/ISUI/Maps/ISWorldMap.lua"
+      "verified": true,
+      "notes": "File at media/lua/client/ISUI/Maps/ISWorldMap.lua."
     },
     {
       "module": "ISUI/PlayerData/ISPlayerData",
       "global": "ISPlayerData",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": ""
+      "verified": true,
+      "notes": "Verified live B42.17."
     },
     {
-      "module": "ISUI/InventoryWindow/ISLootWindowControlHandler",
-      "global": "ISLootWindowControlHandler",
+      "module": "ISUI/ISInventoryPage",
+      "global": "ISInventoryPage",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": ""
+      "verified": true,
+      "notes": "Verified live B42.17 via PZ Test Pilot probe."
+    },
+    {
+      "module": "ISUI/ISToolTipInv",
+      "global": "ISToolTipInv",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISChat",
+      "global": "ISChat",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISDebugMenu",
+      "global": "ISDebugMenu",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISBuildMenu",
+      "global": "ISBuildMenu",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
     },
     {
       "module": "BuildingObjects/ISAnimalPickMateCursor",
       "global": "ISAnimalPickMateCursor",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": "File confirmed at media/lua/server/BuildingObjects/ISAnimalPickMateCursor.lua"
+      "verified": true,
+      "notes": "File at media/lua/server/BuildingObjects/ISAnimalPickMateCursor.lua."
+    },
+    {
+      "module": "BuildingObjects/ISBuildingObject",
+      "global": "ISBuildingObject",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
     },
     {
       "module": "TimedActions/ISInventoryTransferAction",
       "global": "ISInventoryTransferAction",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": "Confirmed still exists in B42. Mods using require() instead of global access fail."
+      "verified": true,
+      "notes": "Mods using require() instead of global access fail. Verified live B42.17."
+    },
+    {
+      "module": "TimedActions/ISBaseTimedAction",
+      "global": "ISBaseTimedAction",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17. Required by many mods that subclass timed actions."
+    },
+    {
+      "module": "TimedActions/ISTakeFuel",
+      "global": "ISTakeFuel",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
     },
     {
       "module": "Vehicles/Vehicles",
       "global": "Vehicles",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": "File confirmed at media/lua/server/Vehicles/Vehicles.lua"
+      "verified": true,
+      "notes": "File at media/lua/server/Vehicles/Vehicles.lua. Verified live."
     },
     {
       "module": "Vehicles/Distributions",
       "global": "VehicleDistributions",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": "Path mismatch: require asks for 'Distributions' but file is named VehicleDistributions.lua at media/lua/server/Vehicles/. Global name unverified."
+      "verified": true,
+      "notes": "Path mismatch: file is VehicleDistributions.lua. Global is VehicleDistributions. Verified live B42.17."
     },
     {
-      "module": "Vehicles/VehicleUtils",
-      "global": "VehicleUtils",
-      "category": "unrecoverable",
+      "module": "Foraging/forageSystem",
+      "global": "forageSystem",
+      "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": "NO FILE EXISTS in B42 vanilla. Possibly removed entirely. Cannot shim - mod author must update. Required by Realistic Dashboard and Gauges."
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Foraging/ISSearchManager",
+      "global": "ISSearchManager",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "luautils",
+      "global": "luautils",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17. Common utility module mods often require directly."
     },
     {
       "module": "BodyLocations",
       "global": "BodyLocations",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": ""
+      "verified": true,
+      "notes": "File at media/lua/shared/NPCs/BodyLocations.lua."
     },
     {
       "module": "SimpleSilencersModelTable",
       "global": "SimpleSilencersModelTable",
       "category": "filename_mismatch",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": "Simple Silencers mod. File is SimpleSilencers_ModelTable.lua (underscore), required as SimpleSilencersModelTable (no underscore). Global is set by the file."
+      "verified": true,
+      "notes": "Simple Silencers mod. File is SimpleSilencers_ModelTable.lua. Required as SimpleSilencersModelTable. Global set by file."
     },
     {
       "module": "SimpleSilencersCraftedSilencerBlacklist",
       "global": "SimpleSilencersCraftedSilencerBlacklist",
       "category": "filename_mismatch",
       "since_pz": "42.0.0",
-      "verified": false,
+      "verified": true,
       "notes": "Simple Silencers mod. Same filename/require mismatch pattern."
     },
     {
@@ -129,7 +217,23 @@
       "category": "filename_mismatch",
       "since_pz": "42.0.0",
       "verified": false,
-      "notes": "AutotsarMotorClub (Tchernobill B42 port). AMC_AquaConfig.lua does require 'AquaConfig' but the actual file is named AMC_AquaConfig. Workshop: 3404737883"
+      "notes": "AutotsarMotorClub (Tchernobill B42 port). AMC_AquaConfig.lua does require 'AquaConfig' but actual file is AMC_AquaConfig. Workshop: 3404737883. Cannot verify without that mod installed."
+    },
+    {
+      "module": "ISUI/InventoryWindow/ISLootWindowControlHandler",
+      "global": "ISLootWindowControlHandler",
+      "category": "unrecoverable",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "PROBED B42.17: global does NOT exist. Module either removed or renamed in B42. Mod author must update. Kept as unrecoverable for documentation."
+    },
+    {
+      "module": "Vehicles/VehicleUtils",
+      "global": "VehicleUtils",
+      "category": "unrecoverable",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "NO FILE EXISTS in B42 vanilla. Cannot shim. Required by Realistic Dashboard and Gauges. Mod author must update."
     }
   ]
 }

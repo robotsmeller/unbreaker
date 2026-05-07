@@ -1,89 +1,120 @@
 # Unbreaker — Handoff
 
-**Last Updated:** 2026-04-22 (end of Session 1)
+**Last Updated:** 2026-05-07 (end of Session 2)
 
 ```yaml
-session: 2
-continue_with: Phase 1 proof-of-concept — write test mod, verify require() override works in PZ Kahlua
+session: 3
+continue_with: Phase 2 — expand redirect data from Session 2's captured miss list (303 entries)
 blockers: none
+status: Phase 1 complete and live-verified
 ```
 
 ## Current State
 
-Fully scaffolded, documented, repo live. No functional Lua code yet.
-Everything blocks on one empirical test: does the require() override work in PZ's Kahlua?
+**Phase 1 is done.** Architecture is empirically proven in PZ Build 42.17.
 
-**Repo:** https://github.com/rob-kingsbury/unbreaker
+In a real 180-mod install during Session 2:
+- 141 broken require() calls intercepted
+- 139 served correctly via redirects (98.6% hit rate)
+- 2 unserved — both already documented unrecoverable (ISLootWindowControlHandler, AquaConfig)
 
 ## What Exists
 
-- Full folder structure and context files
-- SCOPE.md — definitive document on what Unbreaker can/can't fix
-- ROADMAP.md — 7-phase plan with decision log
-- vanilla_globals.json — 15 entries seeded from live PZMC diagnose data (all unverified)
-- GitHub Actions workflow for auto-generating UnbreakerData.lua
-- Issue templates for mod requests and stub interference reports
+- `mod/42/media/lua/shared/Unbreaker.lua` — require() override with miss ring buffer
+- `mod/42/media/lua/shared/UnbreakerData.lua` — generated, 27 redirects
+- `mod/42/mod.info` and top-level `mod/mod.info` — B42 layout (`versionMin=42.0.0`)
+- `data/vanilla_globals.json` — v0.2.0, 27 redirects (25 verified live, 2 documented unrecoverable)
+- `scripts/generate_lua.py` — JSON → Lua generator (stdlib only)
+- `scripts/smoke_probe.py` — bundled Phase 1 architecture probe via PZ Test Pilot
+- `scripts/probe_misses.py` — candidate-list checker for redirect expansion
+- `scripts/final_probe.py` — full live verification including miss-buffer dump
+- Repo on GitHub, GitHub Actions auto-generates UnbreakerData.lua on JSON change
 
-## Session 1 Decisions
+## Session 2 Findings
+
+### Architecture works
+- **require() override pattern works in Kahlua.** Confirmed via live probes.
+- **B42 require() returns nil silently** for missing modules (does NOT throw). Our override now treats `(ok and result == nil)` as a redirect trigger if a redirect entry exists, else passes through unchanged.
+- **B42 vanilla globals are real.** Most `ISUI/Foo`-style modules set `_G.Foo` as a side-effect at load time but don't `return` the table. Our redirect serves `_G.Foo` when require returns nil.
+
+### B42 Bugs in PZ
+- `fileExists()` returns false even for files that exist. Bypassed in pz-test-pilot's `FileIO.atomicRead()` by using `readFile()` empty/nil checks instead.
+- The Lua `Json` module (`require("Json")` → table with .Encode/.Decode) is gone in B42. pz-test-pilot's `Json.lua` was rewritten as a self-contained pure-Lua encoder/decoder.
+
+### Loadstring works
+- `loadstring()` is available in Kahlua B42.17 — pz-test-pilot's `run_lua` route works without falling back to the `snippet` registry.
+
+### Verified redirects (25 entries)
+All probed live. ISInventoryPaneContextMenu, ISVehicleMenu (both paths), ISContextMenu (both paths), ISHotbar, ISWorldMap, ISPlayerData, ISInventoryPage, ISToolTipInv, ISChat, ISDebugMenu, ISBuildMenu, ISAnimalPickMateCursor, ISBuildingObject, ISInventoryTransferAction, ISBaseTimedAction, ISTakeFuel, Vehicles, VehicleDistributions, forageSystem, ISSearchManager, luautils, BodyLocations, SimpleSilencersModelTable, SimpleSilencersCraftedSilencerBlacklist.
+
+### Unrecoverable (2 entries — kept for documentation)
+- `ISLootWindowControlHandler` — global doesn't exist in B42. Module removed/renamed.
+- `Vehicles/VehicleUtils` — file removed entirely. Required by Realistic Dashboard and Gauges.
+
+### Captured for Phase 2 (303 unique misses)
+Every require() in the user's install that returned nil and has no current redirect. Many are no-ops (mods requiring for side effects, discarding the result), but the list contains high-value candidates:
+- `ISBaseObject`, `defines`, `Hotbar/ISHotbar` (alt path), `ISWorldObjectContextMenu`
+- Many `ISUI/*` (ISPanel, ISButton, ISCollapsableWindow, ISTabPanel, ISScrollingListBox, ISTickBox, ISModalDialog, ISTextEntryBox, ISToolTip, ISLabel, ISImage, ...)
+- `Map/CGlobalObject`, `Map/CGlobalObjectSystem`, `Map/SGlobalObject`, `Map/SGlobalObjectSystem`
+- `TimedActions/*` family (ISTimedActionQueue, ISEatFoodAction, ISInventoryTransferUtil, ISTransferAction, ISWearClothing, ...)
+- `Camping/CCampfireSystem`
+- `Farming/SFarmingSystem`, `Farming/farming_vegetableconf`
+- `Traps/TrapDefinition`, `Traps/STrapSystem`
+- Full `WorldGen/features/*` tree (~50 entries)
+- `PZAPI/ui/atoms/*`, `PZAPI/ui/molecules/*`, `PZAPI/ui/organisms/*`, `PZAPI/ModOptions`
+
+## Phase 2 Tasks (next session)
+
+1. Triage the 303-entry miss buffer
+2. For each candidate: probe whether `_G.<leaf>` exists; if yes → add redirect with verified=true
+3. For high-frequency families (WorldGen/features, ISUI) decide whether to add per-entry or pattern-based
+4. Re-run final_probe and verify served-rate climbs further
+5. Update Workshop description, prep for first publish (Phase 7 prerequisites)
+
+## Phase 1 Decisions (Session 2)
 
 | Decision | Rationale |
-|----------|-----------|
-| Public repo | JSON needs public raw URL; community issues = update mechanism |
-| require() override over package.preload | Kahlua preload support unverified |
-| pcall fallback pattern | Real module always wins automatically when mods update |
-| Steam Workshop = distribution, not HTTP | Updates at game launch, no Lua networking needed |
-| "Unbreaker" name retained | Tongue-in-cheek, clearly mod-scoped, not confused with in-game items |
-| Scope: polyfill, not bridge | Not B41->B42 compatibility; patch buffer for active weekly PZ development |
-| Translation shim excluded | Requires filesystem access unavailable in Kahlua |
-| Multiplayer: unverified | Must test before recommending for MP servers |
-| Brita/Arsenal/True Actions: out of scope | Need full rewrites, not shimming |
+|---|---|
+| Treat `(ok, nil)` as needing redirect | B42 require() returns nil for missing modules instead of throwing |
+| Pass-through when no redirect entry | Avoid breaking mods that legitimately call require() for side effects |
+| Ring buffer for miss diagnostics | Enables data-driven Phase 2 expansion without instrumenting individual mods |
+| `42/media/` mod layout | Matches B42 convention; both Unbreaker and PZTestPilot use it |
+| pz-test-pilot fixed in place | Two B42 regressions found; fixes belong in pz-test-pilot's repo |
+| Verified=true gating | Every shipped redirect must round-trip live before being marked verified |
 
-## Phase 1 Tasks (next session)
+## Repo Layout
 
-1. Write 20-line test mod in `mod/` — one require() override, one stub, verify interception
-2. Test in PZ singleplayer — does it intercept? Does real module win via pcall?
-3. Test load order — does alphabetical naming guarantee loading before other mods?
-4. Document results in `.claude/context.md`
-5. If test passes: write `scripts/generate_lua.py`
-6. If test passes: write `mod/media/lua/shared/Unbreaker.lua` (full implementation)
-7. Write `mod/mod.info`
+```
+data/vanilla_globals.json        # source of truth (27 redirects)
+scripts/
+  generate_lua.py                # JSON -> Lua codegen
+  smoke_probe.py                 # Phase 1 architecture probe
+  probe_misses.py                # candidate redirect checker
+  final_probe.py                 # full live verification + miss dump
+mod/
+  mod.info                       # outer (B42 layout marker)
+  42/
+    mod.info
+    media/lua/shared/
+      Unbreaker.lua              # the override
+      UnbreakerData.lua          # GENERATED — never edit by hand
+.github/workflows/generate.yml   # CI regen on JSON change
+```
 
-## Open Questions
+## Open Questions Carried Over
 
-| # | Question | Urgency |
-|---|----------|---------|
-| 1 | Does require() global override work in PZ Kahlua? | BLOCKER — test first |
-| 2 | Does PZ register all mod Lua paths before any mod code runs? | High |
-| 3 | Does alphabetical mod naming guarantee load-before-others? | High |
-| 4 | Multiplayer: does override cause checksum rejection? | Medium |
-| 5 | What is the damnlib API surface KI5 mods actually call? | Medium (Phase 4) |
-| 6 | Does tsarslib B42 Tchernobill port expose same API as B41? | Low (Phase 5) |
-| 7 | SteamCMD GitHub Actions — 2FA bypass setup needed? | Low (Phase 7) |
+| # | Question | Notes |
+|---|---|---|
+| 1 | Multiplayer: does override cause checksum rejection? | Untested. Single-player verified. |
+| 2 | damnlib API surface KI5 mods actually call | Phase 4 prerequisite |
+| 3 | tsarslib B42 Tchernobill API surface | Phase 5 prerequisite |
+| 4 | SteamCMD GitHub Actions 2FA setup | Phase 7 prerequisite |
+| 5 | How to triage the 303-entry miss list efficiently | Phase 2 starts here |
 
-## What Unbreaker Actually Fixes (summary — see SCOPE.md for full detail)
+## Workshop Description Draft (still applicable)
 
-**Can fix:**
-- require() failures where the module is a vanilla global (moved to auto-loaded scope)
-- require() failures where a mod requires its own file under the wrong name
-- Renamed functions / method aliases
-- Moved globals
-
-**Cannot fix:**
-- Deep API rewrites (crafting, animation, vehicle physics)
-- Missing mod dependencies (empty stub silences crash but doesn't restore function)
-- Translation file gaps (no filesystem access in Kahlua)
-- Multiplayer (unverified)
-- Mods needing full rewrites (Brita, Arsenal, True Actions)
-
-## Relationship to PZ Mod Checker
-
-Unbreaker is standalone — no PZMC required.
-PZMC integration is Phase 6: diagnose page notes which failures Unbreaker would fix,
-links to Workshop page. Optional, additive.
-
-## Workshop Description Draft
-
-> Keeps your mods working between PZ patches. Fixes broken require() calls, renamed
-> functions, and moved globals — the minor API shuffles that come with almost every
-> weekly update. Does NOT fix mods needing deep rewrites. When a mod's author publishes
-> a proper fix, Unbreaker automatically steps aside. Stopgap, not a replacement.
+> Keeps your mods working between PZ patches. Fixes broken require() calls,
+> renamed functions, and moved globals — the minor API shuffles that come with
+> almost every weekly update. Does NOT fix mods needing deep rewrites. When a
+> mod's author publishes a proper fix, Unbreaker automatically steps aside.
+> Stopgap, not a replacement.
