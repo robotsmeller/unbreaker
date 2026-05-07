@@ -2,6 +2,7 @@ name: Generate UnbreakerData.lua
 
 on:
   push:
+    branches: [main]
     paths:
       - 'data/vanilla_globals.json'
       - 'data/library_stubs/*.json'
@@ -20,6 +21,22 @@ jobs:
 
       - name: Generate UnbreakerData.lua
         run: python scripts/generate_lua.py
+
+      - name: Validate generated file
+        run: |
+          python - <<'EOF'
+          import json, re
+          from pathlib import Path
+          src = json.loads(Path("data/vanilla_globals.json").read_text(encoding="utf-8"))
+          expected = sum(
+              1 for e in src.get("redirects", [])
+              if e.get("verified") and e.get("category") != "unrecoverable" and e.get("module")
+          )
+          lua = Path("mod/42/media/lua/shared/UnbreakerData.lua").read_text(encoding="utf-8")
+          actual = len(re.findall(r'^\s+\[\"', lua, re.MULTILINE))
+          assert actual == expected, f"Entry count mismatch: Lua has {actual}, JSON has {expected} verified entries"
+          print(f"Validation passed: {actual} entries")
+          EOF
 
       - name: Commit generated file
         uses: stefanzweifel/git-auto-commit-action@v5

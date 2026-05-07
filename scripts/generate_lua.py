@@ -21,18 +21,14 @@ OUT = ROOT / "mod" / "42" / "media" / "lua" / "shared" / "UnbreakerData.lua"
 
 
 def lua_string(value: str) -> str:
-    escaped = value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+    escaped = value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n").replace("\r", "\\r").replace("\0", "")
     return f'"{escaped}"'
 
 
-def render_entry(module: str, entry: dict[str, Any]) -> str:
-    parts = [f"module={lua_string(module)}"]
+def render_entry(entry: dict[str, Any]) -> str:
+    parts = []
     if entry.get("global"):
         parts.append(f"global={lua_string(entry['global'])}")
-    if entry.get("alias"):
-        parts.append(f"alias={lua_string(entry['alias'])}")
-    if entry.get("category"):
-        parts.append(f"category={lua_string(entry['category'])}")
     return "{ " + ", ".join(parts) + " }"
 
 
@@ -42,6 +38,8 @@ def load_redirects() -> tuple[str, list[tuple[str, dict[str, Any]]]]:
     out: list[tuple[str, dict[str, Any]]] = []
     for entry in raw.get("redirects", []):
         if entry.get("category") == "unrecoverable":
+            continue
+        if not entry.get("verified"):
             continue
         module = entry.get("module")
         if not module:
@@ -61,7 +59,7 @@ def render_lua(version: str, entries: list[tuple[str, dict[str, Any]]]) -> str:
         "M.redirects = {",
     ]
     for module, entry in entries:
-        lines.append(f"  [{lua_string(module)}] = {render_entry(module, entry)},")
+        lines.append(f"  [{lua_string(module)}] = {render_entry(entry)},")
     lines.append("}")
     lines.append("")
     lines.append("return M")
