@@ -27,9 +27,9 @@ Session 4 completed every item from the Session 3 collab audit:
 
 | # | Item | Status |
 |---|------|--------|
-| 1 | Move repo to neutral GitHub account (not rob-kingsbury) | Pending |
-| 2 | Update GitHub URL in `assets/workshop-description.txt` | After #1 |
-| 3 | Update `url=` in `mod/42/mod.info` | After #1 |
+| 1 | Move repo to neutral GitHub account (not rob-kingsbury) | Done — github.com/robotsmeller/unbreaker |
+| 2 | Update GitHub URL in `assets/workshop-description.txt` | Done |
+| 3 | Update `url=` in `mod/42/mod.info` | Done |
 | 4 | SteamCMD Workshop upload | After #2-3 |
 | 5 | Pin scoped comment on Workshop page day one | After publish |
 

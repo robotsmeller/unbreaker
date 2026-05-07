@@ -90,8 +90,8 @@ Verified architecture live in B42.17 via pz-test-pilot. 141 intercepted, 139 ser
 
 ## Critical for Next Session
 
-1. Move repo to neutral GitHub account (not rob-kingsbury)
-2. Update `url=` in `mod/42/mod.info` and GitHub link in `assets/workshop-description.txt`
+1. ~~Move repo to neutral GitHub account~~ Done — github.com/robotsmeller/unbreaker
+2. ~~Update URLs in mod.info and workshop-description.txt~~ Done
 3. SteamCMD Workshop upload
 4. Pin scoped comment on Workshop page day one
 5. Phase 2: triage 303-entry miss buffer (issues #1-3 are first candidates)
