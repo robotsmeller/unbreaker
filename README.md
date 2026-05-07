@@ -4,7 +4,7 @@ A standalone Project Zomboid mod that keeps your mods working between patches.
 
 Every PZ update moves something. A file gets renamed, a global shifts scope, a `require()` path changes. Mods that haven't caught up start crashing silently. Unbreaker intercepts those broken `require()` calls and returns the correct value instead.
 
-**Real modules always win.** Unbreaker only fires when the original load fails. When a mod's author ships a proper fix, Unbreaker steps aside automatically — no config needed.
+**Real modules always win.** Unbreaker only fires when the original load fails. When a mod's author ships a proper fix, Unbreaker steps aside automatically. No config needed.
 
 Tested in B42.17 against a 180-mod install: 141 broken `require()` calls intercepted, 139 served correctly (98.6%).
 
@@ -22,7 +22,7 @@ When a mod author ships a proper fix, the original lookup succeeds again. Unbrea
 
 ## Install
 
-Subscribe on the [Steam Workshop](#) *(link pending — will update after first publish)*.
+Subscribe on the [Steam Workshop](#) *(link pending, will update after first publish)*.
 
 **Build 42 only.** Unbreaker will not work on B41. The redirect data and override pattern target B42's module layout specifically.
 
@@ -44,22 +44,22 @@ Unbreaker must load before other mods to intercept their `require()` calls.
 
 ## What it does NOT fix
 
-- **Build 41** — Unbreaker is B42-only. B41 has a different module layout and is not targeted.
-- **Brita's Weapon Pack, Arsenal, True Actions** — these need their authors to rewrite large parts of the mod. A polyfill can't do that.
+- **Build 41:** Unbreaker is B42-only. B41 has a different module layout and is not targeted.
+- **Brita's Weapon Pack, Arsenal, True Actions:** these need their authors to rewrite large parts of the mod. A polyfill can't do that.
 - Deep B42 API rewrites (crafting, animation, vehicles)
 - Missing mod dependencies
-- **Multiplayer** — untested. Single-player only until verified. See roadmap.
+- **Multiplayer:** untested. Single-player only until verified. See roadmap.
 
 ---
 
 ## Architecture
 
 ```
-data/vanilla_globals.json          # Source of truth — all redirects live here
-scripts/generate_lua.py            # JSON → UnbreakerData.lua (run manually or via CI)
+data/vanilla_globals.json          # Source of truth: all redirects live here
+scripts/generate_lua.py            # JSON -> UnbreakerData.lua (run manually or via CI)
 mod/42/media/lua/shared/
   Unbreaker.lua                    # require() override + miss ring buffer
-  UnbreakerData.lua                # Generated — never edit by hand
+  UnbreakerData.lua                # Generated: never edit by hand
 ```
 
 The core pattern:
@@ -87,7 +87,7 @@ B42's `require()` returns `nil` silently for missing modules rather than throwin
 
 ## Adding a redirect
 
-1. Edit `data/vanilla_globals.json` — add an entry with `"verified": false`
+1. Edit `data/vanilla_globals.json`, add an entry with `"verified": false`
 2. Test it in a live PZ session
 3. Set `"verified": true` and open a PR
 
@@ -119,4 +119,4 @@ Leave a comment on the Workshop page, or open a GitHub issue with:
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
