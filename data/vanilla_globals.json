@@ -1,6 +1,6 @@
 {
-  "version": "0.2.0",
-  "last_updated": "2026-05-06",
+  "version": "0.3.0",
+  "last_updated": "2026-05-07",
   "description": "Module path -> global name redirects for PZ B42. Entries with verified:true were confirmed live in B42.17 via PZ Test Pilot probes.",
   "redirects": [
     {
@@ -210,6 +210,566 @@
       "since_pz": "42.0.0",
       "verified": true,
       "notes": "Simple Silencers mod. Same filename/require mismatch pattern."
+    },
+    {
+      "module": "ISUI/ISUIElement",
+      "global": "ISUIElement",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISPanel",
+      "global": "ISPanel",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISButton",
+      "global": "ISButton",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISMouseDrag",
+      "global": "ISMouseDrag",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISInventoryItem",
+      "global": "ISInventoryItem",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISInventoryPane",
+      "global": "ISInventoryPane",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISResizeWidget",
+      "global": "ISResizeWidget",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISCollapsableWindow",
+      "global": "ISCollapsableWindow",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISRichTextPanel",
+      "global": "ISRichTextPanel",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISTabPanel",
+      "global": "ISTabPanel",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISPanelJoypad",
+      "global": "ISPanelJoypad",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISScrollingListBox",
+      "global": "ISScrollingListBox",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISTickBox",
+      "global": "ISTickBox",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISCollapsableWindowJoypad",
+      "global": "ISCollapsableWindowJoypad",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISUI3DModel",
+      "global": "ISUI3DModel",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISRadialMenu",
+      "global": "ISRadialMenu",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISTextEntryBox",
+      "global": "ISTextEntryBox",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISModalDialog",
+      "global": "ISModalDialog",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISRadioButtons",
+      "global": "ISRadioButtons",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISBackButtonWheel",
+      "global": "ISBackButtonWheel",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISComboBox",
+      "global": "ISComboBox",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISModalRichText",
+      "global": "ISModalRichText",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISScrollBar",
+      "global": "ISScrollBar",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISEquippedItem",
+      "global": "ISEquippedItem",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISLabel",
+      "global": "ISLabel",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISImage",
+      "global": "ISImage",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISToolTip",
+      "global": "ISToolTip",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISLayoutManager",
+      "global": "ISLayoutManager",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISWorldObjectContextMenu",
+      "global": "ISWorldObjectContextMenu",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/Maps/ISMap",
+      "global": "ISMap",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/Maps/ISWorldMapSymbols",
+      "global": "ISWorldMapSymbols",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/Maps/ISWorldMapKey",
+      "global": "ISWorldMapKey",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "TimedActions/ISTimedActionQueue",
+      "global": "ISTimedActionQueue",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "TimedActions/ISEatFoodAction",
+      "global": "ISEatFoodAction",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "TimedActions/ISInventoryTransferUtil",
+      "global": "ISInventoryTransferUtil",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "TimedActions/ISClothingExtraAction",
+      "global": "ISClothingExtraAction",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "TimedActions/ISWearClothing",
+      "global": "ISWearClothing",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "TimedActions/ISUnequipAction",
+      "global": "ISUnequipAction",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "TimedActions/ISTransferAction",
+      "global": "ISTransferAction",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISBaseObject",
+      "global": "ISBaseObject",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Map/CGlobalObject",
+      "global": "CGlobalObject",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Map/CGlobalObjectSystem",
+      "global": "CGlobalObjectSystem",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Map/SGlobalObject",
+      "global": "SGlobalObject",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Map/SGlobalObjectSystem",
+      "global": "SGlobalObjectSystem",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Camping/CCampfireSystem",
+      "global": "CCampfireSystem",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Farming/farming_vegetableconf",
+      "global": "farming_vegetableconf",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Farming/SFarmingSystem",
+      "global": "SFarmingSystem",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "FireFighting/FireFighting",
+      "global": "FireFighting",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Traps/STrapSystem",
+      "global": "STrapSystem",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Foraging/ISBaseIcon",
+      "global": "ISBaseIcon",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Foraging/ISZoneDisplay",
+      "global": "ISZoneDisplay",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Hotbar/ISHotbar",
+      "global": "ISHotbar",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Alternate path. Verified live B42.17."
+    },
+    {
+      "module": "Hotbar/ISHotbarAttachDefinition",
+      "global": "ISHotbarAttachDefinition",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "BodyDragging/corpseStorageCheck",
+      "global": "corpseStorageCheck",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "BuildingObjects/ISPickCharacterCursor",
+      "global": "ISPickCharacterCursor",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "OptionScreens/CharacterCreationMain",
+      "global": "CharacterCreationMain",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "OptionScreens/CharacterCreationProfession",
+      "global": "CharacterCreationProfession",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "OptionScreens/MapSpawnSelect",
+      "global": "MapSpawnSelect",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "OptionScreens/MainOptions",
+      "global": "MainOptions",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Vehicles/ISUI/ISUI3DScene",
+      "global": "ISUI3DScene",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Vehicles/ISUI/ISVehicleMechanics",
+      "global": "ISVehicleMechanics",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Vehicles/ISUI/ISVehicleDashboard",
+      "global": "ISVehicleDashboard",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Vehicles/ISUI/ISVehicleSeatUI",
+      "global": "ISVehicleSeatUI",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Vehicles/ISUI/ISVehiclePartMenu",
+      "global": "ISVehiclePartMenu",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Vehicles/ISUI/ISLightbarUI",
+      "global": "ISLightbarUI",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Vehicles/TimedActions/ISEnterVehicle",
+      "global": "ISEnterVehicle",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Vehicles/TimedActions/ISAttachTrailerToVehicle",
+      "global": "ISAttachTrailerToVehicle",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Vehicles/TimedActions/ISDetachTrailerFromVehicle",
+      "global": "ISDetachTrailerFromVehicle",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Vehicles/TimedActions/ISPathFindAction",
+      "global": "ISPathFindAction",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Vehicles/TimedActions/ISRefuelFromGasPump",
+      "global": "ISRefuelFromGasPump",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
     },
     {
       "module": "AquaConfig",
