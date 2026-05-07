@@ -119,7 +119,42 @@ for popular mods that haven't been updated for Build 42.
 
 ---
 
-## Phase 6: PZ Mod Checker Integration
+## Phase 6: Multiplayer Support
+
+**Currently untested. Single-player only until this phase is complete.**
+
+### What needs to be true for MP to work
+
+PZ validates Workshop mod files via checksum when a client connects to a server. The core questions are:
+
+1. **Does the checksum check cover `Unbreaker.lua`?** If the server has Unbreaker and the client doesn't (or vice versa), PZ may reject the connection. Both sides need the same mod files.
+2. **Does the `require()` override change execution state the server tracks?** The override replaces the global `require` function. If PZ's netcode checksums any Lua state beyond file contents (e.g. loaded module results), differing redirect outcomes on client vs. server could cause desync.
+3. **Are redirect results consistent across client and server?** A vanilla global redirect returns a value that's already in memory on both sides — low desync risk. A library stub that returns a fake table is higher risk if the server runs different mod logic against it.
+
+### Research tasks
+
+- [ ] Determine how PZ validates mods in MP: file checksums, Lua state, or both
+- [ ] Confirm: does PZ require all players on a server to have identical mod lists?
+- [ ] Identify which redirect categories are MP-safe (vanilla globals: likely fine; library stubs: needs testing)
+
+### Test tasks
+
+- [ ] Install Unbreaker on both a local server and client, connect, confirm no rejection
+- [ ] Test: client has Unbreaker, server does not — document what happens
+- [ ] Test: at least one redirect fires during a multiplayer session, confirm no desync
+- [ ] Test: dedicated server (not local host) — same results?
+
+### Documentation tasks
+
+- [ ] Document server-side install requirement (if applicable)
+- [ ] Update Workshop description to remove single-player disclaimer once verified
+- [ ] Note any redirect categories that remain MP-unsafe
+
+**Exit criteria:** Unbreaker installs on a server, clients connect without rejection, a redirect fires in a multiplayer session without causing a desync or crash.
+
+---
+
+## Phase 8: PZ Mod Checker Integration
 
 **PZMC can detect what Unbreaker would fix and link to it.**
 
@@ -129,7 +164,7 @@ for popular mods that haven't been updated for Build 42.
 
 ---
 
-## Phase 7: Community Infrastructure
+## Phase 9: Community Infrastructure
 
 - [ ] CONTRIBUTING.md — how to submit a new redirect or report a broken stub
 - [ ] Issue template: mod request (mod name, Workshop ID, what fails, subscriber count)

@@ -14,7 +14,15 @@ Tested in B42.17 against a 180-mod install: 141 broken `require()` calls interce
 
 Subscribe on the [Steam Workshop](#) *(link pending — will update after first publish)*.
 
-No config. No setup. Load order is handled automatically.
+**Build 42 only.** Unbreaker will not work on B41. The redirect data and override pattern target B42's module layout specifically.
+
+### Load order
+
+Unbreaker must load before other mods to intercept their `require()` calls.
+
+**Workshop installs (most users):** handled automatically. Steam assigns a numeric folder ID (e.g. `2987654321`) that sorts before any alphabetically-named local mod folder. No action needed.
+
+**Local installs:** the folder is named `Unbreaker`, which sorts late. Move it to the top of the mod list manually in the PZ mod manager, or rename the folder with a leading character (e.g. `!Unbreaker`) to force it first.
 
 ---
 
@@ -26,10 +34,11 @@ No config. No setup. Load order is handled automatically.
 
 ## What it does NOT fix
 
+- **Build 41** — Unbreaker is B42-only. B41 has a different module layout and is not targeted.
 - **Brita's Weapon Pack, Arsenal, True Actions** — these need their authors to rewrite large parts of the mod. A polyfill can't do that.
 - Deep B42 API rewrites (crafting, animation, vehicles)
 - Missing mod dependencies
-- Multiplayer (untested — single-player only for now)
+- **Multiplayer** — untested. Single-player only until verified. See roadmap.
 
 ---
 
