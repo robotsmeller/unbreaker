@@ -1,98 +1,64 @@
 # Unbreaker — Handoff
 
-**Last Updated:** 2026-05-07 (end of Session 3)
+**Last Updated:** 2026-05-07 (end of Session 4)
 
 ```yaml
-session: 4
-continue_with: Pre-ship blockers — CI path fix, load order / mod ID decision, then publish
+session: 5
+continue_with: Move repo to neutral GitHub account, update URLs, then SteamCMD Workshop publish
 blockers: none
-status: In-game validated. Pre-ship items identified. Ready to ship after ~5 code changes + mod ID decision.
+status: Ship-ready. All pre-ship items complete.
 ```
 
 ## Current State
 
-**Phase 1 is done and re-validated in Session 3.**
+**All pre-ship items are done. Ready to publish.**
 
-In-game probe against a live new-game session confirmed:
-- 141 broken require() calls intercepted
-- 139 served correctly (98.6%)
-- 2 unserved — both already documented unrecoverable (ISLootWindowControlHandler, VehicleUtils)
-- All 13 spot-checked redirects return valid tables
+Session 4 completed every item from the Session 3 collab audit:
+- CI workflow path fixed (`mod/media/...` → `mod/42/media/...`)
+- Mod ID decision: keep `Unbreaker`. Workshop numeric ID sorts before alphabetic local mods.
+- Alias dead code removed from `Unbreaker.lua`
+- Version bumped to `1.0.0` in Lua + both mod.info files
+- Generator docstring corrected
+- Workshop description written and humanizer-audited (`assets/workshop-description.txt`)
+- Thumbnails verified clean (`mod/poster.png`, `mod/preview.png`)
+- Pushed to GitHub remote
 
-**Collab audit (plan-review.md) completed Session 3.** Overall verdict: CAUTION — ship-ready after ~8 concrete pre-ship items. Architecture is sound, gaps are operational.
+## Publish Checklist
 
-## Critical Pre-Ship Items (from collab audit + Session 3 findings)
+| # | Item | Status |
+|---|------|--------|
+| 1 | Move repo to neutral GitHub account (not rob-kingsbury) | Pending |
+| 2 | Update GitHub URL in `assets/workshop-description.txt` | After #1 |
+| 3 | Update `url=` in `mod/42/mod.info` | After #1 |
+| 4 | SteamCMD Workshop upload | After #2-3 |
+| 5 | Pin scoped comment on Workshop page day one | After publish |
 
-### Blockers (must fix before publish)
+## Load Order (resolved)
 
-| # | Item | File | Detail |
-|---|------|------|--------|
-| 1 | CI workflow path wrong | `.github/workflows/generate.yml:28` | `mod/media/...` → `mod/42/media/...` — workflow never successfully regenerated since B42 layout migration |
-| 2 | Mod ID / load order decision | `mod/42/mod.info`, `mod/mod.info` | "Unbreaker" sorts late alphabetically. Some mods' load-time require() calls fire before Unbreaker's hook installs. Must decide on mod ID before first Workshop publish — permanent once listed. |
+Workshop installs use a numeric Steam folder ID which sorts before any alphabetically-named local mod. No mod ID rename needed. Local install load order is a documented limitation.
 
-### Non-blocking but do before publish
+WARN messages in PZ logs (`require("X") failed`) are Java-level logging, not Lua failures. They fire before Unbreaker's redirect kicks in and appear even when Unbreaker successfully serves. Do not use WARNs as a failure metric.
 
-| # | Item | File | Detail |
-|---|------|------|--------|
-| 3 | Remove alias dead code | `mod/42/media/lua/shared/Unbreaker.lua:64-75` | Zero JSON entries use `alias`. Has latent bug: resolveGlobal(entry.alias) treats module paths as global names. Remove until there's data. |
-| 4 | Bump version | Both `mod.info` files + `Unbreaker.lua` | `0.1.0-dev` → `1.0.0` |
-| 5 | Fix generator docstring | `scripts/generate_lua.py:5` | States old output path |
-| 6 | AquaConfig comment | `data/vanilla_globals.json` | Document why verified:false is intentional (can't verify without mod installed) |
-| 7 | Workshop description | — | Must name Brita/Arsenal/True Actions explicitly in paragraph one. See draft below. |
-| 8 | Thumbnail | `mod/preview.png`, `mod/poster.png` | Unwatermark the Gemini image at `C:\Users\roban\Downloads\unbreaker.png` |
-| 9 | Push to GitHub remote | — | Never pushed. Repo exists locally and on GitHub but not synced. |
+## Post-Ship Work
 
-## Load Order Finding (Session 3)
-
-**The WARN messages in PZ logs (`require("X") failed`) are Java-level PZ logging, NOT Lua-level failures.** They fire when the native `_require()` fails, which happens before Unbreaker's redirect kicks in. The WARNs appear even when Unbreaker successfully serves the redirect. Do NOT use WARNs as a failure metric.
-
-**Real load order issue:** "Unbreaker" alphabetically sorts after mods like "kattaj1_42_17_shim", "SimpleSilencers", "SkullysDufflesAndRigs". Their top-level Lua runs before Unbreaker's hook installs. Those load-time calls are genuinely missed.
-
-**Mitigation:** For Workshop-installed mods, the mod folder is a numeric Steam Workshop ID (e.g. `3000000000`). Digits sort before letters in ASCII, so Workshop Unbreaker likely loads before alphabetically-named local mods. Load order may only be a problem for local installs. **Needs empirical test.**
-
-**Options:**
-- Change mod ID to something that sorts early (e.g. `!Unbreaker`, `000Unbreaker`) — ugly but effective for local installs
-- Keep "Unbreaker", document the limitation, rely on Workshop numeric ID sort order
-- **Decision needed before publish** — mod ID is permanent on Workshop
-
-## Collab Audit Key Findings (plan-review.md)
-
-Full plan at `c:\xampp\htdocs\unbreaker\plan-review.md`.
-
-- **Ship strategy:** Option C "Tiered Ship" — ship with 27 redirects now. Phase 2 (303-entry triage) is post-ship work. Don't block publish on batch probe.
-- **Don't build:** GitHub Pages form, community feedback pipeline, CONTRIBUTING.md — premature. No contributors yet.
-- **Workshop description:** Name Brita, Arsenal, True Actions explicitly in paragraph 1. Pin a scoped comment on day one.
-- **Silent success problem:** When Unbreaker works, players see nothing. Review-to-subscriber ratio will skew negative. Accept this.
-- **MP:** Untested. Single-player disclaimer required.
-- **Kill-switch:** Define criteria before publish (e.g. "archive if TIS does a major API overhaul that invalidates >50% of redirects").
-
-## Workshop Description Draft
-
-```
-⚠️ Does NOT fix Brita's Weapon Pack, Arsenal[26], or True Actions. Those need deep
-rewrites only the mod authors can do.
-
-Keeps your mods working between PZ patches. Fixes broken require() calls, renamed
-functions, and moved globals — the minor API shuffles that come with almost every
-weekly update. When a mod's author publishes a proper fix, Unbreaker automatically
-steps aside. Stopgap, not a replacement.
-
-Verified: B42.17, 180-mod install, 98.6% of broken require() calls served.
-Single-player only — multiplayer untested.
-```
+- **Phase 2:** Triage 303-entry miss buffer from Session 2 probe. Issues #1-3 are early Phase 2 candidates.
+- **Multiplayer:** Untested. Single-player disclaimer is in Workshop description.
+- **Kill-switch criteria:** Archive if TIS does a major API overhaul that invalidates >50% of redirects.
 
 ## What Exists
 
-- `mod/42/media/lua/shared/Unbreaker.lua` — require() override with miss ring buffer
+- `mod/42/media/lua/shared/Unbreaker.lua` — require() override with miss ring buffer, v1.0.0
 - `mod/42/media/lua/shared/UnbreakerData.lua` — generated, 27 redirects
-- `mod/42/mod.info` and top-level `mod/mod.info` — B42 layout
+- `mod/42/mod.info` and top-level `mod/mod.info` — B42 layout, v1.0.0
 - `data/vanilla_globals.json` — v0.2.0, 27 redirects
 - `scripts/generate_lua.py` — JSON → Lua generator
-- `scripts/smoke_probe.py` — quick architecture sanity check
-- `scripts/probe_misses.py` — candidate redirect checker
 - `scripts/final_probe.py` — full live verification + miss dump
-- `plan-review.md` — collab audit pre-flight brief (Session 3)
-- `.github/workflows/generate.yml` — CI regen (PATH IS WRONG — see blocker #1)
+- `scripts/smoke_probe.py` — quick architecture sanity check
+- `assets/workshop-description.txt` — Workshop page copy (BBCode formatted)
+- `assets/unbreaker-thumbnail-master.png` — master thumbnail
+- `mod/poster.png`, `mod/preview.png` — clean thumbnails for Workshop
+- `plan-review.md` — collab audit output (Session 3)
+- `.github/workflows/generate.yml` — CI regen on JSON change (path fixed)
 
 ## Repo Layout
 
@@ -105,12 +71,17 @@ scripts/
   final_probe.py                 # full live verification + miss dump
 mod/
   mod.info                       # outer (B42 layout marker)
+  poster.png                     # Workshop thumbnail
+  preview.png                    # Workshop thumbnail
   42/
     mod.info
     media/lua/shared/
       Unbreaker.lua              # the override
       UnbreakerData.lua          # GENERATED — never edit by hand
-.github/workflows/generate.yml   # CI regen on JSON change (PATH BUG — fix first)
+assets/
+  workshop-description.txt      # Workshop page copy
+  unbreaker-thumbnail-master.png
+.github/workflows/generate.yml   # CI regen on JSON change
 plan-review.md                   # collab audit output
 ```
 
@@ -118,8 +89,14 @@ plan-review.md                   # collab audit output
 
 | # | Question | Notes |
 |---|---|---|
-| 1 | Load order: does Workshop numeric ID sort before alphabetic local mods? | Test empirically — affects whether mod ID change is needed |
-| 2 | Mod ID decision: keep "Unbreaker" or rename for early sort? | Must decide before Workshop publish |
-| 3 | Multiplayer: does override cause checksum rejection? | Single-player verified. Untested MP. |
-| 4 | SteamCMD 2FA strategy for CI publish | Phase 7 prerequisite |
-| 5 | Phase 2: triage 303-entry miss buffer | Post-ship work |
+| 1 | Multiplayer: does override cause checksum rejection? | Single-player verified. Untested MP. |
+| 2 | SteamCMD 2FA strategy for CI publish | Phase 7 prerequisite |
+| 3 | Phase 2: triage 303-entry miss buffer | Post-ship work |
+
+## Session Summaries
+
+### Session 4 (2026-05-07): Pre-ship hardening + publish prep
+Completed all 9 pre-ship items from collab audit. Fixed CI path, removed alias dead code, bumped to v1.0.0, wrote and humanizer-audited Workshop description, verified thumbnails clean, pushed to GitHub. Decided mod ID: keep Unbreaker. Noted repo move to neutral account needed before publish.
+
+### Session 3 (2026-05-07): In-game validation + pre-ship planning
+Re-validated in live B42.17. 141 intercepted, 139 served (98.6%). Confirmed WARN messages are Java-level noise, not Lua failures. Identified load order issue for local installs. Collab audit completed — ship strategy: Option C (27 redirects now, Phase 2 post-ship).
