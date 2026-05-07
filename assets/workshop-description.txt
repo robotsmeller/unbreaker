@@ -1,9 +1,42 @@
-Does NOT fix Brita's Weapon Pack, Arsenal[26], or True Actions. Those need deep
-rewrites only the mod authors can do.
+Every PZ patch moves something. A file gets renamed, a global shifts scope, a
+require() path changes. Mods that haven't caught up start crashing silently. The
+error log says something failed but not what or why, and you're stuck waiting for
+an author who might not know their mod is broken yet.
 
-Keeps your mods working between PZ patches. Fixes broken require() calls, renamed
-functions, and moved globals. When a mod's author publishes a proper fix, Unbreaker
-automatically steps aside. Stopgap, not a replacement.
+Unbreaker sits between your mods and the game's loader. When a require() call fails
+because a vanilla file moved, it intercepts and returns the right value instead. The
+real module always loads first. Unbreaker only fires when the original fails.
 
-Verified: B42.17, 180-mod install, 98.6% of broken require() calls served.
-Single-player only. Multiplayer untested.
+Tested in B42.17 against a 180-mod install: 141 broken require() calls intercepted,
+139 served correctly (98.6%). The two misses were files with no recoverable path,
+documented before testing began.
+
+No config. No setup. Subscribe and forget it.
+
+
+[h2]What Unbreaker does NOT fix[/h2]
+
+Brita's Weapon Pack, Arsenal[26], and True Actions. These need the authors to
+rewrite large parts of their mods. A polyfill can't do that. Install Unbreaker and
+those mods will still be broken.
+
+If you're only here because of Brita or Arsenal, don't subscribe. It won't help.
+
+
+[h2]When a mod gets properly patched[/h2]
+
+Unbreaker steps aside. The real module loads and Unbreaker never fires. No
+unsubscribing, no config changes needed.
+
+
+[h2]Something broken? Have a suggestion?[/h2]
+
+Leave a comment with the mod name and what's happening. If a mod still crashes with
+Unbreaker installed, or if something is worse than it was without it, that's worth
+knowing. The redirect list grows from reports like that.
+
+GitHub issues also work if you prefer:
+[url=https://github.com/rob-kingsbury/unbreaker]github.com/rob-kingsbury/unbreaker[/url]
+
+
+Single-player only. Multiplayer is untested.
