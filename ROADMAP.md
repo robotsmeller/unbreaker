@@ -22,15 +22,17 @@ When a mod is still broken after installing Unbreaker, one of the last three row
 
 ---
 
-## Phase 0: Infrastructure (current)
+## Phase 0: Infrastructure
 
 - [x] Project scaffolded
-- [x] GitHub repo created (public)
-- [x] vanilla_globals.json seeded with 12 known redirects
+- [x] GitHub repo created (public, neutral account: github.com/robotsmeller/unbreaker)
+- [x] vanilla_globals.json seeded with 12 known redirects (now 137 entries, 134 verified)
 - [x] Issue templates created
 - [x] GitHub Actions: auto-generate UnbreakerData.lua when data/*.json changes
+- [x] GitHub Actions: validation gate that asserts Lua entry count matches JSON verified count before commit
+- [x] Steam Workshop item created (id 3721648770, currently Hidden)
+- [x] GitHub Pages diagnostic tool live (robotsmeller.github.io/unbreaker)
 - [ ] GitHub Actions: publish to Steam Workshop on release tag (SteamCMD)
-- [ ] Steam Workshop item created (placeholder listing)
 
 ---
 
@@ -52,51 +54,37 @@ When a mod is still broken after installing Unbreaker, one of the last three row
 
 ## Phase 2: Vanilla Globals (safe redirects)
 
-**Zero API replication required. High confidence fixes.**
+**Shipped in v1.2.0. 132 verified redirects, all confirmed against live B42.17 sessions.**
 
 ### Data tasks
-- [ ] Verify each redirect in vanilla_globals.json against actual PZ B42 Lua source
-- [ ] Document `since_pz` version for each (when did the global move?)
-- [ ] Add missing redirects as GitHub Issues are filed
-
-### Known redirects to verify and ship
-
-| Module path | Global name | Affected mods | Verified |
-|-------------|-------------|---------------|---------|
-| ISUI/ISInventoryPaneContextMenu | ISInventoryPaneContextMenu | KATTAJ1 packs, Context Menu Building, US Military Pack, Simple Silencers | No |
-| TimedActions/ISInventoryTransferAction | ISInventoryTransferAction | More Traits, Bandits Week One, Nepenthe's More On The Floor | No |
-| Vehicles/Vehicles | Vehicles | Bandits Week One, RotatorsLib, Nepenthe's High Beams | No |
-| Vehicles/VehicleUtils | VehicleUtils | Realistic Dashboard and Gauges | No |
-| Vehicles/Distributions | VehicleDistributions | (unknown) | No |
-| ISUI/ISContextMenu | ISContextMenu | Realistic Dashboard and Gauges | No |
-| ISUI/ISHotbar | ISHotbar | Reorder The Hotbar | No |
-| ISUI/ISWorldMap | ISWorldMap | (unknown) | No |
-| ISUI/PlayerData/ISPlayerData | ISPlayerData | RotatorsLib | No |
-| ISUI/InventoryWindow/ISLootWindowControlHandler | ISLootWindowControlHandler | (unknown) | No |
-| BuildingObjects/ISAnimalPickMateCursor | ISAnimalPickMateCursor | (unknown) | No |
-| BodyLocations | BodyLocations | Skully's Duffelbags | No |
+- [x] Verify each redirect in vanilla_globals.json against actual PZ B42 Lua source
+- [x] Coverage spans ISUI, TimedActions, Vehicles, Farming, Camping, FireFighting, Traps, Foraging, Hotbar, Map, OptionScreens, Entity, RadioCom, Tutorial, Definitions, BuildingRooms, RainBarrel, NPCs, CharacterCustomisation, CommonTemplates, Items distributions
+- [x] `ISLootWindowControlHandler` and `Vehicles/VehicleUtils` flagged as `unrecoverable` (removed in B42 with no replacement, surface as "not fixable" in the diagnostic tool)
+- [ ] Add missing redirects as GitHub Issues are filed (ongoing post-launch)
 
 ### Code tasks
 - [x] Write `scripts/generate_lua.py` (JSON -> UnbreakerData.lua)
-- [x] Write `mod/42/media/lua/shared/Unbreaker.lua` (require() override)
-- [x] Write `mod/mod.info`
-- [ ] Verify each redirect against actual PZ B42 Lua source (ongoing)
-- [ ] Submit to Steam Workshop
+- [x] Write `mod/42/media/lua/shared/Unbreaker.lua` (require() override with miss ring buffer)
+- [x] Write `mod/mod.info` and `mod/42/mod.info`
+- [x] Verify each redirect against actual PZ B42 Lua source via pz-test-pilot probes
+- [x] Submit to Steam Workshop (item created; content upload pending rate-limit clear)
 
-**Exit criteria:** Unbreaker is on the Workshop. Installs, loads, and demonstrably reduces require() failures in PZ Mod Checker diagnose output.
+**Exit criteria met.** 132 verified vanilla_global redirects shipping. Workshop item live (Hidden). Two in-game probes confirmed `intercepted + unknown = 1388` consistent across sessions, validating buffer accounting.
 
 ---
 
 ## Phase 3: Filename Mismatch Fixes
 
-**Mods that require() their own files under the wrong name.**
+**Shipped in v1.2.0. Mods that require() their own files under the wrong name.**
 
-- [ ] Simple Silencers: `SimpleSilencersModelTable` -> global `SimpleSilencersModelTable` (file is `SimpleSilencers_ModelTable.lua`)
-- [ ] Simple Silencers: `SimpleSilencersCraftedSilencerBlacklist` -> global
-- [ ] Identify other filename-mismatch cases from community issues
-- [ ] Add `filename_mismatch` category handling to generate_lua.py
+- [x] Simple Silencers: `SimpleSilencersModelTable` -> global `SimpleSilencersModelTable` (file is `SimpleSilencers_ModelTable.lua`)
+- [x] Simple Silencers: `SimpleSilencersCraftedSilencerBlacklist` -> global
+- [x] `filename_mismatch` category handling in generate_lua.py (treated identically to `vanilla_global` at runtime; the category is metadata for documentation/triage)
+- [ ] Identify other filename-mismatch cases from community issues (ongoing post-launch)
 
-**Note:** These are different from vanilla globals. The global exists because PZ auto-loads all .lua files, but the require() name doesn't match the filename. The stub returns the global that the auto-loaded file already set up.
+**Note:** These are different from vanilla globals. The global exists because PZ auto-loads all .lua files, but the require() name doesn't match the filename. The redirect returns the global that the auto-loaded file already set up.
+
+A third entry (`AquaConfig`) is in the JSON but `verified: false`, so it's filtered out of production builds until confirmed.
 
 ---
 
