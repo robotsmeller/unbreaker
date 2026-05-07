@@ -54,6 +54,16 @@ on the roadmap but not yet stubbed, so mods that depend on them may still fail.
 The only way to know which category your mods fall into is to install it and check.
 
 
+[h2]Is your mod covered?[/h2]
+
+Paste your console.txt into the diagnostic tool to find out before you ask:
+[url=https://robotsmeller.github.io/unbreaker/]robotsmeller.github.io/unbreaker[/url]
+
+It shows which require() failures are fixed by Unbreaker, which have no fix, and
+which fall outside current coverage. Nothing is uploaded — the log is processed
+in your browser.
+
+
 [h2]Something broken? Have a suggestion?[/h2]
 
 Leave a comment with the mod name and what's happening. If a mod still crashes with

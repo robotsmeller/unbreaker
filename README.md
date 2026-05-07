@@ -6,7 +6,7 @@ Every PZ update moves something. A file gets renamed, a global shifts scope, a `
 
 **Real modules always win.** Unbreaker only fires when the original load fails. When a mod's author ships a proper fix, Unbreaker steps aside automatically. No config needed.
 
-Tested in B42.17 against a 180-mod install: 141 broken `require()` calls intercepted, 139 served correctly (98.6%).
+134 verified redirects covering vanilla module paths that moved in B42 patches. Tested in B42.17 against a 180-mod install.
 
 ---
 
@@ -23,6 +23,10 @@ When a mod author ships a proper fix, the original lookup succeeds again. Unbrea
 ## Install
 
 Subscribe on the [Steam Workshop](#) *(link pending, will update after first publish)*.
+
+### Diagnostic tool
+
+Not sure if Unbreaker covers your mods? Paste your `console.txt` into the [diagnostic tool](https://robotsmeller.github.io/unbreaker/) to see which `require()` failures are fixed, which cannot be fixed, and why. Nothing is uploaded — the log is processed in your browser.
 
 **Build 42 only.** Unbreaker will not work on B41. The redirect data and override pattern target B42's module layout specifically.
 

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unbreaker Diagnostic</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0f1117;
+    color: #c9d1d9;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .container { max-width: 860px; margin: 0 auto; }
+
+  header { margin-bottom: 1.5rem; }
+  header h1 { font-size: 1.5rem; font-weight: 600; color: #e6edf3; }
+  header p { margin-top: .4rem; font-size: .9rem; color: #8b949e; }
+
+  .how-to {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: .9rem 1rem;
+    font-size: .83rem;
+    color: #8b949e;
+    margin-bottom: 1.2rem;
+    line-height: 1.6;
+  }
+  .how-to strong { color: #c9d1d9; }
+  .how-to code {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: .8rem;
+    background: #21262d;
+    border-radius: 3px;
+    padding: .1em .35em;
+    color: #79c0ff;
+  }
+
+  .status-bar {
+    font-size: .8rem;
+    color: #8b949e;
+    margin-bottom: 1.2rem;
+    min-height: 1.2em;
+  }
+  .status-bar.error { color: #f85149; }
+  .status-bar.ok { color: #3fb950; }
+
+  .input-area {
+    margin-bottom: 1rem;
+  }
+
+  textarea {
+    width: 100%;
+    height: 220px;
+    background: #161b22;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: .75rem;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: .8rem;
+    resize: vertical;
+    outline: none;
+    transition: border-color .15s;
+  }
+  textarea:focus { border-color: #388bfd; }
+  textarea.drag-over { border-color: #388bfd; background: #1c2333; }
+
+  .actions { display: flex; gap: .75rem; align-items: center; margin-bottom: 2rem; }
+
+  button {
+    padding: .5rem 1.2rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: .875rem;
+    font-weight: 500;
+    transition: background .15s;
+  }
+  #analyze-btn {
+    background: #238636;
+    color: #fff;
+  }
+  #analyze-btn:hover { background: #2ea043; }
+  #analyze-btn:disabled { background: #21262d; color: #484f58; cursor: default; }
+  #clear-btn {
+    background: transparent;
+    color: #8b949e;
+    border: 1px solid #30363d;
+  }
+  #clear-btn:hover { color: #c9d1d9; border-color: #8b949e; }
+
+  .report-btn {
+    display: inline-block;
+    margin-top: .6rem;
+    padding: .35rem .9rem;
+    font-size: .78rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #58a6ff;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    background: transparent;
+    text-decoration: none;
+    transition: border-color .15s, color .15s;
+  }
+  .report-btn:hover { color: #79c0ff; border-color: #58a6ff; }
+
+  #results { display: none; }
+
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: .75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .summary-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: .75rem 1rem;
+    text-align: center;
+  }
+  .summary-card .count {
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .summary-card .label {
+    font-size: .75rem;
+    color: #8b949e;
+    margin-top: .3rem;
+  }
+  .card-fixed .count    { color: #3fb950; }
+  .card-broken .count   { color: #f85149; }
+  .card-library .count  { color: #d29922; }
+  .card-unknown .count  { color: #8b949e; }
+
+  .section { margin-bottom: 1.5rem; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .875rem;
+    font-weight: 600;
+    color: #e6edf3;
+    margin-bottom: .5rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-header .badge {
+    font-size: .75rem;
+    font-weight: 500;
+    padding: .15rem .45rem;
+    border-radius: 10px;
+    background: #21262d;
+    color: #8b949e;
+  }
+  .section-header .chevron {
+    margin-left: auto;
+    color: #484f58;
+    transition: transform .2s;
+  }
+  .section-header.collapsed .chevron { transform: rotate(-90deg); }
+
+  .section-body { display: flex; flex-direction: column; gap: .3rem; }
+  .section-body.hidden { display: none; }
+
+  .entry {
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-left: 3px solid transparent;
+    border-radius: 4px;
+    padding: .45rem .75rem;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: .8rem;
+    display: flex;
+    align-items: baseline;
+    gap: .75rem;
+    flex-wrap: wrap;
+  }
+  .entry-fixed   { border-left-color: #3fb950; }
+  .entry-broken  { border-left-color: #f85149; }
+  .entry-library { border-left-color: #d29922; }
+  .entry-unknown { border-left-color: #484f58; }
+
+  .entry .module { color: #79c0ff; flex: 1; min-width: 0; word-break: break-all; }
+  .entry .reason { font-size: .73rem; color: #8b949e; font-family: inherit; white-space: nowrap; }
+
+  .no-failures {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 1.5rem;
+    text-align: center;
+    color: #8b949e;
+    font-size: .875rem;
+  }
+  .no-failures strong { color: #3fb950; display: block; font-size: 1rem; margin-bottom: .3rem; }
+
+  footer {
+    margin-top: 3rem;
+    font-size: .78rem;
+    color: #484f58;
+    border-top: 1px solid #21262d;
+    padding-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+  footer a { color: #58a6ff; text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>Unbreaker Diagnostic</h1>
+    <p>Paste your Project Zomboid <code>console.txt</code> below to see which <code>require()</code> failures are covered by Unbreaker, which cannot be fixed, and why.</p>
+  </header>
+
+  <div class="how-to">
+    <strong>How to get your console.txt:</strong>
+    Start PZ with your mods active and load into a save (errors appear during load). Close the game, then open
+    <code>C:\Users\YourName\Zomboid\console.txt</code> in Notepad, select all, and paste it below.
+    You can also drag and drop the file directly onto the text box.
+    On Steam Deck / Linux the file is at <code>~/.local/share/Zomboid/console.txt</code>.
+    <br><br>
+    <strong>Nothing leaves your browser.</strong> The text is processed entirely on your machine. The only external request is fetching the redirect list from GitHub.
+  </div>
+
+  <div class="status-bar" id="status">Loading redirect data...</div>
+
+  <div class="input-area">
+    <textarea id="log-input" placeholder="Paste console.txt here, or drag and drop the file onto this box..."></textarea>
+  </div>
+
+  <div class="actions">
+    <button id="analyze-btn" disabled>Analyze</button>
+    <button id="clear-btn">Clear</button>
+  </div>
+
+  <div id="results"></div>
+
+  <footer>
+    <span id="data-version"></span>
+    <span><a href="https://github.com/robotsmeller/unbreaker" target="_blank" rel="noopener">GitHub</a> &mdash; Workshop link TBD</span>
+  </footer>
+
+</div>
+
+<script>
+const DATA_URL = "https://raw.githubusercontent.com/robotsmeller/unbreaker/main/data/vanilla_globals.json";
+
+const LIBRARY_PATTERNS = [
+  /^DAMN_/i, /^Hooks\/DAMN_/i, /^DAMN\b/i,
+  /^tsarslib/i, /^tsar/i,
+  /^rLib\./i, /^rLib\//i,
+  /^PZAPI\//i, /^pzapi\//i,
+];
+
+let redirectData = null;
+
+async function loadData() {
+  const status = document.getElementById("status");
+  try {
+    const res = await fetch(DATA_URL);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const json = await res.json();
+
+    const byModule = new Map();
+    const unrecoverable = new Set();
+
+    for (const entry of json.redirects || []) {
+      if (entry.category === "unrecoverable") {
+        unrecoverable.add(entry.module);
+      } else if (entry.verified) {
+        byModule.set(entry.module, entry);
+      }
+    }
+
+    redirectData = { byModule, unrecoverable, version: json.version };
+
+    const count = byModule.size;
+    status.textContent = "Ready. " + count + " redirects loaded (data v" + json.version + ").";
+    status.className = "status-bar ok";
+    document.getElementById("data-version").textContent = "data v" + json.version + " — " + count + " redirects";
+    document.getElementById("analyze-btn").disabled = false;
+  } catch (e) {
+    status.textContent = "Could not load redirect data: " + e.message + ". Results will be limited.";
+    status.className = "status-bar error";
+    redirectData = { byModule: new Map(), unrecoverable: new Set(), version: "unknown" };
+    document.getElementById("analyze-btn").disabled = false;
+  }
+}
+
+function parseModules(log) {
+  const seen = new Set();
+  const results = [];
+  const re = /require\s*\(\s*["']([^"']+)["']\s*\)/g;
+  let m;
+  while ((m = re.exec(log)) !== null) {
+    const mod = m[1].replace(/[\r\n\0]/g, " ").trim();
+    if (!mod || seen.has(mod)) continue;
+    seen.add(mod);
+    results.push(mod);
+  }
+  return results;
+}
+
+function categorize(module) {
+  if (redirectData.byModule.has(module)) {
+    return { type: "fixed", reason: "covered by Unbreaker" };
+  }
+  if (redirectData.unrecoverable.has(module)) {
+    return { type: "broken", reason: "removed in B42, no replacement exists" };
+  }
+  if (module.endsWith(".lua")) {
+    return { type: "broken", reason: "invalid require path (includes .lua extension) — self-broken mod" };
+  }
+  if (module === "Items/" || module.endsWith("/")) {
+    return { type: "broken", reason: "empty or malformed require path — self-broken mod" };
+  }
+  for (const pat of LIBRARY_PATTERNS) {
+    if (pat.test(module)) {
+      return { type: "library", reason: "library mod stub needed (not yet covered)" };
+    }
+  }
+  return { type: "unknown", reason: "not in redirect list — may be self-broken, a mod dependency, or a candidate for a future redirect" };
+}
+
+function renderResults(modules) {
+  const results = document.getElementById("results");
+
+  if (modules.length === 0) {
+    results.style.display = "block";
+    results.innerHTML = '<div class="no-failures"><strong>No require() calls found</strong>Make sure you pasted your console.txt from a session where mods were loaded.</div>';
+    return;
+  }
+
+  const groups = { fixed: [], broken: [], library: [], unknown: [] };
+  for (const mod of modules) {
+    const cat = categorize(mod);
+    groups[cat.type].push({ module: mod, reason: cat.reason });
+  }
+
+  const html = [];
+
+  html.push('<div class="summary">');
+  html.push(summaryCard("fixed",   groups.fixed.length,   "Fixed by Unbreaker"));
+  html.push(summaryCard("broken",  groups.broken.length,  "Not fixable"));
+  html.push(summaryCard("library", groups.library.length, "Library stub needed"));
+  html.push(summaryCard("unknown", groups.unknown.length, "Unknown"));
+  html.push("</div>");
+
+  if (groups.fixed.length)   html.push(section("fixed",   "Fixed by Unbreaker",   groups.fixed,   false));
+  if (groups.broken.length)  html.push(section("broken",  "Not fixable",          groups.broken,  false));
+  if (groups.library.length) html.push(section("library", "Library stub needed",  groups.library, true));
+  if (groups.unknown.length) html.push(section("unknown", "Unknown", groups.unknown, true, makeReportUrl(groups.unknown)));
+
+  results.style.display = "block";
+  results.innerHTML = html.join("");
+
+  results.querySelectorAll(".section-header").forEach(function(header) {
+    header.addEventListener("click", function() {
+      const body = header.nextElementSibling;
+      const collapsed = body.classList.toggle("hidden");
+      header.classList.toggle("collapsed", collapsed);
+    });
+  });
+}
+
+function summaryCard(type, count, label) {
+  return '<div class="summary-card card-' + type + '"><div class="count">' + count + '</div><div class="label">' + escHtml(label) + "</div></div>";
+}
+
+function makeReportUrl(entries) {
+  var LIMIT = 80;
+  var capped = entries.length > LIMIT;
+  var shown = capped ? entries.slice(0, LIMIT) : entries;
+  var lines = shown.map(function(e) { return "- `" + e.module.replace(/`/g, "'") + "`"; }).join("\n");
+  if (capped) lines += "\n- ...and " + (entries.length - LIMIT) + " more (list truncated)";
+  var body = "The following `require()` modules were not found in the Unbreaker redirect list.\n"
+    + "Needs triage — may be vanilla globals that moved, self-broken mods, or candidates for new redirects.\n\n"
+    + lines
+    + "\n\n*Detected via [diagnostic tool](https://robotsmeller.github.io/unbreaker/)*";
+  var title = "Uncovered require() failures (" + entries.length + " modules)";
+  return "https://github.com/robotsmeller/unbreaker/issues/new"
+    + "?labels=vanilla-global&title=" + encodeURIComponent(title)
+    + "&body=" + encodeURIComponent(body);
+}
+
+function section(type, title, entries, startCollapsed, reportUrl) {
+  const bodyClass = startCollapsed ? "section-body hidden" : "section-body";
+  const headerClass = startCollapsed ? "section-header collapsed" : "section-header";
+  const rows = entries.map(function(e) {
+    return '<div class="entry entry-' + type + '"><span class="module">' + escHtml(e.module) + '</span><span class="reason">' + escHtml(e.reason) + "</span></div>";
+  }).join("");
+  var reportHtml = reportUrl
+    ? '<a class="report-btn" href="' + escHtml(reportUrl) + '" target="_blank" rel="noopener">Open GitHub issue with these ' + entries.length + " modules</a>"
+    : "";
+  return '<div class="section"><div class="' + headerClass + '"><span>' + escHtml(title) + '</span><span class="badge">' + entries.length + '</span><span class="chevron">&#9660;</span></div><div class="' + bodyClass + '">' + rows + "</div>" + reportHtml + "</div>";
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+document.getElementById("analyze-btn").addEventListener("click", function() {
+  const log = document.getElementById("log-input").value;
+  const modules = parseModules(log);
+  renderResults(modules);
+});
+
+document.getElementById("clear-btn").addEventListener("click", function() {
+  document.getElementById("log-input").value = "";
+  const results = document.getElementById("results");
+  results.style.display = "none";
+  results.innerHTML = "";
+});
+
+// File drag-and-drop: FileReader reads the file locally, no network request
+const ta = document.getElementById("log-input");
+ta.addEventListener("dragover", function(e) { e.preventDefault(); ta.classList.add("drag-over"); });
+ta.addEventListener("dragleave", function() { ta.classList.remove("drag-over"); });
+ta.addEventListener("drop", function(e) {
+  e.preventDefault();
+  ta.classList.remove("drag-over");
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) { ta.value = ev.target.result; };
+  reader.readAsText(file);
+});
+
+loadData();
+</script>
+</body>
+</html>
