@@ -17,7 +17,7 @@
       "category": "vanilla_global",
       "since_pz": "42.0.0",
       "verified": false,
-      "notes": ""
+      "notes": "File confirmed at media/lua/client/Vehicles/ISUI/ISVehicleMenu.lua. Required by CommonSense, damnlib, AutotsarTrailers, tsarslib, [B42]PumpsHavePropane."
     },
     {
       "module": "ISUI/ISContextMenu",
@@ -41,7 +41,7 @@
       "category": "vanilla_global",
       "since_pz": "42.0.0",
       "verified": false,
-      "notes": ""
+      "notes": "File confirmed at media/lua/client/ISUI/Maps/ISWorldMap.lua"
     },
     {
       "module": "ISUI/PlayerData/ISPlayerData",
@@ -65,7 +65,7 @@
       "category": "vanilla_global",
       "since_pz": "42.0.0",
       "verified": false,
-      "notes": ""
+      "notes": "File confirmed at media/lua/server/BuildingObjects/ISAnimalPickMateCursor.lua"
     },
     {
       "module": "TimedActions/ISInventoryTransferAction",
@@ -81,15 +81,7 @@
       "category": "vanilla_global",
       "since_pz": "42.0.0",
       "verified": false,
-      "notes": "Needs verification — global name may differ"
-    },
-    {
-      "module": "Vehicles/VehicleUtils",
-      "global": "VehicleUtils",
-      "category": "vanilla_global",
-      "since_pz": "42.0.0",
-      "verified": false,
-      "notes": "Needs verification"
+      "notes": "File confirmed at media/lua/server/Vehicles/Vehicles.lua"
     },
     {
       "module": "Vehicles/Distributions",
@@ -97,7 +89,15 @@
       "category": "vanilla_global",
       "since_pz": "42.0.0",
       "verified": false,
-      "notes": "Global name unverified — may be different"
+      "notes": "Path mismatch: require asks for 'Distributions' but file is named VehicleDistributions.lua at media/lua/server/Vehicles/. Global name unverified."
+    },
+    {
+      "module": "Vehicles/VehicleUtils",
+      "global": "VehicleUtils",
+      "category": "unrecoverable",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "NO FILE EXISTS in B42 vanilla. Possibly removed entirely. Cannot shim - mod author must update. Required by Realistic Dashboard and Gauges."
     },
     {
       "module": "BodyLocations",
@@ -122,6 +122,14 @@
       "since_pz": "42.0.0",
       "verified": false,
       "notes": "Simple Silencers mod. Same filename/require mismatch pattern."
+    },
+    {
+      "module": "AquaConfig",
+      "global": "AquaConfig",
+      "category": "filename_mismatch",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "AutotsarMotorClub (Tchernobill B42 port). AMC_AquaConfig.lua does require 'AquaConfig' but the actual file is named AMC_AquaConfig. Workshop: 3404737883"
     }
   ]
 }
