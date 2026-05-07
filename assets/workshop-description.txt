@@ -52,3 +52,6 @@ GitHub also works:
 
 
 Single-player only. Multiplayer is untested.
+
+
+This is a human-AI collab. Fully tested by an actual human being. Deal with it.
