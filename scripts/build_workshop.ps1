@@ -11,7 +11,7 @@ $ErrorActionPreference = "Stop"
 $root  = Split-Path -Parent $PSScriptRoot
 $mod   = Join-Path $root "mod"
 $build = Join-Path $root "build\workshop"
-$tpl   = Join-Path $root "workshop_item.txt"
+$tpl   = Join-Path $root "workshop_item.template.txt"
 $desc  = Join-Path $root "assets\workshop-description.txt"
 $out   = Join-Path $root "build\workshop_item.txt"
 
