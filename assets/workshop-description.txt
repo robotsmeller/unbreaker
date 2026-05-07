@@ -51,7 +51,9 @@ GitHub also works:
 [url=https://github.com/robotsmeller/unbreaker]github.com/robotsmeller/unbreaker[/url]
 
 
-Single-player only. Multiplayer is untested.
+- b42.17+ only (will "work" on previous, but database won't fix issues)
+- Single-player only
+- Multiplayer is untested (give it a try, let me know!)
 
 
-This is a human-AI collab. Fully tested by an actual human being. Deal with it.
+[b]This is a human-AI collab. Fully tested by an actual human being. Deal with it.[/b]
