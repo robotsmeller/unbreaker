@@ -51,7 +51,7 @@ GitHub also works:
 [url=https://github.com/robotsmeller/unbreaker]github.com/robotsmeller/unbreaker[/url]
 
 
-- b42.17+ only (will "work" on previous, but database won't fix issues)
+- b42.17+ only (will 'work' on previous, but database won't fix issues)
 - Single-player only
 - Multiplayer is untested (give it a try, let me know!)
 

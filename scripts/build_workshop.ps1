@@ -56,11 +56,17 @@ if (-not (Test-Path $desc)) { throw "Description not found: $desc" }
 $descRaw = Get-Content $desc -Raw -Encoding UTF8
 $descRaw = $descRaw -replace "`r`n", "`n"      # normalize line endings
 $descRaw = $descRaw.TrimEnd("`n")              # drop trailing blank lines
-$descEsc = $descRaw -replace '\\', '\\'         # escape backslashes first
-$descEsc = $descEsc -replace '"', '\"'         # escape quotes
-# Newlines stay as actual newlines. SteamCMD's VDF parser accepts
-# multi-line quoted strings; \n escapes get pushed through literally
-# and would render as text on the Workshop page.
+
+# SteamCMD's VDF parser is shallow: \n is passed through literally,
+# and \" terminates the string instead of escaping the quote. So
+# newlines stay as actual newlines (multi-line strings work), and
+# any literal " in the source must be replaced with single or curly
+# quotes before it ever hits the VDF.
+if ($descRaw -match '"') {
+    throw 'Description contains a literal double-quote character. Use single quotes or curly quotes instead. SteamCMD VDF will truncate the description at the first ASCII double-quote.'
+}
+
+$descEsc = $descRaw -replace '\\', '\\'         # backslashes still need escaping
 
 $tplLines = Get-Content $tpl
 $outLines = $tplLines | ForEach-Object {
