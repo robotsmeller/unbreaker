@@ -39,6 +39,21 @@ those mods will still be broken.
 If you're only here because of Brita or Arsenal, don't subscribe. It won't help.
 
 
+[h2]How much does it actually cover?[/h2]
+
+Depends on why your mods broke. The redirect list targets vanilla module paths that
+moved in B42 patches. Those are a finite set. Once all the moved paths are mapped,
+every mod that breaks for that reason is covered by a single entry, regardless of
+how many mods use it.
+
+Other failure modes are a different story. If a mod has a bug in its own require()
+call, Unbreaker can't fix it. If a mod requires another mod that isn't installed,
+Unbreaker can't fix that either. Major library mods like damnlib and tsarslib are
+on the roadmap but not yet stubbed, so mods that depend on them may still fail.
+
+The only way to know which category your mods fall into is to install it and check.
+
+
 [h2]Something broken? Have a suggestion?[/h2]
 
 Leave a comment with the mod name and what's happening. If a mod still crashes with

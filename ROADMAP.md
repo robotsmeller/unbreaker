@@ -5,6 +5,23 @@ for popular mods that haven't been updated for Build 42.
 
 ---
 
+## Coverage Model
+
+The redirect list targets vanilla module paths that moved in B42. Those are a finite set. Each entry covers every mod that uses that path, so coverage compounds as the list grows. The goal is comprehensive coverage of vanilla-path breakage, not a general compatibility layer.
+
+Three failure modes are outside scope and won't be addressed by expanding the redirect list:
+
+| Failure mode | Example | Fixable? |
+|---|---|---|
+| Vanilla path moved | `require("ISUI/ISInventoryPaneContextMenu")` | Yes, add redirect entry |
+| Self-broken mod | mod requires a file that never existed | No |
+| Missing dependency | mod A requires mod B not installed | No |
+| Major library not stubbed | damnlib, tsarslib | Phase 4/5 |
+
+When a mod is still broken after installing Unbreaker, one of the last three rows is almost certainly why.
+
+---
+
 ## Phase 0: Infrastructure (current)
 
 - [x] Project scaffolded

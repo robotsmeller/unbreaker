@@ -42,6 +42,18 @@ Unbreaker must load before other mods to intercept their `require()` calls.
 - `require()` calls with filename mismatches (mod requires the wrong filename for its own file)
 - Moved globals: old location redirected to new one
 
+### Coverage
+
+The redirect list targets vanilla module paths that moved in B42. Those are a finite set. Once all the moved paths are mapped, every mod that breaks for that reason is covered by a single entry, regardless of how many mods use it.
+
+Other failure modes are outside that scope:
+
+- **Self-broken mods:** the mod has a bug in its own require() call, referencing a file that never existed. Nothing to redirect.
+- **Missing dependencies:** mod A requires mod B that isn't installed. Unbreaker can't substitute a mod that isn't there.
+- **Major libraries:** damnlib and tsarslib are required by hundreds of mods each. They're on the roadmap but not yet stubbed. Mods that depend on them may still fail until that work is done.
+
+If a mod is still broken after installing Unbreaker, one of those three is almost certainly the cause.
+
 ## What it does NOT fix
 
 - **Build 41:** Unbreaker is B42-only. B41 has a different module layout and is not targeted.
