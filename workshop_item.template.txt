@@ -6,7 +6,17 @@
 	"visibility"		"2"
 	"title"		"Unbreaker"
 	"description"		"PLACEHOLDER - replaced by build_workshop.ps1 with assets/workshop-description.txt"
-	"changenote"		"v1.2.0 - Initial public release.\n\n134 verified redirects covering vanilla module paths that moved between B42 patches. All entries tested live in B42.17 against a 180-mod install.\n\nArchitecture: pcall-first. Real modules always load; Unbreaker only fires when the original require() fails. B42's silent nil-return quirk handled correctly.\n\nCoverage spans ISUI, TimedActions, Vehicles, Farming, Camping, FireFighting, Traps, Foraging, Hotbar, Map, OptionScreens, Entity, RadioCom, Tutorial, Definitions, BuildingRooms, RainBarrel, NPCs, CharacterCustomisation, CommonTemplates, and Items distributions.\n\nNot yet covered: library mods (damnlib, tsarslib) are on the roadmap. Brita, Arsenal, and True Actions require author rewrites and cannot be fixed by redirects. Multiplayer is untested.\n\nDiagnostic tool: https://robotsmeller.github.io/unbreaker/"
+	"changenote"		"v1.2.0 - Initial public release.
+
+134 verified redirects covering vanilla module paths that moved between B42 patches. All entries tested live in B42.17 against a 180-mod install.
+
+Architecture: pcall-first. Real modules always load; Unbreaker only fires when the original require() fails. B42's silent nil-return quirk handled correctly.
+
+Coverage spans ISUI, TimedActions, Vehicles, Farming, Camping, FireFighting, Traps, Foraging, Hotbar, Map, OptionScreens, Entity, RadioCom, Tutorial, Definitions, BuildingRooms, RainBarrel, NPCs, CharacterCustomisation, CommonTemplates, and Items distributions.
+
+Not yet covered: library mods (damnlib, tsarslib) are on the roadmap. Brita, Arsenal, and True Actions require author rewrites and cannot be fixed by redirects. Multiplayer is untested.
+
+Diagnostic tool: https://robotsmeller.github.io/unbreaker/"
 	"tags"
 	{
 		"tag"	"Build 42"

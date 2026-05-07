@@ -58,7 +58,9 @@ $descRaw = $descRaw -replace "`r`n", "`n"      # normalize line endings
 $descRaw = $descRaw.TrimEnd("`n")              # drop trailing blank lines
 $descEsc = $descRaw -replace '\\', '\\'         # escape backslashes first
 $descEsc = $descEsc -replace '"', '\"'         # escape quotes
-$descEsc = $descEsc -replace "`n", '\n'        # newlines -> literal \n
+# Newlines stay as actual newlines. SteamCMD's VDF parser accepts
+# multi-line quoted strings; \n escapes get pushed through literally
+# and would render as text on the Workshop page.
 
 $tplLines = Get-Content $tpl
 $outLines = $tplLines | ForEach-Object {
