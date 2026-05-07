@@ -1,6 +1,6 @@
 name=Unbreaker
 id=Unbreaker
 description=Polyfill for PZ mods broken by weekly patches. Fixes broken require() calls, renamed functions, moved globals. Real modules always win, stubs only fire when the original load fails.
-modversion=1.0.0
+modversion=1.0.1
 versionMin=42.0.0
 url=https://github.com/robotsmeller/unbreaker
