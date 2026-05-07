@@ -4,72 +4,187 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unbreaker Diagnostic</title>
+<script>
+  // Apply saved theme before CSS to avoid flash of wrong theme.
+  (function() {
+    try {
+      var t = localStorage.getItem("unbreaker-theme") || "system";
+      document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {
+      document.documentElement.setAttribute("data-theme", "system");
+    }
+  })();
+</script>
 <style>
+  :root {
+    --bg: #ffffff;
+    --card-bg: #f6f8fa;
+    --card-hover: #eaeef2;
+    --text: #1f2328;
+    --text-muted: #656d76;
+    --text-strong: #1f2328;
+    --text-faint: #8c959f;
+    --border: #d0d7de;
+    --border-soft: #d8dee4;
+    --accent: #0969da;
+    --accent-bright: #218bff;
+    --success: #1a7f37;
+    --error: #cf222e;
+    --warning: #9a6700;
+    --btn-bg: #1f883d;
+    --btn-hover: #1a7f37;
+    --btn-text: #ffffff;
+    --code-bg: #eaeef2;
+    --tip-bg: #ddf4ff;
+    --tip-border: #54aeff;
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0f1117;
+    --card-bg: #161b22;
+    --card-hover: #1c2333;
+    --text: #c9d1d9;
+    --text-muted: #8b949e;
+    --text-strong: #e6edf3;
+    --text-faint: #484f58;
+    --border: #30363d;
+    --border-soft: #21262d;
+    --accent: #58a6ff;
+    --accent-bright: #79c0ff;
+    --success: #3fb950;
+    --error: #f85149;
+    --warning: #d29922;
+    --btn-bg: #238636;
+    --btn-hover: #2ea043;
+    --btn-text: #ffffff;
+    --code-bg: #21262d;
+    --tip-bg: #161b22;
+    --tip-border: #1f6feb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root[data-theme="system"] {
+      --bg: #0f1117;
+      --card-bg: #161b22;
+      --card-hover: #1c2333;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --text-strong: #e6edf3;
+      --text-faint: #484f58;
+      --border: #30363d;
+      --border-soft: #21262d;
+      --accent: #58a6ff;
+      --accent-bright: #79c0ff;
+      --success: #3fb950;
+      --error: #f85149;
+      --warning: #d29922;
+      --btn-bg: #238636;
+      --btn-hover: #2ea043;
+      --btn-text: #ffffff;
+      --code-bg: #21262d;
+      --tip-bg: #161b22;
+      --tip-border: #1f6feb;
+    }
+  }
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #0f1117;
-    color: #c9d1d9;
+    background: var(--bg);
+    color: var(--text);
     min-height: 100vh;
     padding: 2rem 1rem;
+    transition: background .15s, color .15s;
   }
 
   .container { max-width: 860px; margin: 0 auto; }
 
-  header { margin-bottom: 1.5rem; }
-  header h1 { font-size: 1.5rem; font-weight: 600; color: #e6edf3; }
-  header p { margin-top: .4rem; font-size: .9rem; color: #8b949e; }
+  header {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  header .titles { flex: 1; min-width: 0; }
+  header h1 { font-size: 1.5rem; font-weight: 600; color: var(--text-strong); }
+  header p { margin-top: .4rem; font-size: .9rem; color: var(--text-muted); }
+
+  .theme-toggle {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .theme-toggle button {
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    padding: .35rem .65rem;
+    font-size: .75rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s, color .15s;
+    border-radius: 0;
+  }
+  .theme-toggle button:hover { color: var(--text-strong); }
+  .theme-toggle button.active {
+    background: var(--card-bg);
+    color: var(--text-strong);
+  }
+  .theme-toggle button + button { border-left: 1px solid var(--border); }
+
+  code {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: .8rem;
+    background: var(--code-bg);
+    border-radius: 3px;
+    padding: .1em .35em;
+    color: var(--accent);
+  }
 
   .how-to {
-    background: #161b22;
-    border: 1px solid #30363d;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
     border-radius: 6px;
     padding: .9rem 1rem;
     font-size: .83rem;
-    color: #8b949e;
+    color: var(--text-muted);
     margin-bottom: 1.2rem;
     line-height: 1.6;
   }
-  .how-to strong { color: #c9d1d9; }
-  .how-to code {
-    font-family: "SFMono-Regular", Consolas, monospace;
-    font-size: .8rem;
-    background: #21262d;
-    border-radius: 3px;
-    padding: .1em .35em;
-    color: #79c0ff;
-  }
+  .how-to strong { color: var(--text); }
 
   .status-bar {
     font-size: .8rem;
-    color: #8b949e;
+    color: var(--text-muted);
     margin-bottom: 1.2rem;
     min-height: 1.2em;
   }
-  .status-bar.error { color: #f85149; }
-  .status-bar.ok { color: #3fb950; }
+  .status-bar.error { color: var(--error); }
+  .status-bar.ok { color: var(--success); }
 
-  .input-area {
-    margin-bottom: 1rem;
-  }
+  .input-area { margin-bottom: 1rem; }
 
   textarea {
     width: 100%;
     height: 220px;
-    background: #161b22;
-    color: #c9d1d9;
-    border: 1px solid #30363d;
+    background: var(--card-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
     border-radius: 6px;
     padding: .75rem;
     font-family: "SFMono-Regular", Consolas, monospace;
     font-size: .8rem;
     resize: vertical;
     outline: none;
-    transition: border-color .15s;
+    transition: border-color .15s, background .15s;
   }
-  textarea:focus { border-color: #388bfd; }
-  textarea.drag-over { border-color: #388bfd; background: #1c2333; }
+  textarea:focus { border-color: var(--accent); }
+  textarea.drag-over { border-color: var(--accent); background: var(--card-hover); }
 
   .actions { display: flex; gap: .75rem; align-items: center; margin-bottom: 2rem; }
 
@@ -81,34 +196,32 @@
     font-size: .875rem;
     font-weight: 500;
     transition: background .15s;
+    font-family: inherit;
   }
-  #analyze-btn {
-    background: #238636;
-    color: #fff;
-  }
-  #analyze-btn:hover { background: #2ea043; }
-  #analyze-btn:disabled { background: #21262d; color: #484f58; cursor: default; }
+  #analyze-btn { background: var(--btn-bg); color: var(--btn-text); }
+  #analyze-btn:hover { background: var(--btn-hover); }
+  #analyze-btn:disabled { background: var(--card-bg); color: var(--text-faint); cursor: default; }
   #clear-btn {
     background: transparent;
-    color: #8b949e;
-    border: 1px solid #30363d;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
   }
-  #clear-btn:hover { color: #c9d1d9; border-color: #8b949e; }
+  #clear-btn:hover { color: var(--text); border-color: var(--text-muted); }
 
   .report-btn {
     display: inline-block;
     margin-top: .6rem;
-    padding: .35rem .9rem;
-    font-size: .78rem;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    color: #58a6ff;
-    border: 1px solid #30363d;
+    padding: .4rem 1rem;
+    font-size: .8rem;
+    font-weight: 500;
+    color: var(--btn-text);
+    background: var(--accent);
+    border: 1px solid var(--accent);
     border-radius: 6px;
-    background: transparent;
     text-decoration: none;
-    transition: border-color .15s, color .15s;
+    transition: background .15s;
   }
-  .report-btn:hover { color: #79c0ff; border-color: #58a6ff; }
+  .report-btn:hover { background: var(--accent-bright); border-color: var(--accent-bright); }
 
   #results { display: none; }
 
@@ -120,8 +233,8 @@
   }
 
   .summary-card {
-    background: #161b22;
-    border: 1px solid #30363d;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
     border-radius: 6px;
     padding: .75rem 1rem;
     text-align: center;
@@ -133,13 +246,13 @@
   }
   .summary-card .label {
     font-size: .75rem;
-    color: #8b949e;
+    color: var(--text-muted);
     margin-top: .3rem;
   }
-  .card-fixed .count    { color: #3fb950; }
-  .card-broken .count   { color: #f85149; }
-  .card-library .count  { color: #d29922; }
-  .card-unknown .count  { color: #8b949e; }
+  .card-fixed .count    { color: var(--success); }
+  .card-broken .count   { color: var(--error); }
+  .card-library .count  { color: var(--warning); }
+  .card-unknown .count  { color: var(--text-muted); }
 
   .section { margin-bottom: 1.5rem; }
   .section-header {
@@ -148,8 +261,7 @@
     gap: .5rem;
     font-size: .875rem;
     font-weight: 600;
-    color: #e6edf3;
-    margin-bottom: .5rem;
+    color: var(--text-strong);
     cursor: pointer;
     user-select: none;
   }
@@ -158,22 +270,30 @@
     font-weight: 500;
     padding: .15rem .45rem;
     border-radius: 10px;
-    background: #21262d;
-    color: #8b949e;
+    background: var(--code-bg);
+    color: var(--text-muted);
   }
   .section-header .chevron {
     margin-left: auto;
-    color: #484f58;
+    color: var(--text-faint);
     transition: transform .2s;
   }
   .section-header.collapsed .chevron { transform: rotate(-90deg); }
+
+  .section-action {
+    font-size: .8rem;
+    color: var(--text-muted);
+    margin: .25rem 0 .55rem;
+    font-weight: 400;
+    line-height: 1.4;
+  }
 
   .section-body { display: flex; flex-direction: column; gap: .3rem; }
   .section-body.hidden { display: none; }
 
   .entry {
-    background: #161b22;
-    border: 1px solid #21262d;
+    background: var(--card-bg);
+    border: 1px solid var(--border-soft);
     border-left: 3px solid transparent;
     border-radius: 4px;
     padding: .45rem .75rem;
@@ -184,37 +304,37 @@
     gap: .75rem;
     flex-wrap: wrap;
   }
-  .entry-fixed   { border-left-color: #3fb950; }
-  .entry-broken  { border-left-color: #f85149; }
-  .entry-library { border-left-color: #d29922; }
-  .entry-unknown { border-left-color: #484f58; }
+  .entry-fixed   { border-left-color: var(--success); }
+  .entry-broken  { border-left-color: var(--error); }
+  .entry-library { border-left-color: var(--warning); }
+  .entry-unknown { border-left-color: var(--text-faint); }
 
-  .entry .module { color: #79c0ff; flex: 1; min-width: 0; word-break: break-all; }
-  .entry .reason { font-size: .73rem; color: #8b949e; font-family: inherit; white-space: nowrap; }
+  .entry .module { color: var(--accent); flex: 1; min-width: 0; word-break: break-all; }
+  .entry .reason { font-size: .73rem; color: var(--text-muted); font-family: inherit; white-space: nowrap; }
 
   .no-failures {
-    background: #161b22;
-    border: 1px solid #30363d;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
     border-radius: 6px;
     padding: 1.5rem;
     text-align: center;
-    color: #8b949e;
+    color: var(--text-muted);
     font-size: .875rem;
   }
-  .no-failures strong { color: #3fb950; display: block; font-size: 1rem; margin-bottom: .3rem; }
+  .no-failures strong { color: var(--success); display: block; font-size: 1rem; margin-bottom: .3rem; }
 
   footer {
     margin-top: 3rem;
     font-size: .78rem;
-    color: #484f58;
-    border-top: 1px solid #21262d;
+    color: var(--text-faint);
+    border-top: 1px solid var(--border-soft);
     padding-top: 1rem;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: .5rem;
   }
-  footer a { color: #58a6ff; text-decoration: none; }
+  footer a { color: var(--accent); text-decoration: none; }
   footer a:hover { text-decoration: underline; }
 </style>
 </head>
@@ -222,8 +342,15 @@
 <div class="container">
 
   <header>
-    <h1>Unbreaker Diagnostic</h1>
-    <p>Paste your Project Zomboid <code>console.txt</code> below to see which <code>require()</code> failures are covered by Unbreaker, which cannot be fixed, and why.</p>
+    <div class="titles">
+      <h1>Unbreaker Diagnostic</h1>
+      <p>Paste your Project Zomboid <code>console.txt</code> below to see which <code>require()</code> failures are covered by Unbreaker, which cannot be fixed, and why.</p>
+    </div>
+    <div class="theme-toggle" role="group" aria-label="Theme">
+      <button data-theme-set="light" type="button" title="Light theme">Light</button>
+      <button data-theme-set="dark" type="button" title="Dark theme">Dark</button>
+      <button data-theme-set="system" type="button" title="Match system">System</button>
+    </div>
   </header>
 
   <div class="how-to">
@@ -265,6 +392,29 @@ const LIBRARY_PATTERNS = [
   /^rLib\./i, /^rLib\//i,
   /^PZAPI\//i, /^pzapi\//i,
 ];
+
+const SECTION_META = {
+  fixed: {
+    title: "Fixed by Unbreaker",
+    action: "These calls are caught and redirected. Nothing for you to do.",
+    startCollapsed: true,
+  },
+  broken: {
+    title: "Cannot be fixed",
+    action: "These mods need to be updated by their authors, or unsubscribed. Unbreaker cannot recover them.",
+    startCollapsed: false,
+  },
+  library: {
+    title: "Waiting on library support",
+    action: "These rely on large library mods (damnlib, tsarslib) that need full stub work. On the roadmap, not yet covered. Nothing to do right now.",
+    startCollapsed: false,
+  },
+  unknown: {
+    title: "Not in the redirect list",
+    action: "Unbreaker has not seen these before. Please report them with the button below so they can be reviewed for a future redirect.",
+    startCollapsed: false,
+  },
+};
 
 let redirectData = null;
 
@@ -323,17 +473,33 @@ function categorize(module) {
     return { type: "broken", reason: "removed in B42, no replacement exists" };
   }
   if (module.endsWith(".lua")) {
-    return { type: "broken", reason: "invalid require path (includes .lua extension) — self-broken mod" };
+    return { type: "broken", reason: "the mod is asking for a file with a .lua extension, which is invalid" };
   }
-  if (module === "Items/" || module.endsWith("/")) {
-    return { type: "broken", reason: "empty or malformed require path — self-broken mod" };
+  if (module.endsWith("/")) {
+    return { type: "broken", reason: "the mod is asking for an empty path" };
   }
   for (const pat of LIBRARY_PATTERNS) {
     if (pat.test(module)) {
-      return { type: "library", reason: "library mod stub needed (not yet covered)" };
+      return { type: "library", reason: "needs library support" };
     }
   }
-  return { type: "unknown", reason: "not in redirect list — may be self-broken, a mod dependency, or a candidate for a future redirect" };
+  return { type: "unknown", reason: "not yet in the redirect list" };
+}
+
+function makeReportUrl(entries) {
+  var LIMIT = 80;
+  var capped = entries.length > LIMIT;
+  var shown = capped ? entries.slice(0, LIMIT) : entries;
+  var lines = shown.map(function(e) { return "- `" + e.module.replace(/`/g, "'") + "`"; }).join("\n");
+  if (capped) lines += "\n- ...and " + (entries.length - LIMIT) + " more (list truncated)";
+  var body = "The following `require()` modules were not found in the Unbreaker redirect list.\n"
+    + "Needs triage — may be vanilla globals that moved, self-broken mods, or candidates for new redirects.\n\n"
+    + lines
+    + "\n\n*Detected via [diagnostic tool](https://robotsmeller.github.io/unbreaker/)*";
+  var title = "Uncovered require() failures (" + entries.length + " modules)";
+  return "https://github.com/robotsmeller/unbreaker/issues/new"
+    + "?labels=vanilla-global&title=" + encodeURIComponent(title)
+    + "&body=" + encodeURIComponent(body);
 }
 
 function renderResults(modules) {
@@ -356,21 +522,23 @@ function renderResults(modules) {
   html.push('<div class="summary">');
   html.push(summaryCard("fixed",   groups.fixed.length,   "Fixed by Unbreaker"));
   html.push(summaryCard("broken",  groups.broken.length,  "Not fixable"));
-  html.push(summaryCard("library", groups.library.length, "Library stub needed"));
-  html.push(summaryCard("unknown", groups.unknown.length, "Unknown"));
+  html.push(summaryCard("library", groups.library.length, "Waiting on library"));
+  html.push(summaryCard("unknown", groups.unknown.length, "Not in list"));
   html.push("</div>");
 
-  if (groups.fixed.length)   html.push(section("fixed",   "Fixed by Unbreaker",   groups.fixed,   false));
-  if (groups.broken.length)  html.push(section("broken",  "Not fixable",          groups.broken,  false));
-  if (groups.library.length) html.push(section("library", "Library stub needed",  groups.library, true));
-  if (groups.unknown.length) html.push(section("unknown", "Unknown", groups.unknown, true, makeReportUrl(groups.unknown)));
+  // Order: actionable buckets first, fixed last
+  if (groups.broken.length)  html.push(section("broken",  groups.broken));
+  if (groups.library.length) html.push(section("library", groups.library));
+  if (groups.unknown.length) html.push(section("unknown", groups.unknown, makeReportUrl(groups.unknown)));
+  if (groups.fixed.length)   html.push(section("fixed",   groups.fixed));
 
   results.style.display = "block";
   results.innerHTML = html.join("");
 
   results.querySelectorAll(".section-header").forEach(function(header) {
     header.addEventListener("click", function() {
-      const body = header.nextElementSibling;
+      const body = header.parentElement.querySelector(".section-body");
+      if (!body) return;
       const collapsed = body.classList.toggle("hidden");
       header.classList.toggle("collapsed", collapsed);
     });
@@ -381,32 +549,26 @@ function summaryCard(type, count, label) {
   return '<div class="summary-card card-' + type + '"><div class="count">' + count + '</div><div class="label">' + escHtml(label) + "</div></div>";
 }
 
-function makeReportUrl(entries) {
-  var LIMIT = 80;
-  var capped = entries.length > LIMIT;
-  var shown = capped ? entries.slice(0, LIMIT) : entries;
-  var lines = shown.map(function(e) { return "- `" + e.module.replace(/`/g, "'") + "`"; }).join("\n");
-  if (capped) lines += "\n- ...and " + (entries.length - LIMIT) + " more (list truncated)";
-  var body = "The following `require()` modules were not found in the Unbreaker redirect list.\n"
-    + "Needs triage — may be vanilla globals that moved, self-broken mods, or candidates for new redirects.\n\n"
-    + lines
-    + "\n\n*Detected via [diagnostic tool](https://robotsmeller.github.io/unbreaker/)*";
-  var title = "Uncovered require() failures (" + entries.length + " modules)";
-  return "https://github.com/robotsmeller/unbreaker/issues/new"
-    + "?labels=vanilla-global&title=" + encodeURIComponent(title)
-    + "&body=" + encodeURIComponent(body);
-}
-
-function section(type, title, entries, startCollapsed, reportUrl) {
-  const bodyClass = startCollapsed ? "section-body hidden" : "section-body";
-  const headerClass = startCollapsed ? "section-header collapsed" : "section-header";
+function section(type, entries, reportUrl) {
+  const meta = SECTION_META[type];
+  const bodyClass = meta.startCollapsed ? "section-body hidden" : "section-body";
+  const headerClass = meta.startCollapsed ? "section-header collapsed" : "section-header";
   const rows = entries.map(function(e) {
     return '<div class="entry entry-' + type + '"><span class="module">' + escHtml(e.module) + '</span><span class="reason">' + escHtml(e.reason) + "</span></div>";
   }).join("");
-  var reportHtml = reportUrl
+  const reportHtml = reportUrl
     ? '<a class="report-btn" href="' + escHtml(reportUrl) + '" target="_blank" rel="noopener">Open GitHub issue with these ' + entries.length + " modules</a>"
     : "";
-  return '<div class="section"><div class="' + headerClass + '"><span>' + escHtml(title) + '</span><span class="badge">' + entries.length + '</span><span class="chevron">&#9660;</span></div><div class="' + bodyClass + '">' + rows + "</div>" + reportHtml + "</div>";
+  return '<div class="section">'
+    + '<div class="' + headerClass + '">'
+    +   '<span>' + escHtml(meta.title) + '</span>'
+    +   '<span class="badge">' + entries.length + '</span>'
+    +   '<span class="chevron">&#9660;</span>'
+    + '</div>'
+    + '<div class="section-action">' + escHtml(meta.action) + '</div>'
+    + '<div class="' + bodyClass + '">' + rows + '</div>'
+    + reportHtml
+    + '</div>';
 }
 
 function escHtml(s) {
@@ -430,6 +592,25 @@ document.getElementById("clear-btn").addEventListener("click", function() {
   results.style.display = "none";
   results.innerHTML = "";
 });
+
+// Theme toggle
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  try { localStorage.setItem("unbreaker-theme", theme); } catch (e) {}
+  document.querySelectorAll(".theme-toggle button").forEach(function(b) {
+    b.classList.toggle("active", b.getAttribute("data-theme-set") === theme);
+  });
+}
+(function initTheme() {
+  var saved;
+  try { saved = localStorage.getItem("unbreaker-theme"); } catch (e) {}
+  applyTheme(saved || "system");
+  document.querySelectorAll(".theme-toggle button").forEach(function(b) {
+    b.addEventListener("click", function() {
+      applyTheme(b.getAttribute("data-theme-set"));
+    });
+  });
+})();
 
 // File drag-and-drop: FileReader reads the file locally, no network request
 const ta = document.getElementById("log-input");
