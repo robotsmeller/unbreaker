@@ -14,6 +14,22 @@ documented before testing began.
 No config. No setup. Subscribe and forget it.
 
 
+[h2]How it works[/h2]
+
+When a mod loads, it fetches the scripts and tools it depends on by name — think
+of it like looking something up in a filing cabinet by its label. PZ patches
+sometimes reorganize that cabinet: a file gets moved, a label gets changed. The
+mod still asks for the old label, finds nothing, and crashes.
+
+Unbreaker watches every one of those lookups. If a lookup succeeds, it steps aside
+and returns the result untouched. If it fails, Unbreaker checks its redirect list
+and finds where the thing actually lives now, then hands it back. The mod gets what
+it needs without knowing anything went wrong.
+
+When a mod author ships a proper fix, the original lookup succeeds again. Unbreaker
+never fires. Nothing to unsubscribe, nothing to reconfigure.
+
+
 [h2]What Unbreaker does NOT fix[/h2]
 
 Brita's Weapon Pack, Arsenal[26], and True Actions. These need the authors to

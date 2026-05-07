@@ -10,6 +10,16 @@ Tested in B42.17 against a 180-mod install: 141 broken `require()` calls interce
 
 ---
 
+## How it works
+
+When a mod loads, it fetches the scripts and tools it depends on by name — like looking something up in a filing cabinet by its label. PZ patches sometimes reorganize that cabinet: a file gets moved, a label changes. The mod still asks for the old label, finds nothing, and crashes. The error log tells you something failed but not what or why.
+
+Unbreaker watches every one of those lookups. If a lookup succeeds, it steps aside and returns the result untouched. If it fails, Unbreaker checks its redirect list and finds where the thing actually lives now, then hands it back. The mod gets what it needs without knowing anything went wrong.
+
+When a mod author ships a proper fix, the original lookup succeeds again. Unbreaker never fires. Nothing to unsubscribe, nothing to reconfigure.
+
+---
+
 ## Install
 
 Subscribe on the [Steam Workshop](#) *(link pending — will update after first publish)*.
