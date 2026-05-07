@@ -1,90 +1,67 @@
 # Unbreaker — Handoff
 
-**Last Updated:** 2026-05-07 (end of Session 6)
+**Last Updated:** 2026-05-07 (end of Session 7)
 
 ```yaml
-session: 6
-continue_with: Enable GitHub Pages in repo settings, then SteamCMD Workshop upload
+session: 7
+continue_with: Draft and post r/projectzomboid announcement; verify tags appear on Workshop page
 blockers: none
-status: Ship-ready. Diagnostic tool built and pushed.
+status: Live on Steam Workshop (id 3721648770). v1.2.0 public.
 ```
 
 ## Current State
 
-**Mod is at v1.2.0 with 134 verified redirects. Diagnostic tool is live on GitHub.**
+**Unbreaker is live on the Workshop.** Public visibility, content uploaded, in-game test passed (`[Unbreaker] loaded v1.2.0 — 134 redirects`). Diagnostic tool live at robotsmeller.github.io/unbreaker. Issue #4 filed via the diagnostic tool's report flow, end-to-end verified.
 
-One manual step to activate the diagnostic tool: enable GitHub Pages in repo settings
-(Settings > Pages > Deploy from branch: main, folder: /docs).
+Workshop URL: https://steamcommunity.com/sharedfiles/filedetails/?id=3721648770
 
-## Publish Checklist
+## Post-Launch Actions
 
 | # | Item | Status |
 |---|------|--------|
-| 1 | Move repo to neutral GitHub account | Done — github.com/robotsmeller/unbreaker |
-| 2 | Update GitHub URL in `assets/workshop-description.txt` | Done |
-| 3 | Update `url=` in `mod/42/mod.info` | Done |
-| 4 | Enable GitHub Pages (Settings > Pages > main, /docs) | Pending |
-| 5 | SteamCMD Workshop upload | Pending |
-| 6 | Update Workshop footer link in `docs/index.html` with real Workshop ID | After #5 |
-| 7 | Pin scoped comment on Workshop page day one | After #5 |
+| 1 | Verify tags actually appear on Workshop page | Pending — SteamCMD VDF tag formats both ignored by PZ. PZ in-game publisher folder is set up at `~/Zomboid/Workshop/Unbreaker/` as fallback. |
+| 2 | Draft + post r/projectzomboid announcement | Pending |
+| 3 | Indie Stone forums modding-section post | Pending |
+| 4 | PZ modding Discord(s) — diagnostic tool announcement | Pending |
+| 5 | Reach out to authors of mods Unbreaker covers | Ongoing |
+| 6 | Triage Issue #4 (6 unknowns from launch session) | Pending |
+
+## Promotion Strategy (drafted Session 7)
+
+**Lead with the diagnostic tool**, not the mod. It's the unique value — paste console.txt, get a categorized answer. Frame Unbreaker as the engine behind the tool's "fixed" bucket.
+
+**Tone:** Match the Workshop description — dry, direct, honest about Brita/Arsenal/True Actions being out of scope. PZ community rewards self-awareness over hype.
+
+**Don't:** spam comments on broken mods, astroturf with alts, post identical content cross-platform within 24h.
+
+## Workshop Publishing Lessons (Session 7)
+
+These bit us during launch — recorded so they don't bite again:
+
+- **`poster.png` is the Workshop thumbnail, NOT `preview.png`.** The names are reversed from what you'd expect on PZ Workshop. Updating only `preview.png` left a blank thumbnail in browse lists.
+- **SteamCMD VDF doesn't escape strings the way you think.** `\n` passes through literally and renders as `\n` text on the page. `\"` truncates the string at the backslash-quote pair. Use real newlines for multi-line strings; replace any literal `"` in source with single quotes or curly quotes.
+- **VDF re-pushes everything on every upload.** If the description field has a placeholder and you point SteamCMD at that file, your real description gets clobbered. Hence `workshop_item.template.txt` (placeholder) + `build/workshop_item.txt` (generated, full content spliced in by `scripts/build_workshop.ps1`).
+- **Tags via SteamCMD VDF do not work for PZ.** Neither `tags { tag "..." }` nor `tags "comma,separated"` formats took. Use PZ's in-game Workshop publisher (`~/Zomboid/Workshop/<ModName>/workshop.txt`) for tag setting. Folder is already set up.
+- **Workshop preview cap is 1 MB hard.** Steam returns "Limit exceeded" for oversized previews — same error name as rate limiting, easy to misdiagnose. Resize previews to 1024x1024 or 512x512 and re-encode.
 
 ## Diagnostic Tool
 
-Static page at https://robotsmeller.github.io/unbreaker/ (live once GitHub Pages enabled).
+Static page at https://robotsmeller.github.io/unbreaker/
 
 - Paste or drag-drop console.txt; processed entirely in-browser
-- Categorizes require() failures: fixed / not fixable / library stub needed / unknown
-- Unknown bucket has one-click "Open GitHub issue" button pre-filled with module list
+- Simple/Advanced view toggle, light/dark/system theme toggle (all persist in localStorage)
+- Simple view: status banner + plain-language stats + inline report button
+- Advanced view: detailed module list with collapsible sections
+- Unknown bucket has one-click "Open GitHub issue" button pre-filled with module list, label, title
 - Fetches vanilla_globals.json from GitHub raw — always reflects current release
+- Backtick + newline sanitization in issue body (no Markdown injection)
+- Forbids literal `"` in description (build script throws — would have truncated the VDF push)
 
-## Load Order (resolved)
+## Open Issues
 
-Workshop installs use a numeric Steam folder ID which sorts before any alphabetically-named local mod. No mod ID rename needed. Local install load order is a documented limitation.
-
-WARN messages in PZ logs (`require("X") failed`) are Java-level logging, not Lua failures. They fire before Unbreaker's redirect kicks in and appear even when Unbreaker successfully serves. Do not use WARNs as a failure metric.
-
-## Post-Ship Work
-
-- **Phase 2:** Triage miss buffer. Issues #1-3 are early Phase 2 candidates.
-- **Multiplayer:** Untested. Single-player disclaimer is in Workshop description.
-- **Kill-switch criteria:** Archive if TIS does a major API overhaul that invalidates >50% of redirects.
-
-## What Exists
-
-- `mod/42/media/lua/shared/Unbreaker.lua` — require() override with miss ring buffer, v1.2.0
-- `mod/42/media/lua/shared/UnbreakerData.lua` — generated, 134 redirects
-- `mod/42/mod.info` and top-level `mod/mod.info` — B42 layout, v1.2.0
-- `data/vanilla_globals.json` — v0.4.0, 134 verified redirects
-- `docs/index.html` — GitHub Pages diagnostic tool
-- `scripts/generate_lua.py` — JSON -> Lua generator
-- `scripts/final_probe.py` — full live verification + miss dump
-- `scripts/smoke_probe.py` — quick architecture sanity check
-- `assets/workshop-description.txt` — Workshop page copy (BBCode formatted)
-- `mod/poster.png`, `mod/preview.png` — clean thumbnails for Workshop
-- `.github/workflows/generate.yml` — CI regen on JSON change
-
-## Repo Layout
-
-```
-data/vanilla_globals.json        # source of truth (134 redirects)
-docs/
-  index.html                     # GitHub Pages diagnostic tool
-scripts/
-  generate_lua.py                # JSON -> Lua codegen
-  smoke_probe.py                 # architecture probe
-  final_probe.py                 # full live verification + miss dump
-mod/
-  mod.info                       # outer (B42 layout marker)
-  poster.png / preview.png       # Workshop thumbnails
-  42/
-    mod.info
-    media/lua/shared/
-      Unbreaker.lua              # the override
-      UnbreakerData.lua          # GENERATED — never edit by hand
-assets/
-  workshop-description.txt      # Workshop page copy
-.github/workflows/generate.yml   # CI regen on JSON change
-```
+- #2 [Smoke Like It's 93] Stray `require("Items/")` — self-broken, `unrecoverable`-class
+- #3 [WaterPipes] Self-broken require `wp_vsquare`
+- #4 Uncovered require() failures (6 modules) — filed via diagnostic tool. AquaConfig already in JSON unverified; `Json` and `recipecode` worth probing as vanilla candidates; three `YourDash/Z_PatchVehicleDashboard_*` look like filename mismatches.
 
 ## Open Questions
 
@@ -92,12 +69,31 @@ assets/
 |---|---|---|
 | 1 | Multiplayer: does override cause checksum rejection? | Single-player verified. Untested MP. |
 | 2 | SteamCMD 2FA strategy for CI publish | Phase 7 prerequisite |
-| 3 | Phase 2: triage miss buffer | Post-ship work |
+| 3 | Phase 2: triage miss buffer | Post-launch, ongoing |
+
+## What Exists
+
+- `mod/42/media/lua/shared/Unbreaker.lua` — require() override with miss ring buffer, v1.2.0
+- `mod/42/media/lua/shared/UnbreakerData.lua` — generated, 134 redirects
+- `mod/42/mod.info` and top-level `mod/mod.info` — B42 layout, v1.2.0
+- `mod/poster.png`, `mod/preview.png` — childish-art thumbnails, 1024x1024, ~360 KB each
+- `data/vanilla_globals.json` — v0.4.0, 134 verified redirects
+- `docs/index.html` — GitHub Pages diagnostic tool
+- `scripts/generate_lua.py` — JSON → Lua generator
+- `scripts/build_workshop.ps1` — builds Workshop content folder + generates VDF with description spliced in
+- `scripts/final_probe.py` and `scripts/smoke_probe.py` — in-game verification probes
+- `assets/workshop-description.txt` — Workshop page copy (BBCode, source of truth)
+- `assets/unbreaker-childish.png` — master art for poster + preview
+- `assets/preview-original-1024.png` — pre-resize backup of original preview
+- `workshop_item.template.txt` — VDF template (description is placeholder, replaced at build time)
+- `PUBLISH.md` — runbook
+- `~/Zomboid/Workshop/Unbreaker/` — local PZ Workshop folder for in-game publisher (tags fallback)
+- `.github/workflows/generate.yml` — CI regen on JSON change
 
 ## Session Summaries
 
-### Session 6 (2026-05-07): Diagnostic tool + security hardening
-Built docs/index.html GitHub Pages diagnostic tool (paste console.txt, get categorized results, one-click unknown issue filing). Soren audit found backtick injection (medium) and newline passthrough (low) in GitHub issue URL builder — both fixed. Updated README and workshop description to reference tool.
+### Session 7 (2026-05-07): Workshop launch
+Set up SteamCMD pipeline (`scripts/build_workshop.ps1`, `workshop_item.template.txt`, `PUBLISH.md`). Hit and resolved every VDF gotcha: rate limit, 1MB preview cap, content folder layout (no `Contents/` wrapper), description clobbering, `\n` not interpreting, `\"` truncating. Discovered `poster.png` is the Workshop thumbnail, not `preview.png`. Tags don't work via SteamCMD VDF on PZ; PZ in-game publisher folder set up as fallback. Mod is now live and public.
 
-### Session 5 (2026-05-07): Collab audit fixes + Phase 2/3 redirect expansion
-Soren+Atlas audit fixed verified filter, added CI validation gate, capped missSeen, removed dead alias branch. Two in-game probes expanded redirects 27 -> 96 -> 134 (all verified live B42.17). Version bumped to 1.2.0.
+### Session 6 (2026-05-07): Diagnostic tool + security hardening
+Built docs/index.html GitHub Pages diagnostic tool (paste console.txt, get categorized results, one-click unknown issue filing). Soren audit found backtick injection (medium) and newline passthrough (low) in GitHub issue URL builder; both fixed. Updated README and workshop description to reference tool.
