@@ -28,7 +28,7 @@ When a mod is still broken after installing Unbreaker, one of the last three row
 - [x] GitHub repo created (public)
 - [x] vanilla_globals.json seeded with 12 known redirects
 - [x] Issue templates created
-- [ ] GitHub Actions: auto-generate UnbreakerData.lua when data/*.json changes
+- [x] GitHub Actions: auto-generate UnbreakerData.lua when data/*.json changes
 - [ ] GitHub Actions: publish to Steam Workshop on release tag (SteamCMD)
 - [ ] Steam Workshop item created (placeholder listing)
 
@@ -36,17 +36,17 @@ When a mod is still broken after installing Unbreaker, one of the last three row
 
 ## Phase 1: Proof of Concept
 
-**Blocker: verify core mechanism works before writing anything else.**
+**Completed in Session 2 (2026-05-06). Verified live in B42.17.**
 
-- [ ] Write 20-line test mod that overrides global `require`
-- [ ] Verify: `require("SomeModule")` is intercepted by the override
-- [ ] Verify: real module (file exists) wins over stub via pcall fallback
-- [ ] Verify: load order — does alphabetical naming guarantee loading before other mods?
-- [ ] Verify: PZ registers all mod Lua paths before any mod code executes
-- [ ] Verify: multiplayer — does require() override cause checksum mismatch?
-- [ ] Document findings in `.claude/context.md`
+- [x] Write 20-line test mod that overrides global `require`
+- [x] Verify: `require("SomeModule")` is intercepted by the override
+- [x] Verify: real module (file exists) wins over stub via pcall fallback
+- [x] Verify: load order — Workshop numeric folder ID sorts before alphabetic local mods
+- [x] Verify: PZ registers all mod Lua paths before any mod code executes
+- [ ] Verify: multiplayer — does require() override cause checksum mismatch? (untested)
+- [x] Document findings in `.claude/context.md`
 
-**Exit criteria:** A test mod in PZ that intercepts a require() call and returns a stub value. Confirmed working in singleplayer. Multiplayer status documented.
+**Exit criteria met.** 141 broken require() calls intercepted, 139 served (98.6%) in a 180-mod install.
 
 ---
 
@@ -77,10 +77,10 @@ When a mod is still broken after installing Unbreaker, one of the last three row
 | BodyLocations | BodyLocations | Skully's Duffelbags | No |
 
 ### Code tasks
-- [ ] Write `scripts/generate_lua.py` (JSON -> UnbreakerData.lua)
-- [ ] Write `mod/media/lua/shared/Unbreaker.lua` (require() override)
-- [ ] Write `mod/mod.info`
-- [ ] Test each vanilla global redirect in PZ
+- [x] Write `scripts/generate_lua.py` (JSON -> UnbreakerData.lua)
+- [x] Write `mod/42/media/lua/shared/Unbreaker.lua` (require() override)
+- [x] Write `mod/mod.info`
+- [ ] Verify each redirect against actual PZ B42 Lua source (ongoing)
 - [ ] Submit to Steam Workshop
 
 **Exit criteria:** Unbreaker is on the Workshop. Installs, loads, and demonstrably reduces require() failures in PZ Mod Checker diagnose output.
@@ -183,11 +183,11 @@ PZ validates Workshop mod files via checksum when a client connects to a server.
 
 ## Phase 9: Community Infrastructure
 
-- [ ] CONTRIBUTING.md — how to submit a new redirect or report a broken stub
-- [ ] Issue template: mod request (mod name, Workshop ID, what fails, subscriber count)
-- [ ] Issue template: stub broken (mod updated, Unbreaker now shadowing real module)
-- [ ] Label conventions documented
-- [ ] Process for verifying community-submitted redirects before merging
+- [x] CONTRIBUTING.md — how to submit a new redirect or report a broken stub
+- [x] Issue template: mod request (mod name, Workshop ID, what fails, subscriber count)
+- [x] Issue template: stub broken (mod updated, Unbreaker now shadowing real module)
+- [x] Label conventions documented (in CONTRIBUTING.md)
+- [x] Process for verifying community-submitted redirects before merging (in CONTRIBUTING.md)
 
 ---
 

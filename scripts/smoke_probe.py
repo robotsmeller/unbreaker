@@ -11,10 +11,11 @@ PZ window must be FOCUSED (not paused) for the duration. ~10-30 seconds.
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
-TEST_PILOT_ROOT = Path("C:/xampp/htdocs/pz-test-pilot")
+TEST_PILOT_ROOT = Path(os.environ.get("PZ_TEST_PILOT_PATH", "C:/xampp/htdocs/pz-test-pilot"))
 sys.path.insert(0, str(TEST_PILOT_ROOT / "scripts"))
 
 from config import load as load_config

@@ -14,27 +14,26 @@ end
 
 local REDIRECTS = DATA.redirects or {}
 
-local function resolveGlobal(globalName)
-    local v = rawget(_G, globalName)
-    if v ~= nil then return v end
-    return nil
-end
-
 local _require = require
 
+-- intercepted: calls where a redirect entry exists (served or not)
+-- unknown: broken calls with no redirect entry at all
 local intercepted = 0
 local served = 0
 local missed = 0
+local unknown = 0
 
 -- Ring buffer of module names we couldn't redirect (for diagnostic dumps).
--- Bounded so a runaway loop can't blow memory.
+-- Both missBuffer (captured names) and missSeen (dedup) are bounded.
 local MISS_BUFFER_MAX = 256
+local MISS_SEEN_MAX = MISS_BUFFER_MAX * 4
 local missBuffer = {}
 local missSeen = {}
 local missCount = 0
 
 local function recordMiss(module)
     if missSeen[module] then return end
+    if missCount >= MISS_SEEN_MAX then return end
     missSeen[module] = true
     missCount = missCount + 1
     if #missBuffer >= MISS_BUFFER_MAX then return end
@@ -55,7 +54,7 @@ local function unbreakerRequire(module)
     if entry then
         intercepted = intercepted + 1
         if entry.global then
-            local g = resolveGlobal(entry.global)
+            local g = rawget(_G, entry.global)
             if g ~= nil then
                 served = served + 1
                 return g
@@ -64,6 +63,7 @@ local function unbreakerRequire(module)
         missed = missed + 1
         recordMiss(module)
     else
+        unknown = unknown + 1
         recordMiss(module)
     end
 
@@ -78,7 +78,13 @@ _G.Unbreaker = {
     data_version = DATA.version,
     redirect_count = 0,
     stats = function()
-        return { intercepted = intercepted, served = served, missed = missed }
+        return {
+            intercepted = intercepted,
+            served = served,
+            missed = missed,
+            unknown = unknown,
+            total_broken = intercepted + unknown,
+        }
     end,
     has_redirect = function(module)
         return REDIRECTS[module] ~= nil
