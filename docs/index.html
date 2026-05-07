@@ -323,6 +323,103 @@
   }
   .no-failures strong { color: var(--success); display: block; font-size: 1rem; margin-bottom: .3rem; }
 
+  .view-tabs {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+  }
+  .view-tabs button {
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    padding: .5rem 1.1rem;
+    font-size: .85rem;
+    cursor: pointer;
+    font-family: inherit;
+    border-radius: 0;
+    transition: background .15s, color .15s;
+  }
+  .view-tabs button:hover { color: var(--text-strong); }
+  .view-tabs button.active {
+    background: var(--card-bg);
+    color: var(--text-strong);
+    font-weight: 600;
+  }
+  .view-tabs button + button { border-left: 1px solid var(--border); }
+
+  .view-pane.hidden { display: none; }
+
+  .simple-banner {
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--text-faint);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    background: var(--card-bg);
+  }
+  .simple-banner h2 {
+    font-size: 1.1rem;
+    color: var(--text-strong);
+    margin-bottom: .35rem;
+    font-weight: 600;
+  }
+  .simple-banner p {
+    font-size: .9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .banner-good    { border-left-color: var(--success); }
+  .banner-warn    { border-left-color: var(--warning); }
+  .banner-bad     { border-left-color: var(--error); }
+  .banner-action  { border-left-color: var(--accent); }
+
+  .simple-rows { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1rem; }
+
+  .simple-row {
+    background: var(--card-bg);
+    border: 1px solid var(--border-soft);
+    border-left: 3px solid transparent;
+    border-radius: 6px;
+    padding: .75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    flex-wrap: wrap;
+  }
+  .simple-row.row-fixed   { border-left-color: var(--success); }
+  .simple-row.row-broken  { border-left-color: var(--error); }
+  .simple-row.row-library { border-left-color: var(--warning); }
+  .simple-row.row-unknown { border-left-color: var(--accent); }
+
+  .simple-row .stat-num {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-strong);
+    min-width: 2.2rem;
+    text-align: center;
+    line-height: 1;
+  }
+  .row-fixed   .stat-num { color: var(--success); }
+  .row-broken  .stat-num { color: var(--error); }
+  .row-library .stat-num { color: var(--warning); }
+  .row-unknown .stat-num { color: var(--accent); }
+
+  .simple-row .stat-text {
+    flex: 1;
+    min-width: 200px;
+    font-size: .88rem;
+    line-height: 1.4;
+    color: var(--text);
+  }
+  .simple-row .stat-text strong { color: var(--text-strong); display: block; margin-bottom: .15rem; }
+  .simple-row .stat-text span { color: var(--text-muted); font-size: .82rem; }
+
+  .simple-row .row-action {
+    flex-shrink: 0;
+  }
+
   footer {
     margin-top: 3rem;
     font-size: .78rem;
@@ -517,23 +614,29 @@ function renderResults(modules) {
     groups[cat.type].push({ module: mod, reason: cat.reason });
   }
 
-  const html = [];
+  const reportUrl = groups.unknown.length ? makeReportUrl(groups.unknown) : null;
+  const total = modules.length;
+  const savedView = (function() { try { return localStorage.getItem("unbreaker-view"); } catch (e) { return null; } })();
+  const initialView = (savedView === "advanced") ? "advanced" : "simple";
 
-  html.push('<div class="summary">');
-  html.push(summaryCard("fixed",   groups.fixed.length,   "Fixed by Unbreaker"));
-  html.push(summaryCard("broken",  groups.broken.length,  "Not fixable"));
-  html.push(summaryCard("library", groups.library.length, "Waiting on library"));
-  html.push(summaryCard("unknown", groups.unknown.length, "Not in list"));
-  html.push("</div>");
-
-  // Order: actionable buckets first, fixed last
-  if (groups.broken.length)  html.push(section("broken",  groups.broken));
-  if (groups.library.length) html.push(section("library", groups.library));
-  if (groups.unknown.length) html.push(section("unknown", groups.unknown, makeReportUrl(groups.unknown)));
-  if (groups.fixed.length)   html.push(section("fixed",   groups.fixed));
+  const tabs = '<div class="view-tabs" role="tablist">'
+    + '<button data-view="simple" type="button">Simple</button>'
+    + '<button data-view="advanced" type="button">Advanced</button>'
+    + '</div>';
 
   results.style.display = "block";
-  results.innerHTML = html.join("");
+  results.innerHTML = tabs
+    + '<div class="view-pane" data-pane="simple">' + buildSimpleView(groups, total, reportUrl) + '</div>'
+    + '<div class="view-pane" data-pane="advanced">' + buildAdvancedView(groups, reportUrl) + '</div>';
+
+  // Activate initial view
+  setView(initialView);
+
+  results.querySelectorAll(".view-tabs button").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      setView(btn.getAttribute("data-view"));
+    });
+  });
 
   results.querySelectorAll(".section-header").forEach(function(header) {
     header.addEventListener("click", function() {
@@ -543,6 +646,104 @@ function renderResults(modules) {
       header.classList.toggle("collapsed", collapsed);
     });
   });
+}
+
+function setView(view) {
+  const results = document.getElementById("results");
+  results.querySelectorAll(".view-tabs button").forEach(function(b) {
+    b.classList.toggle("active", b.getAttribute("data-view") === view);
+  });
+  results.querySelectorAll(".view-pane").forEach(function(p) {
+    p.classList.toggle("hidden", p.getAttribute("data-pane") !== view);
+  });
+  try { localStorage.setItem("unbreaker-view", view); } catch (e) {}
+}
+
+function buildSimpleView(groups, total, reportUrl) {
+  const f = groups.fixed.length;
+  const b = groups.broken.length;
+  const l = groups.library.length;
+  const u = groups.unknown.length;
+
+  // Banner: pick the most actionable status
+  let banner;
+  if (u > 0) {
+    banner = simpleBanner("action", "Help us improve coverage",
+      "Found " + u + " require() failure" + (u === 1 ? "" : "s") + " Unbreaker has not seen before. Click the report button below to add them to the queue. We will review them for the next update.");
+  } else if (b > 0 && l > 0) {
+    banner = simpleBanner("bad", "Some mods cannot be saved",
+      "Unbreaker fixes " + f + " of " + total + " failures. The rest need either author updates (" + b + ") or library support that has not shipped yet (" + l + ").");
+  } else if (b > 0) {
+    banner = simpleBanner("bad", "Some mods cannot be saved",
+      "Unbreaker fixes " + f + " of " + total + " failures. " + b + " require updates from the mod authors and cannot be redirected.");
+  } else if (l > 0) {
+    banner = simpleBanner("warn", "Waiting on library support",
+      "Unbreaker fixes " + f + " of " + total + " failures. The remaining " + l + " depend on large library mods that are on the roadmap but not yet supported.");
+  } else {
+    banner = simpleBanner("good", "Good to go",
+      "All " + total + " require() failure" + (total === 1 ? "" : "s") + " in your log " + (total === 1 ? "is" : "are") + " covered by Unbreaker. Your mods will load.");
+  }
+
+  const rows = [];
+  if (f > 0) {
+    rows.push(simpleRow("fixed", f,
+      "Fixed by Unbreaker",
+      "These calls are intercepted and redirected. The mods using them will work."));
+  }
+  if (b > 0) {
+    rows.push(simpleRow("broken", b,
+      "Cannot be fixed",
+      "These need updates from the mod authors. Unsubscribing the broken mods is the only way to stop the crashes."));
+  }
+  if (l > 0) {
+    rows.push(simpleRow("library", l,
+      "Waiting on library support",
+      "These rely on damnlib or tsarslib. On the roadmap, not yet supported. Nothing to do right now."));
+  }
+  if (u > 0) {
+    const btn = reportUrl
+      ? '<a class="report-btn row-action" href="' + escHtml(reportUrl) + '" target="_blank" rel="noopener">Report ' + u + ' failure' + (u === 1 ? "" : "s") + '</a>'
+      : "";
+    rows.push(simpleRow("unknown", u,
+      "New to Unbreaker",
+      "These have not been seen before. Submitting them helps us add proper redirects in the next update.",
+      btn));
+  }
+
+  return banner + '<div class="simple-rows">' + rows.join("") + '</div>';
+}
+
+function simpleBanner(kind, title, text) {
+  return '<div class="simple-banner banner-' + kind + '">'
+    + '<h2>' + escHtml(title) + '</h2>'
+    + '<p>' + escHtml(text) + '</p>'
+    + '</div>';
+}
+
+function simpleRow(type, count, title, text, actionHtml) {
+  return '<div class="simple-row row-' + type + '">'
+    + '<div class="stat-num">' + count + '</div>'
+    + '<div class="stat-text"><strong>' + escHtml(title) + '</strong><span>' + escHtml(text) + '</span></div>'
+    + (actionHtml || "")
+    + '</div>';
+}
+
+function buildAdvancedView(groups, reportUrl) {
+  const html = [];
+
+  html.push('<div class="summary">');
+  html.push(summaryCard("fixed",   groups.fixed.length,   "Fixed by Unbreaker"));
+  html.push(summaryCard("broken",  groups.broken.length,  "Not fixable"));
+  html.push(summaryCard("library", groups.library.length, "Waiting on library"));
+  html.push(summaryCard("unknown", groups.unknown.length, "Not in list"));
+  html.push("</div>");
+
+  if (groups.broken.length)  html.push(section("broken",  groups.broken));
+  if (groups.library.length) html.push(section("library", groups.library));
+  if (groups.unknown.length) html.push(section("unknown", groups.unknown, reportUrl));
+  if (groups.fixed.length)   html.push(section("fixed",   groups.fixed));
+
+  return html.join("");
 }
 
 function summaryCard(type, count, label) {
