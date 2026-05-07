@@ -18,7 +18,7 @@ if (Test-Path $build) {
     Remove-Item -Recurse -Force $build
 }
 
-$dest = Join-Path $build "Contents\mods\Unbreaker"
+$dest = Join-Path $build "mods\Unbreaker"
 New-Item -ItemType Directory -Force -Path $dest | Out-Null
 
 # Workshop preview lives at the content folder root, not inside the mod.
