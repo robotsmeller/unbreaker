@@ -22,7 +22,7 @@ When a mod author ships a proper fix, the original lookup succeeds again. Unbrea
 
 ## Install
 
-Subscribe on the [Steam Workshop](#) *(link pending, will update after first publish)*.
+Subscribe on the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3721648770).
 
 ### Diagnostic tool
 
