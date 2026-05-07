@@ -16,7 +16,7 @@ No config. No setup. Subscribe and forget it.
 
 [h2]How it works[/h2]
 
-When a mod loads, it fetches the scripts and tools it depends on by name — think
+When a mod loads, it fetches the scripts and tools it depends on by name. Think
 of it like looking something up in a filing cabinet by its label. PZ patches
 sometimes reorganize that cabinet: a file gets moved, a label gets changed. The
 mod still asks for the old label, finds nothing, and crashes.
@@ -39,17 +39,11 @@ those mods will still be broken.
 If you're only here because of Brita or Arsenal, don't subscribe. It won't help.
 
 
-[h2]When a mod gets properly patched[/h2]
-
-Unbreaker steps aside. The real module loads and Unbreaker never fires. No
-unsubscribing, no config changes needed.
-
-
 [h2]Something broken? Have a suggestion?[/h2]
 
 Leave a comment with the mod name and what's happening. If a mod still crashes with
-Unbreaker installed, or if something is worse than it was without it, that's worth
-knowing. The redirect list grows from reports like that.
+Unbreaker installed, or something got worse after installing it, I need to hear
+about it. That's how the redirect list grows.
 
 GitHub issues also work if you prefer:
 [url=https://github.com/robotsmeller/unbreaker]github.com/robotsmeller/unbreaker[/url]
