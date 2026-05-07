@@ -3,6 +3,7 @@
 	"appid"		"108600"
 	"publishedfileid"		"3721648770"
 	"contentfolder"		"C:\\xampp\\htdocs\\unbreaker\\build\\workshop"
+	"previewfile"		"C:\\xampp\\htdocs\\unbreaker\\build\\workshop\\preview.png"
 	"visibility"		"2"
 	"title"		"Unbreaker"
 	"description"		"PLACEHOLDER - replaced by build_workshop.ps1 with assets/workshop-description.txt"
@@ -17,10 +18,5 @@ Coverage spans ISUI, TimedActions, Vehicles, Farming, Camping, FireFighting, Tra
 Not yet covered: library mods (damnlib, tsarslib) are on the roadmap. Brita, Arsenal, and True Actions require author rewrites and cannot be fixed by redirects. Multiplayer is untested.
 
 Diagnostic tool: https://robotsmeller.github.io/unbreaker/"
-	"tags"
-	{
-		"tag"	"Build 42"
-		"tag"	"Misc"
-		"tag"	"QoL"
-	}
+	"tags"		"Build 42,Misc,QoL"
 }
