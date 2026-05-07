@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python scripts/generate_lua.py)",
+      "PowerShell(& C:\\\\xampp\\\\htdocs\\\\unbreaker\\\\scripts\\\\build_workshop.ps1)",
+      "PowerShell(& C:\\\\steamcmd\\\\steamcmd.exe +quit 2>&1)",
+      "PowerShell(if \\(-not $?\\) { \"Directory does not exist\" })",
+      "Bash(Select-String -Pattern \".\" --AllMatches)"
+    ]
+  }
+}
