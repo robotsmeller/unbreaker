@@ -3,7 +3,7 @@
 -- Regenerate with: python scripts/generate_lua.py
 
 local M = {}
-M.version = "0.3.0"
+M.version = "0.4.0"
 M.redirects = {
   ["ISUI/ISInventoryPaneContextMenu"] = { global="ISInventoryPaneContextMenu" },
   ["ISUI/ISVehicleMenu"] = { global="ISVehicleMenu" },
@@ -101,6 +101,44 @@ M.redirects = {
   ["Vehicles/TimedActions/ISDetachTrailerFromVehicle"] = { global="ISDetachTrailerFromVehicle" },
   ["Vehicles/TimedActions/ISPathFindAction"] = { global="ISPathFindAction" },
   ["Vehicles/TimedActions/ISRefuelFromGasPump"] = { global="ISRefuelFromGasPump" },
+  ["ISUI/ISControllerTestPanel"] = { global="ISControllerTestPanel" },
+  ["ISUI/ISVolumeControl"] = { global="ISVolumeControl" },
+  ["ISUI/ISMPEditServer"] = { global="ISMPEditServer" },
+  ["ISUI/Maps/Editor/WorldMapEditorMode"] = { global="WorldMapEditorMode" },
+  ["ISUI/Maps/Editor/WorldMapEditorResizer"] = { global="WorldMapEditorResizer" },
+  ["ISUI/Maps/Editor/WorldMapEditorListBox"] = { global="WorldMapEditorListBox" },
+  ["ISUI/Maps/ISMapSymbolZoomPanel"] = { global="ISMapSymbolZoomPanel" },
+  ["ISUI/Maps/ISWorldMap"] = { global="ISWorldMap" },
+  ["ISUI/AdminPanel/ZoneEditor/MultiplayerZoneEditorMode"] = { global="MultiplayerZoneEditorMode" },
+  ["ISUI/InventoryWindow/ISInventoryWindowControlHandler"] = { global="ISInventoryWindowControlHandler" },
+  ["ISUI/InventoryWindow/ISInventoryWindowContainerControls"] = { global="ISInventoryWindowContainerControls" },
+  ["ISUI/LootWindow/ISLootWindowObjectControlHandler"] = { global="ISLootWindowObjectControlHandler" },
+  ["ISUI/LootWindow/ISLootWindowFloorControlHandler"] = { global="ISLootWindowFloorControlHandler" },
+  ["ISUI/LootWindow/ISLootWindowContainerControls"] = { global="ISLootWindowContainerControls" },
+  ["Definitions/ContainerButtonIcons"] = { global="ContainerButtonIcons" },
+  ["Entity/ISUI/Components/ISBaseComponentPanel"] = { global="ISBaseComponentPanel" },
+  ["Entity/ISUI/Controls/ISGroupBox"] = { global="ISGroupBox" },
+  ["Entity/ISUI/ISBaseEntityWindow"] = { global="ISBaseEntityWindow" },
+  ["RadioCom/ISRadioAction"] = { global="ISRadioAction" },
+  ["RadioCom/ISUIRadio/ISSliderPanel"] = { global="ISSliderPanel" },
+  ["RadioCom/RadioWindowModules/RWMPanel"] = { global="RWMPanel" },
+  ["Tutorial/TutorialStep"] = { global="TutorialStep" },
+  ["OptionScreens/ModSelector/ModSelector"] = { global="ModSelector" },
+  ["OptionScreens/ModSelector/ModInfoPanel"] = { global="ModInfoPanel" },
+  ["OptionScreens/ServerSettingsScreen"] = { global="ServerSettingsScreen" },
+  ["BuildingRooms/ISBuildingRoomsEditor_ToolAddRect"] = { global="ISBuildingRoomsEditor_ToolAddRect" },
+  ["RainBarrel/BuildingObjects/RainCollectorBarrel"] = { global="RainCollectorBarrel" },
+  ["NPCs/BodyLocations"] = { global="BodyLocations" },
+  ["NPCs/ZombiesZoneDefinition"] = { global="ZombiesZoneDefinition" },
+  ["CharacterCustomisation/BodyDetailWindow/CharacterCustomisationPanel"] = { global="CharacterCustomisationPanel" },
+  ["Vehicles/ISUI/ISCarMechanicsOverlay"] = { global="ISCarMechanicsOverlay" },
+  ["Vehicles/TimedActions/ISLightbarUITimedAction"] = { global="ISLightbarUITimedAction" },
+  ["Vehicles/VehicleDistributions"] = { global="VehicleDistributions" },
+  ["Items/ProceduralDistributions"] = { global="ProceduralDistributions" },
+  ["Items/Distributions"] = { global="Distributions" },
+  ["Items/ItemPicker"] = { global="ItemPicker" },
+  ["Items/SuburbsDistributions"] = { global="SuburbsDistributions" },
+  ["CommonTemplates/CommonTemplates"] = { global="CommonTemplates" },
 }
 
 return M

@@ -1,5 +1,5 @@
 {
-  "version": "0.3.0",
+  "version": "0.4.0",
   "last_updated": "2026-05-07",
   "description": "Module path -> global name redirects for PZ B42. Entries with verified:true were confirmed live in B42.17 via PZ Test Pilot probes.",
   "redirects": [
@@ -766,6 +766,310 @@
     {
       "module": "Vehicles/TimedActions/ISRefuelFromGasPump",
       "global": "ISRefuelFromGasPump",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISControllerTestPanel",
+      "global": "ISControllerTestPanel",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISVolumeControl",
+      "global": "ISVolumeControl",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/ISMPEditServer",
+      "global": "ISMPEditServer",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/Maps/Editor/WorldMapEditorMode",
+      "global": "WorldMapEditorMode",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/Maps/Editor/WorldMapEditorResizer",
+      "global": "WorldMapEditorResizer",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/Maps/Editor/WorldMapEditorListBox",
+      "global": "WorldMapEditorListBox",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/Maps/ISMapSymbolZoomPanel",
+      "global": "ISMapSymbolZoomPanel",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/Maps/ISWorldMap",
+      "global": "ISWorldMap",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Alternate path for ISWorldMap. Verified live B42.17."
+    },
+    {
+      "module": "ISUI/AdminPanel/ZoneEditor/MultiplayerZoneEditorMode",
+      "global": "MultiplayerZoneEditorMode",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/InventoryWindow/ISInventoryWindowControlHandler",
+      "global": "ISInventoryWindowControlHandler",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/InventoryWindow/ISInventoryWindowContainerControls",
+      "global": "ISInventoryWindowContainerControls",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/LootWindow/ISLootWindowObjectControlHandler",
+      "global": "ISLootWindowObjectControlHandler",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/LootWindow/ISLootWindowFloorControlHandler",
+      "global": "ISLootWindowFloorControlHandler",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "ISUI/LootWindow/ISLootWindowContainerControls",
+      "global": "ISLootWindowContainerControls",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Definitions/ContainerButtonIcons",
+      "global": "ContainerButtonIcons",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Entity/ISUI/Components/ISBaseComponentPanel",
+      "global": "ISBaseComponentPanel",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Entity/ISUI/Controls/ISGroupBox",
+      "global": "ISGroupBox",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Entity/ISUI/ISBaseEntityWindow",
+      "global": "ISBaseEntityWindow",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "RadioCom/ISRadioAction",
+      "global": "ISRadioAction",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "RadioCom/ISUIRadio/ISSliderPanel",
+      "global": "ISSliderPanel",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "RadioCom/RadioWindowModules/RWMPanel",
+      "global": "RWMPanel",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Tutorial/TutorialStep",
+      "global": "TutorialStep",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "OptionScreens/ModSelector/ModSelector",
+      "global": "ModSelector",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "OptionScreens/ModSelector/ModInfoPanel",
+      "global": "ModInfoPanel",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "OptionScreens/ServerSettingsScreen",
+      "global": "ServerSettingsScreen",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "BuildingRooms/ISBuildingRoomsEditor_ToolAddRect",
+      "global": "ISBuildingRoomsEditor_ToolAddRect",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "RainBarrel/BuildingObjects/RainCollectorBarrel",
+      "global": "RainCollectorBarrel",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "NPCs/BodyLocations",
+      "global": "BodyLocations",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Alternate path for BodyLocations global. Verified live B42.17."
+    },
+    {
+      "module": "NPCs/ZombiesZoneDefinition",
+      "global": "ZombiesZoneDefinition",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "CharacterCustomisation/BodyDetailWindow/CharacterCustomisationPanel",
+      "global": "CharacterCustomisationPanel",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Vehicles/ISUI/ISCarMechanicsOverlay",
+      "global": "ISCarMechanicsOverlay",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Vehicles/TimedActions/ISLightbarUITimedAction",
+      "global": "ISLightbarUITimedAction",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Vehicles/VehicleDistributions",
+      "global": "VehicleDistributions",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Alternate path. We have Vehicles/Distributions as well. Verified live B42.17."
+    },
+    {
+      "module": "Items/ProceduralDistributions",
+      "global": "ProceduralDistributions",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Items/Distributions",
+      "global": "Distributions",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Items/ItemPicker",
+      "global": "ItemPicker",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "Items/SuburbsDistributions",
+      "global": "SuburbsDistributions",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.17."
+    },
+    {
+      "module": "CommonTemplates/CommonTemplates",
+      "global": "CommonTemplates",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
       "verified": true,
