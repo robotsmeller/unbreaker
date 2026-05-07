@@ -1,86 +1,98 @@
 # Unbreaker — Handoff
 
-**Last Updated:** 2026-05-07 (end of Session 2)
+**Last Updated:** 2026-05-07 (end of Session 3)
 
 ```yaml
-session: 3
-continue_with: Phase 2 — expand redirect data from Session 2's captured miss list (303 entries)
+session: 4
+continue_with: Pre-ship blockers — CI path fix, load order / mod ID decision, then publish
 blockers: none
-status: Phase 1 complete and live-verified
+status: In-game validated. Pre-ship items identified. Ready to ship after ~5 code changes + mod ID decision.
 ```
 
 ## Current State
 
-**Phase 1 is done.** Architecture is empirically proven in PZ Build 42.17.
+**Phase 1 is done and re-validated in Session 3.**
 
-In a real 180-mod install during Session 2:
+In-game probe against a live new-game session confirmed:
 - 141 broken require() calls intercepted
-- 139 served correctly via redirects (98.6% hit rate)
-- 2 unserved — both already documented unrecoverable (ISLootWindowControlHandler, AquaConfig)
+- 139 served correctly (98.6%)
+- 2 unserved — both already documented unrecoverable (ISLootWindowControlHandler, VehicleUtils)
+- All 13 spot-checked redirects return valid tables
+
+**Collab audit (plan-review.md) completed Session 3.** Overall verdict: CAUTION — ship-ready after ~8 concrete pre-ship items. Architecture is sound, gaps are operational.
+
+## Critical Pre-Ship Items (from collab audit + Session 3 findings)
+
+### Blockers (must fix before publish)
+
+| # | Item | File | Detail |
+|---|------|------|--------|
+| 1 | CI workflow path wrong | `.github/workflows/generate.yml:28` | `mod/media/...` → `mod/42/media/...` — workflow never successfully regenerated since B42 layout migration |
+| 2 | Mod ID / load order decision | `mod/42/mod.info`, `mod/mod.info` | "Unbreaker" sorts late alphabetically. Some mods' load-time require() calls fire before Unbreaker's hook installs. Must decide on mod ID before first Workshop publish — permanent once listed. |
+
+### Non-blocking but do before publish
+
+| # | Item | File | Detail |
+|---|------|------|--------|
+| 3 | Remove alias dead code | `mod/42/media/lua/shared/Unbreaker.lua:64-75` | Zero JSON entries use `alias`. Has latent bug: resolveGlobal(entry.alias) treats module paths as global names. Remove until there's data. |
+| 4 | Bump version | Both `mod.info` files + `Unbreaker.lua` | `0.1.0-dev` → `1.0.0` |
+| 5 | Fix generator docstring | `scripts/generate_lua.py:5` | States old output path |
+| 6 | AquaConfig comment | `data/vanilla_globals.json` | Document why verified:false is intentional (can't verify without mod installed) |
+| 7 | Workshop description | — | Must name Brita/Arsenal/True Actions explicitly in paragraph one. See draft below. |
+| 8 | Thumbnail | `mod/preview.png`, `mod/poster.png` | Unwatermark the Gemini image at `C:\Users\roban\Downloads\unbreaker.png` |
+| 9 | Push to GitHub remote | — | Never pushed. Repo exists locally and on GitHub but not synced. |
+
+## Load Order Finding (Session 3)
+
+**The WARN messages in PZ logs (`require("X") failed`) are Java-level PZ logging, NOT Lua-level failures.** They fire when the native `_require()` fails, which happens before Unbreaker's redirect kicks in. The WARNs appear even when Unbreaker successfully serves the redirect. Do NOT use WARNs as a failure metric.
+
+**Real load order issue:** "Unbreaker" alphabetically sorts after mods like "kattaj1_42_17_shim", "SimpleSilencers", "SkullysDufflesAndRigs". Their top-level Lua runs before Unbreaker's hook installs. Those load-time calls are genuinely missed.
+
+**Mitigation:** For Workshop-installed mods, the mod folder is a numeric Steam Workshop ID (e.g. `3000000000`). Digits sort before letters in ASCII, so Workshop Unbreaker likely loads before alphabetically-named local mods. Load order may only be a problem for local installs. **Needs empirical test.**
+
+**Options:**
+- Change mod ID to something that sorts early (e.g. `!Unbreaker`, `000Unbreaker`) — ugly but effective for local installs
+- Keep "Unbreaker", document the limitation, rely on Workshop numeric ID sort order
+- **Decision needed before publish** — mod ID is permanent on Workshop
+
+## Collab Audit Key Findings (plan-review.md)
+
+Full plan at `c:\xampp\htdocs\unbreaker\plan-review.md`.
+
+- **Ship strategy:** Option C "Tiered Ship" — ship with 27 redirects now. Phase 2 (303-entry triage) is post-ship work. Don't block publish on batch probe.
+- **Don't build:** GitHub Pages form, community feedback pipeline, CONTRIBUTING.md — premature. No contributors yet.
+- **Workshop description:** Name Brita, Arsenal, True Actions explicitly in paragraph 1. Pin a scoped comment on day one.
+- **Silent success problem:** When Unbreaker works, players see nothing. Review-to-subscriber ratio will skew negative. Accept this.
+- **MP:** Untested. Single-player disclaimer required.
+- **Kill-switch:** Define criteria before publish (e.g. "archive if TIS does a major API overhaul that invalidates >50% of redirects").
+
+## Workshop Description Draft
+
+```
+⚠️ Does NOT fix Brita's Weapon Pack, Arsenal[26], or True Actions. Those need deep
+rewrites only the mod authors can do.
+
+Keeps your mods working between PZ patches. Fixes broken require() calls, renamed
+functions, and moved globals — the minor API shuffles that come with almost every
+weekly update. When a mod's author publishes a proper fix, Unbreaker automatically
+steps aside. Stopgap, not a replacement.
+
+Verified: B42.17, 180-mod install, 98.6% of broken require() calls served.
+Single-player only — multiplayer untested.
+```
 
 ## What Exists
 
 - `mod/42/media/lua/shared/Unbreaker.lua` — require() override with miss ring buffer
 - `mod/42/media/lua/shared/UnbreakerData.lua` — generated, 27 redirects
-- `mod/42/mod.info` and top-level `mod/mod.info` — B42 layout (`versionMin=42.0.0`)
-- `data/vanilla_globals.json` — v0.2.0, 27 redirects (25 verified live, 2 documented unrecoverable)
-- `scripts/generate_lua.py` — JSON → Lua generator (stdlib only)
-- `scripts/smoke_probe.py` — bundled Phase 1 architecture probe via PZ Test Pilot
-- `scripts/probe_misses.py` — candidate-list checker for redirect expansion
-- `scripts/final_probe.py` — full live verification including miss-buffer dump
-- Repo on GitHub, GitHub Actions auto-generates UnbreakerData.lua on JSON change
-
-## Session 2 Findings
-
-### Architecture works
-- **require() override pattern works in Kahlua.** Confirmed via live probes.
-- **B42 require() returns nil silently** for missing modules (does NOT throw). Our override now treats `(ok and result == nil)` as a redirect trigger if a redirect entry exists, else passes through unchanged.
-- **B42 vanilla globals are real.** Most `ISUI/Foo`-style modules set `_G.Foo` as a side-effect at load time but don't `return` the table. Our redirect serves `_G.Foo` when require returns nil.
-
-### B42 Bugs in PZ
-- `fileExists()` returns false even for files that exist. Bypassed in pz-test-pilot's `FileIO.atomicRead()` by using `readFile()` empty/nil checks instead.
-- The Lua `Json` module (`require("Json")` → table with .Encode/.Decode) is gone in B42. pz-test-pilot's `Json.lua` was rewritten as a self-contained pure-Lua encoder/decoder.
-
-### Loadstring works
-- `loadstring()` is available in Kahlua B42.17 — pz-test-pilot's `run_lua` route works without falling back to the `snippet` registry.
-
-### Verified redirects (25 entries)
-All probed live. ISInventoryPaneContextMenu, ISVehicleMenu (both paths), ISContextMenu (both paths), ISHotbar, ISWorldMap, ISPlayerData, ISInventoryPage, ISToolTipInv, ISChat, ISDebugMenu, ISBuildMenu, ISAnimalPickMateCursor, ISBuildingObject, ISInventoryTransferAction, ISBaseTimedAction, ISTakeFuel, Vehicles, VehicleDistributions, forageSystem, ISSearchManager, luautils, BodyLocations, SimpleSilencersModelTable, SimpleSilencersCraftedSilencerBlacklist.
-
-### Unrecoverable (2 entries — kept for documentation)
-- `ISLootWindowControlHandler` — global doesn't exist in B42. Module removed/renamed.
-- `Vehicles/VehicleUtils` — file removed entirely. Required by Realistic Dashboard and Gauges.
-
-### Captured for Phase 2 (303 unique misses)
-Every require() in the user's install that returned nil and has no current redirect. Many are no-ops (mods requiring for side effects, discarding the result), but the list contains high-value candidates:
-- `ISBaseObject`, `defines`, `Hotbar/ISHotbar` (alt path), `ISWorldObjectContextMenu`
-- Many `ISUI/*` (ISPanel, ISButton, ISCollapsableWindow, ISTabPanel, ISScrollingListBox, ISTickBox, ISModalDialog, ISTextEntryBox, ISToolTip, ISLabel, ISImage, ...)
-- `Map/CGlobalObject`, `Map/CGlobalObjectSystem`, `Map/SGlobalObject`, `Map/SGlobalObjectSystem`
-- `TimedActions/*` family (ISTimedActionQueue, ISEatFoodAction, ISInventoryTransferUtil, ISTransferAction, ISWearClothing, ...)
-- `Camping/CCampfireSystem`
-- `Farming/SFarmingSystem`, `Farming/farming_vegetableconf`
-- `Traps/TrapDefinition`, `Traps/STrapSystem`
-- Full `WorldGen/features/*` tree (~50 entries)
-- `PZAPI/ui/atoms/*`, `PZAPI/ui/molecules/*`, `PZAPI/ui/organisms/*`, `PZAPI/ModOptions`
-
-## Phase 2 Tasks (next session)
-
-1. Triage the 303-entry miss buffer
-2. For each candidate: probe whether `_G.<leaf>` exists; if yes → add redirect with verified=true
-3. For high-frequency families (WorldGen/features, ISUI) decide whether to add per-entry or pattern-based
-4. Re-run final_probe and verify served-rate climbs further
-5. Update Workshop description, prep for first publish (Phase 7 prerequisites)
-
-## Phase 1 Decisions (Session 2)
-
-| Decision | Rationale |
-|---|---|
-| Treat `(ok, nil)` as needing redirect | B42 require() returns nil for missing modules instead of throwing |
-| Pass-through when no redirect entry | Avoid breaking mods that legitimately call require() for side effects |
-| Ring buffer for miss diagnostics | Enables data-driven Phase 2 expansion without instrumenting individual mods |
-| `42/media/` mod layout | Matches B42 convention; both Unbreaker and PZTestPilot use it |
-| pz-test-pilot fixed in place | Two B42 regressions found; fixes belong in pz-test-pilot's repo |
-| Verified=true gating | Every shipped redirect must round-trip live before being marked verified |
+- `mod/42/mod.info` and top-level `mod/mod.info` — B42 layout
+- `data/vanilla_globals.json` — v0.2.0, 27 redirects
+- `scripts/generate_lua.py` — JSON → Lua generator
+- `scripts/smoke_probe.py` — quick architecture sanity check
+- `scripts/probe_misses.py` — candidate redirect checker
+- `scripts/final_probe.py` — full live verification + miss dump
+- `plan-review.md` — collab audit pre-flight brief (Session 3)
+- `.github/workflows/generate.yml` — CI regen (PATH IS WRONG — see blocker #1)
 
 ## Repo Layout
 
@@ -98,23 +110,16 @@ mod/
     media/lua/shared/
       Unbreaker.lua              # the override
       UnbreakerData.lua          # GENERATED — never edit by hand
-.github/workflows/generate.yml   # CI regen on JSON change
+.github/workflows/generate.yml   # CI regen on JSON change (PATH BUG — fix first)
+plan-review.md                   # collab audit output
 ```
 
-## Open Questions Carried Over
+## Open Questions
 
 | # | Question | Notes |
 |---|---|---|
-| 1 | Multiplayer: does override cause checksum rejection? | Untested. Single-player verified. |
-| 2 | damnlib API surface KI5 mods actually call | Phase 4 prerequisite |
-| 3 | tsarslib B42 Tchernobill API surface | Phase 5 prerequisite |
-| 4 | SteamCMD GitHub Actions 2FA setup | Phase 7 prerequisite |
-| 5 | How to triage the 303-entry miss list efficiently | Phase 2 starts here |
-
-## Workshop Description Draft (still applicable)
-
-> Keeps your mods working between PZ patches. Fixes broken require() calls,
-> renamed functions, and moved globals — the minor API shuffles that come with
-> almost every weekly update. Does NOT fix mods needing deep rewrites. When a
-> mod's author publishes a proper fix, Unbreaker automatically steps aside.
-> Stopgap, not a replacement.
+| 1 | Load order: does Workshop numeric ID sort before alphabetic local mods? | Test empirically — affects whether mod ID change is needed |
+| 2 | Mod ID decision: keep "Unbreaker" or rename for early sort? | Must decide before Workshop publish |
+| 3 | Multiplayer: does override cause checksum rejection? | Single-player verified. Untested MP. |
+| 4 | SteamCMD 2FA strategy for CI publish | Phase 7 prerequisite |
+| 5 | Phase 2: triage 303-entry miss buffer | Post-ship work |

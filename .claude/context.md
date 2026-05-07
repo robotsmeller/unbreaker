@@ -2,9 +2,9 @@
 
 ```yaml
 version: 0.2.0
-status: Phase 1 complete — live-verified in B42.17 with 98.6% hit rate
+status: Phase 1 re-validated Session 3. Pre-ship items identified. Ready to ship after ~5 code changes + mod ID decision.
 created: 2026-04-22
-session: 3
+session: 4
 last_updated: 2026-05-07
 
 arch:
@@ -101,7 +101,26 @@ live via the bundled probe.
 - `scripts/final_probe.py` — re-run after every data change to verify
 - `scripts/smoke_probe.py` — quick architecture sanity check
 
+## Session Notes (continued)
+
+### Session 3 (2026-05-07): In-game validation + pre-ship planning
+
+**Re-validated in live B42.17 new game session.** Probe confirmed 141 intercepted, 139 served (98.6%). All 13 spot-checked redirects return valid tables. Architecture holds.
+
+**Key finding: WARN messages in PZ log are NOT Lua failures.** PZ logs `require("X") failed` at the Java level when native _require() fails. This fires before Unbreaker's redirect kicks in. WARNs appear even when Unbreaker successfully serves. Do not use WARNs as failure metric.
+
+**Load order issue confirmed.** "Unbreaker" sorts late alphabetically. Mods like kattaj1_42_17_shim run their Lua before Unbreaker's hook installs. Those load-time calls are genuinely missed. For Workshop installs (numeric mod ID), digits sort before letters — may not be an issue. Needs empirical test. Mod ID decision required before first publish (permanent).
+
+**Collab audit completed.** Ship strategy: Option C — ship with 27 redirects now, Phase 2 post-ship. Two hard blockers: CI workflow path (`mod/media/...` → `mod/42/media/...`), mod ID decision. Full plan in `plan-review.md`.
+
 ## Critical for Future Sessions
 
-The miss ring buffer in `_G.Unbreaker.misses()` is the Phase 2 input. Run a save,
-let it settle, dump misses → that's the candidate list to add to JSON.
+Next session starts with pre-ship blockers:
+1. Fix CI workflow path (`.github/workflows/generate.yml:28`)
+2. Decide mod ID (affects Workshop publish — permanent)
+3. Remove alias dead code, bump version, fix docstring
+4. Push to GitHub remote
+5. Workshop description + thumbnail (user to unwatermark)
+6. Publish
+
+Phase 2 (303-entry miss buffer triage) is post-ship work.

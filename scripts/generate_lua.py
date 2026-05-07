@@ -2,7 +2,7 @@
 Unbreaker — Lua data generator.
 
 Reads data/vanilla_globals.json (and future data/library_stubs/) and emits
-mod/media/lua/shared/UnbreakerData.lua, a Kahlua-compatible Lua 5.1 module
+mod/42/media/lua/shared/UnbreakerData.lua, a Kahlua-compatible Lua 5.1 module
 returned as a single table the runtime indexes by module path.
 
 Run:

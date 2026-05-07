@@ -61,18 +61,6 @@ local function unbreakerRequire(module)
                 return g
             end
         end
-        if entry.alias then
-            local ok2, result2 = pcall(_require, entry.alias)
-            if ok2 and result2 ~= nil then
-                served = served + 1
-                return result2
-            end
-            local g2 = resolveGlobal(entry.alias)
-            if g2 ~= nil then
-                served = served + 1
-                return g2
-            end
-        end
         missed = missed + 1
         recordMiss(module)
     else
@@ -86,7 +74,7 @@ end
 require = unbreakerRequire
 
 _G.Unbreaker = {
-    version = "0.1.0-dev",
+    version = "1.0.0",
     data_version = DATA.version,
     redirect_count = 0,
     stats = function()

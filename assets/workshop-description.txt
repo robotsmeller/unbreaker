@@ -1,0 +1,9 @@
+Does NOT fix Brita's Weapon Pack, Arsenal[26], or True Actions. Those need deep
+rewrites only the mod authors can do.
+
+Keeps your mods working between PZ patches. Fixes broken require() calls, renamed
+functions, and moved globals. When a mod's author publishes a proper fix, Unbreaker
+automatically steps aside. Stopgap, not a replacement.
+
+Verified: B42.17, 180-mod install, 98.6% of broken require() calls served.
+Single-player only. Multiplayer untested.

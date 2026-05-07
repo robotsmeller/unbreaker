@@ -25,4 +25,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 'chore: regenerate UnbreakerData.lua from JSON'
-          file_pattern: 'mod/media/lua/shared/UnbreakerData.lua'
+          file_pattern: 'mod/42/media/lua/shared/UnbreakerData.lua'
