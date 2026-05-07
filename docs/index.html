@@ -590,7 +590,7 @@ function makeReportUrl(entries) {
   var lines = shown.map(function(e) { return "- `" + e.module.replace(/`/g, "'") + "`"; }).join("\n");
   if (capped) lines += "\n- ...and " + (entries.length - LIMIT) + " more (list truncated)";
   var body = "The following `require()` modules were not found in the Unbreaker redirect list.\n"
-    + "Needs triage — may be vanilla globals that moved, self-broken mods, or candidates for new redirects.\n\n"
+    + "Needs triage. May be vanilla globals that moved, self-broken mods, or candidates for new redirects.\n\n"
     + lines
     + "\n\n*Detected via [diagnostic tool](https://robotsmeller.github.io/unbreaker/)*";
   var title = "Uncovered require() failures (" + entries.length + " modules)";
