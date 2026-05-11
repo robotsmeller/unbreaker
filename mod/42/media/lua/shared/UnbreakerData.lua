@@ -3,7 +3,7 @@
 -- Regenerate with: python scripts/generate_lua.py
 
 local M = {}
-M.version = "0.4.0"
+M.version = "0.5.0"
 M.redirects = {
   ["ISUI/ISInventoryPaneContextMenu"] = { global="ISInventoryPaneContextMenu" },
   ["ISUI/ISVehicleMenu"] = { global="ISVehicleMenu" },

@@ -1,13 +1,37 @@
 # Unbreaker — Handoff
 
-**Last Updated:** 2026-05-07 (end of Session 7)
+**Last Updated:** 2026-05-11 (end of Session 8)
 
 ```yaml
-session: 7
-continue_with: Draft and post r/projectzomboid announcement; verify tags appear on Workshop page
+session: 8
+continue_with: In-game probe under B42.18 — validate 134 existing redirects + 2 new candidates (Json, recipecode). Ship v0.5.0 only if probe passes.
 blockers: none
-status: Live on Steam Workshop (id 3721648770). v1.2.0 public.
+status: Live on Steam Workshop (id 3721648770). v1.2.0 / data v0.4.0 public — verified safe under B42.18 per patch notes review. Data v0.5.0 staged on disk but NOT pushed.
 ```
+
+## Session 8 Summary
+
+PZ shipped **B42.18 Unstable** (2026-05-11). Reviewed the full Steam announcement patch notes:
+- **MODDING section is purely additive.** New Java methods (`CraftRecipe.getModTags`/`setTags`, `InputScript.getItems`, `Zombie.doCrawlerSpeed`/`doSprinter`/etc.), new `SyncFactionServer` event, new Texture field for Trait scripts. No file moves, no renamed globals, no removed Lua APIs.
+- **Conclusion:** the currently-live v1.2.0 / data v0.4.0 should continue to work under 42.18 without any changes shipped. Caveat: patch notes are a summary, not a diff — silent file relocations are possible but unlikely in a bug-fix patch.
+- **Decision:** do NOT push v0.5.0 to the Workshop until in-game probe verifies. The live mod already covers 42.18 users.
+
+Workshop communication posted (in-thread comment by Rob, 2026-05-11):
+> "Fixes for 42.18 update coming today, but doesn't look like there are any require() changes so the current version should still work. Feel free to let me know here is there are other issues. If it works for you, spread the word, rate the mod — every bit helps. Thanks."
+
+Changes staged on disk (not committed, not released):
+- `data/vanilla_globals.json` → v0.5.0, last_updated 2026-05-11, added `verification_target: "B42.18"` field
+- 2 candidate entries added (`verified: false`, so not shipped by generate_lua.py): `Json` → `Json`, `recipecode` → `recipecode` (both are Issue #4 unknowns)
+- `mod/42/media/lua/shared/UnbreakerData.lua` regenerated (header v0.5.0; shipped redirect count unchanged at 134)
+- `HANDOFF.md` + `.claude/context.md` updated
+
+Pending for next session:
+1. Run `python scripts/smoke_probe.py` under B42.18 — verify Unbreaker loads with 134 redirects and miss buffer is empty on a clean save
+2. Run `python scripts/final_probe.py` — spot-check the v0.2.0 expansion redirects still resolve
+3. Probe `_G.Json` and `_G.recipecode`. If non-nil and table-shaped: flip `verified: true`. If nil: reclassify category to `unrecoverable` and note PROBED B42.18.
+4. If probe clean: bump `mod.info` modversion 1.2.0 → 1.2.1, run `scripts/build_workshop.ps1`, push to Workshop.
+5. Issue #4 leftovers (not addressable today): `AquaConfig` (filename mismatch in AutotsarMotorClub port — needs that mod installed); three `YourDash/Z_PatchVehicleDashboard_*` (mod-internal filename mismatches — can't shim from vanilla, file as mod-request bug for YourDash author).
+6. Monitor Workshop comments + diagnostic tool reports for surprise 42.18 regressions.
 
 ## Current State
 

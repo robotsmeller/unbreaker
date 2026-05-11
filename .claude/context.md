@@ -2,10 +2,12 @@
 
 ```yaml
 version: 1.2.0
-status: Live on Steam Workshop. Public visibility. Promotion phase.
+data_version: 0.5.0
+status: Live on Steam Workshop. Public visibility. Data v0.5.0 staged for B42.18 — awaiting in-game probe before release.
 created: 2026-04-22
-session: 7
-last_updated: 2026-05-07
+session: 8
+last_updated: 2026-05-11
+verification_target: B42.18
 
 arch:
   stack: Lua (PZ mod), Python (tooling), GitHub Actions (CI/CD), GitHub Pages (diagnostic), PowerShell (Workshop build)
@@ -102,6 +104,9 @@ Static GitHub Pages tool at https://robotsmeller.github.io/unbreaker/
 
 ## Recent Sessions
 
+### Session 8 (2026-05-11): B42.18 update prep
+PZ shipped 42.18 Unstable. Reviewed full Steam announcement patch notes. MODDING section purely additive: new Java methods (CraftRecipe.getModTags/setTags, InputScript.getItems, Zombie speed control methods), new SyncFactionServer event, Trait Texture field. No file moves, no renamed globals, no removed Lua APIs — no existing redirect should break. Bumped data v0.4.0 → v0.5.0, added `verification_target: B42.18`. Added 2 candidate entries (verified:false) for Issue #4 unknowns: `Json` and `recipecode`. Not yet released — pending in-game probe to validate.
+
 ### Session 7 (2026-05-07): Workshop launch
 Built SteamCMD pipeline; resolved every VDF gotcha (rate limit, 1MB preview cap, layout, description clobbering, `\n` not interpreting, `\"` truncating). Discovered `poster.png` is the Workshop thumbnail. Mod live and public at id 3721648770.
 
@@ -113,8 +118,9 @@ Fixed verified filter, added CI validation gate, capped missSeen, removed dead a
 
 ## Critical for Next Session
 
-1. Verify tags appear on Workshop page (use PZ in-game publisher if VDF didn't take)
-2. Draft and post r/projectzomboid announcement (lead with diagnostic tool, not the mod)
-3. Indie Stone forums + PZ modding Discord posts
-4. Triage Issue #4 (6 unknowns from launch session)
-5. Outreach to authors of mods Unbreaker covers
+1. **In-game probe under B42.18** — run smoke + final probes to confirm all 134 existing redirects still resolve, then probe `Json` and `recipecode` candidates (flip verified:true or reclassify as unrecoverable)
+2. If all clean, release: bump mod.info modversion (1.2.0 → 1.2.1 or 1.3.0), run build_workshop.ps1, push to Workshop
+3. Verify tags appear on Workshop page (use PZ in-game publisher if VDF didn't take)
+4. Draft and post r/projectzomboid announcement (lead with diagnostic tool, not the mod)
+5. Indie Stone forums + PZ modding Discord posts
+6. Outreach to authors of mods Unbreaker covers

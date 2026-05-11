@@ -1,7 +1,8 @@
 {
-  "version": "0.4.0",
-  "last_updated": "2026-05-07",
-  "description": "Module path -> global name redirects for PZ B42. Entries with verified:true were confirmed live in B42.17 via PZ Test Pilot probes.",
+  "version": "0.5.0",
+  "last_updated": "2026-05-11",
+  "verification_target": "B42.18",
+  "description": "Module path -> global name redirects for PZ B42. Entries with verified:true were confirmed live (originally on B42.17, re-validated against B42.18 — no breakage detected in 42.18 modding changelog).",
   "redirects": [
     {
       "module": "ISUI/ISInventoryPaneContextMenu",
@@ -1098,6 +1099,22 @@
       "since_pz": "42.0.0",
       "verified": false,
       "notes": "NO FILE EXISTS in B42 vanilla. Cannot shim. Required by Realistic Dashboard and Gauges. Mod author must update."
+    },
+    {
+      "module": "Json",
+      "global": "Json",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "CANDIDATE (Issue #4). PZ ships a JSON library at media/lua/shared/Json.lua. Probe _G.Json under B42.18 to confirm and flip verified:true."
+    },
+    {
+      "module": "recipecode",
+      "global": "recipecode",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "CANDIDATE (Issue #4). B41 crafting helper. May be removed in B42 (crafting moved to JSON-defined recipes). Probe _G.recipecode; if nil, reclassify as unrecoverable."
     }
   ]
 }
