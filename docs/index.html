@@ -308,6 +308,7 @@
   .entry-broken  { border-left-color: var(--error); }
   .entry-library { border-left-color: var(--warning); }
   .entry-unknown { border-left-color: var(--text-faint); }
+  .entry-asset   { border-left-color: var(--error); }
 
   .entry .module { color: var(--accent); flex: 1; min-width: 0; word-break: break-all; }
   .entry .reason { font-size: .73rem; color: var(--text-muted); font-family: inherit; white-space: nowrap; }
@@ -392,6 +393,7 @@
   .simple-row.row-broken  { border-left-color: var(--error); }
   .simple-row.row-library { border-left-color: var(--warning); }
   .simple-row.row-unknown { border-left-color: var(--accent); }
+  .simple-row.row-asset   { border-left-color: var(--error); }
 
   .simple-row .stat-num {
     font-size: 1.4rem;
@@ -405,6 +407,7 @@
   .row-broken  .stat-num { color: var(--error); }
   .row-library .stat-num { color: var(--warning); }
   .row-unknown .stat-num { color: var(--accent); }
+  .row-asset   .stat-num { color: var(--error); }
 
   .simple-row .stat-text {
     flex: 1;
@@ -441,7 +444,7 @@
   <header>
     <div class="titles">
       <h1>Unbreaker Diagnostic</h1>
-      <p>Paste your Project Zomboid <code>console.txt</code> below to see which <code>require()</code> failures are covered by Unbreaker, which cannot be fixed, and why.</p>
+      <p>Paste your Project Zomboid <code>console.txt</code> below to see which <code>require()</code> failures are covered by Unbreaker, which cannot be fixed, and why. Also detects B42.18 asset load failures.</p>
     </div>
     <div class="theme-toggle" role="group" aria-label="Theme">
       <button data-theme-set="light" type="button" title="Light theme">Light</button>
@@ -491,6 +494,11 @@ const LIBRARY_PATTERNS = [
 ];
 
 const SECTION_META = {
+  asset: {
+    title: "Asset load failures (B42.18)",
+    action: "These mods store FBX model files in common/media/models_X/ which B42.18 now rejects. Unbreaker cannot fix this — the failure is below the Lua layer. Mod authors need to move their models to 42/media/models_X/. Disable these mods until they are updated.",
+    startCollapsed: false,
+  },
   fixed: {
     title: "Fixed by Unbreaker",
     action: "These calls are caught and redirected. Nothing for you to do.",
@@ -562,6 +570,21 @@ function parseModules(log) {
   return results;
 }
 
+// Parse "Caused by: java.lang.IllegalArgumentException: Invalid prefix found for: <path>"
+// Returns array of {mod, count} sorted by count descending.
+function parseInvalidPrefix(log) {
+  const counts = {};
+  const re = /Invalid prefix found for: .+?[\/\\]mods[\/\\]([^\/\\]+)[\/\\]/g;
+  let m;
+  while ((m = re.exec(log)) !== null) {
+    const mod = m[1];
+    counts[mod] = (counts[mod] || 0) + 1;
+  }
+  return Object.entries(counts)
+    .sort(function(a, b) { return b[1] - a[1]; })
+    .map(function(e) { return { module: e[0], count: e[1], reason: e[1] + " FBX file" + (e[1] === 1 ? "" : "s") + " rejected" }; });
+}
+
 function categorize(module) {
   if (redirectData.byModule.has(module)) {
     return { type: "fixed", reason: "covered by Unbreaker" };
@@ -599,16 +622,16 @@ function makeReportUrl(entries) {
     + "&body=" + encodeURIComponent(body);
 }
 
-function renderResults(modules) {
+function renderResults(modules, assetErrors) {
   const results = document.getElementById("results");
 
-  if (modules.length === 0) {
+  if (modules.length === 0 && assetErrors.length === 0) {
     results.style.display = "block";
-    results.innerHTML = '<div class="no-failures"><strong>No require() calls found</strong>Make sure you pasted your console.txt from a session where mods were loaded.</div>';
+    results.innerHTML = '<div class="no-failures"><strong>No issues found</strong>Make sure you pasted your console.txt from a session where mods were loaded.</div>';
     return;
   }
 
-  const groups = { fixed: [], broken: [], library: [], unknown: [] };
+  const groups = { asset: assetErrors, fixed: [], broken: [], library: [], unknown: [] };
   for (const mod of modules) {
     const cat = categorize(mod);
     groups[cat.type].push({ module: mod, reason: cat.reason });
@@ -660,14 +683,19 @@ function setView(view) {
 }
 
 function buildSimpleView(groups, total, reportUrl) {
+  const a = groups.asset.length;
   const f = groups.fixed.length;
   const b = groups.broken.length;
   const l = groups.library.length;
   const u = groups.unknown.length;
+  const totalAssetErrors = groups.asset.reduce(function(s, e) { return s + e.count; }, 0);
 
-  // Banner: pick the most actionable status
+  // Banner: asset failures are the most severe signal
   let banner;
-  if (u > 0) {
+  if (a > 0) {
+    banner = simpleBanner("bad", "B42.18 asset failures detected",
+      totalAssetErrors + " FBX model file" + (totalAssetErrors === 1 ? "" : "s") + " rejected by B42.18 across " + a + " mod" + (a === 1 ? "" : "s") + ". This is not fixable by Unbreaker — mod authors need to update. Disable the affected mods until then.");
+  } else if (u > 0) {
     banner = simpleBanner("action", "Help us improve coverage",
       "Found " + u + " require() failure" + (u === 1 ? "" : "s") + " Unbreaker has not seen before. Click the report button below to add them to the queue. We will review them for the next update.");
   } else if (b > 0 && l > 0) {
@@ -685,6 +713,12 @@ function buildSimpleView(groups, total, reportUrl) {
   }
 
   const rows = [];
+  if (a > 0) {
+    const modNames = groups.asset.map(function(e) { return e.module + " (" + e.count + ")"; }).join(", ");
+    rows.push(simpleRow("asset", a,
+      "B42.18 asset load failures",
+      "Affected mods: " + modNames + ". Move FBX models from common/media/models_X/ to 42/media/models_X/."));
+  }
   if (f > 0) {
     rows.push(simpleRow("fixed", f,
       "Fixed by Unbreaker",
@@ -732,12 +766,14 @@ function buildAdvancedView(groups, reportUrl) {
   const html = [];
 
   html.push('<div class="summary">');
+  if (groups.asset.length) html.push(summaryCard("broken", groups.asset.length, "Asset failures"));
   html.push(summaryCard("fixed",   groups.fixed.length,   "Fixed by Unbreaker"));
   html.push(summaryCard("broken",  groups.broken.length,  "Not fixable"));
   html.push(summaryCard("library", groups.library.length, "Waiting on library"));
   html.push(summaryCard("unknown", groups.unknown.length, "Not in list"));
   html.push("</div>");
 
+  if (groups.asset.length)   html.push(section("asset",   groups.asset));
   if (groups.broken.length)  html.push(section("broken",  groups.broken));
   if (groups.library.length) html.push(section("library", groups.library));
   if (groups.unknown.length) html.push(section("unknown", groups.unknown, reportUrl));
@@ -784,7 +820,8 @@ function escHtml(s) {
 document.getElementById("analyze-btn").addEventListener("click", function() {
   const log = document.getElementById("log-input").value;
   const modules = parseModules(log);
-  renderResults(modules);
+  const assetErrors = parseInvalidPrefix(log);
+  renderResults(modules, assetErrors);
 });
 
 document.getElementById("clear-btn").addEventListener("click", function() {
