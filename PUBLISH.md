@@ -44,7 +44,7 @@ Point it at the **generated** VDF in `build/`, not the template at the repo root
 & C:\steamcmd\steamcmd.exe +login YOUR_STEAM_USERNAME +workshop_build_item C:\xampp\htdocs\unbreaker\build\workshop_item.txt +quit
 ```
 
-The generated VDF carries the full BBCode description from `assets/workshop-description.txt`. Pointing SteamCMD at the bare template instead would push a placeholder string and wipe your description on the Workshop page.
+**The VDF deliberately has NO `description` field.** The Workshop description is edited by hand in the Steam app and must never be pushed — a pushed description overwrites those manual edits. `build_workshop.ps1` omits the field (and throws if the template ever reintroduces it), so SteamCMD leaves the live description untouched. `assets/workshop-description.txt` is kept only as a reference copy of the launch text; it is not the source of truth for the live page.
 
 SteamCMD will prompt for your Steam password and a Steam Guard 2FA code. Type them when prompted.
 
