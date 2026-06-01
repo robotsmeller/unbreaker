@@ -2,3 +2,6 @@ build/
 __pycache__/
 .pytest_cache/
 *.pyc
+
+# Local per-session state for the SessionStart issue hook
+.claude/.issue-cache

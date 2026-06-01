@@ -1,8 +1,8 @@
 {
-  "version": "0.5.0",
-  "last_updated": "2026-05-11",
-  "verification_target": "B42.18",
-  "description": "Module path -> global name redirects for PZ B42. Entries with verified:true were confirmed live (originally on B42.17, re-validated against B42.18 — no breakage detected in 42.18 modding changelog).",
+  "version": "0.6.0",
+  "last_updated": "2026-06-01",
+  "verification_target": "B42.19",
+  "description": "Module path -> global name redirects for PZ B42. Entries with verified:true were confirmed live (originally B42.17, re-validated B42.18/B42.19; no breakage in the 42.18/42.19 modding changelogs). Farming/CFarmingSystem added and verified live B42.19.",
   "redirects": [
     {
       "module": "ISUI/ISInventoryPaneContextMenu",
@@ -589,6 +589,14 @@
       "notes": "Verified live B42.17."
     },
     {
+      "module": "Farming/CFarmingSystem",
+      "global": "CFarmingSystem",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Verified live B42.19 (Issues #5/#6): require returns nil but _G.CFarmingSystem exists as a table. Client-side counterpart to SFarmingSystem."
+    },
+    {
       "module": "FireFighting/FireFighting",
       "global": "FireFighting",
       "category": "vanilla_global",
@@ -1103,18 +1111,34 @@
     {
       "module": "Json",
       "global": "Json",
-      "category": "vanilla_global",
+      "category": "unrecoverable",
       "since_pz": "42.0.0",
       "verified": false,
-      "notes": "CANDIDATE (Issue #4). PZ ships a JSON library at media/lua/shared/Json.lua. Probe _G.Json under B42.18 to confirm and flip verified:true."
+      "notes": "PROBED B42.19 (Issue #4): no _G.Json global exists. Not a vanilla global; mods bundle their own Json.lua. Unbreaker cannot shim, the mod must ship its library at the required path."
     },
     {
       "module": "recipecode",
       "global": "recipecode",
-      "category": "vanilla_global",
+      "category": "unrecoverable",
       "since_pz": "42.0.0",
       "verified": false,
-      "notes": "CANDIDATE (Issue #4). B41 crafting helper. May be removed in B42 (crafting moved to JSON-defined recipes). Probe _G.recipecode; if nil, reclassify as unrecoverable."
+      "notes": "PROBED B42.19 (Issue #4): no _G.recipecode global. B42 loads recipe-code side effects under other names (RecipeCodeOnCreate, BuildRecipeCode, etc.); there is no single 'recipecode' global to return. Unrecoverable via redirect."
+    },
+    {
+      "module": "Items/ItemFactory",
+      "global": "ItemFactory",
+      "category": "unrecoverable",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "PROBED B42.19 (Issue #6): no _G.ItemFactory global (only PerkFactory/SurvivorFactory/GameEntityFactory/ObservationFactory exist). Items are created via the Java InventoryItemFactory, not a Lua global. Cannot shim."
+    },
+    {
+      "module": "Maps/ISMapDefinitions",
+      "global": "ISMapDefinitions",
+      "category": "unrecoverable",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "PROBED B42.19 (Issues #5/#6): no _G.ISMapDefinitions global under any name, and corrected paths (ISUI/Maps/..., client/ISUI/Maps/...) return nil. Restructured or removed in B42. Mod must update."
     }
   ]
 }
