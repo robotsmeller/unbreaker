@@ -7,5 +7,19 @@
       "PowerShell(if \\(-not $?\\) { \"Directory does not exist\" })",
       "Bash(Select-String -Pattern \".\" --AllMatches)"
     ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-issues.sh\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
   }
 }

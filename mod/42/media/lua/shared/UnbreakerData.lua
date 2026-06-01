@@ -3,7 +3,7 @@
 -- Regenerate with: python scripts/generate_lua.py
 
 local M = {}
-M.version = "0.5.0"
+M.version = "0.6.0"
 M.redirects = {
   ["ISUI/ISInventoryPaneContextMenu"] = { global="ISInventoryPaneContextMenu" },
   ["ISUI/ISVehicleMenu"] = { global="ISVehicleMenu" },
@@ -78,6 +78,7 @@ M.redirects = {
   ["Camping/CCampfireSystem"] = { global="CCampfireSystem" },
   ["Farming/farming_vegetableconf"] = { global="farming_vegetableconf" },
   ["Farming/SFarmingSystem"] = { global="SFarmingSystem" },
+  ["Farming/CFarmingSystem"] = { global="CFarmingSystem" },
   ["FireFighting/FireFighting"] = { global="FireFighting" },
   ["Traps/STrapSystem"] = { global="STrapSystem" },
   ["Foraging/ISBaseIcon"] = { global="ISBaseIcon" },
