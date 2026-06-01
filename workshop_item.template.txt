@@ -6,7 +6,6 @@
 	"previewfile"		"C:\\xampp\\htdocs\\unbreaker\\build\\workshop\\preview.png"
 	"visibility"		"0"
 	"title"		"Unbreaker"
-	"description"		"PLACEHOLDER - replaced by build_workshop.ps1 with assets/workshop-description.txt"
 	"changenote"		"v1.2.1 - Build 42.19 verified.
 
 Re-validated all existing redirects against B42.19 Unstable. No breakage: the 42.18 and 42.19 modding changelogs were purely additive (new Java methods, no moved or renamed Lua files).

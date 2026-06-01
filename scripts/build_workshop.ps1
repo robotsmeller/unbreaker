@@ -12,7 +12,6 @@ $root  = Split-Path -Parent $PSScriptRoot
 $mod   = Join-Path $root "mod"
 $build = Join-Path $root "build\workshop"
 $tpl   = Join-Path $root "workshop_item.template.txt"
-$desc  = Join-Path $root "assets\workshop-description.txt"
 $out   = Join-Path $root "build\workshop_item.txt"
 
 if (-not (Test-Path $mod)) {
@@ -47,41 +46,23 @@ Get-ChildItem -Recurse $build | ForEach-Object {
     if ($_.PSIsContainer) { Write-Host "  $rel\" } else { Write-Host "  $rel" }
 }
 
-# Generate VDF with full description spliced in.
-# Template's "description" line is replaced with the escaped contents
-# of assets/workshop-description.txt. Newlines become \n, quotes become \".
-if (-not (Test-Path $tpl))  { throw "VDF template not found: $tpl" }
-if (-not (Test-Path $desc)) { throw "Description not found: $desc" }
+# Generate VDF by copying the template verbatim.
+# IMPORTANT: the VDF intentionally has NO "description" field. The Workshop
+# description is managed by hand in the Steam app and must NEVER be pushed.
+# A pushed description overwrites manual edits on the Workshop page. Omitting
+# the field entirely makes SteamCMD leave the live description untouched.
+if (-not (Test-Path $tpl)) { throw "VDF template not found: $tpl" }
 
-$descRaw = Get-Content $desc -Raw -Encoding UTF8
-$descRaw = $descRaw -replace "`r`n", "`n"      # normalize line endings
-$descRaw = $descRaw.TrimEnd("`n")              # drop trailing blank lines
-
-# SteamCMD's VDF parser is shallow: \n is passed through literally,
-# and \" terminates the string instead of escaping the quote. So
-# newlines stay as actual newlines (multi-line strings work), and
-# any literal " in the source must be replaced with single or curly
-# quotes before it ever hits the VDF.
-if ($descRaw -match '"') {
-    throw 'Description contains a literal double-quote character. Use single quotes or curly quotes instead. SteamCMD VDF will truncate the description at the first ASCII double-quote.'
+if ((Get-Content $tpl -Raw) -match '"description"') {
+    throw 'workshop_item.template.txt contains a "description" field. Remove it. Pushing a description overwrites manual edits in the Steam app.'
 }
 
-$descEsc = $descRaw -replace '\\', '\\'         # backslashes still need escaping
-
-$tplLines = Get-Content $tpl
-$outLines = $tplLines | ForEach-Object {
-    if ($_ -match '^\s*"description"') {
-        "`t`"description`"`t`t`"$descEsc`""
-    } else {
-        $_
-    }
-}
-$outLines | Set-Content -Path $out -Encoding UTF8
+Copy-Item $tpl $out -Force
 
 Write-Host ""
 Write-Host "VDF built at:" -ForegroundColor Green
 Write-Host "  $out"
-Write-Host "  (description spliced from assets\workshop-description.txt)"
+Write-Host "  (no description field; Steam-app description is preserved)"
 Write-Host ""
 Write-Host "Run SteamCMD against the generated file:" -ForegroundColor Yellow
 Write-Host "  & C:\steamcmd\steamcmd.exe +login robotsmeller +workshop_build_item `"$out`" +quit"
