@@ -7,6 +7,11 @@ for popular mods that haven't been updated for Build 42.
 
 Facts only. No fluff. Research before answering. Disagree when wrong.
 
+**Replying to users (RULE, non-negotiable):** Every reply to a user who leaves a message
+(GitHub issue/PR comments, Workshop replies, any outward response to a person) MUST be run
+through the `avoid-ai-writing` skill before posting, and MUST @tag the person. No em dashes,
+no AI-isms. This applies to the first draft, not just on request.
+
 ---
 
 ## SESSION START (REQUIRED)
