@@ -3,7 +3,7 @@
 -- Regenerate with: python scripts/generate_lua.py
 
 local M = {}
-M.version = "0.6.0"
+M.version = "0.7.0"
 M.redirects = {
   ["ISUI/ISInventoryPaneContextMenu"] = { global="ISInventoryPaneContextMenu" },
   ["ISUI/ISVehicleMenu"] = { global="ISVehicleMenu" },
@@ -92,6 +92,7 @@ M.redirects = {
   ["OptionScreens/MapSpawnSelect"] = { global="MapSpawnSelect" },
   ["OptionScreens/MainOptions"] = { global="MainOptions" },
   ["Vehicles/ISUI/ISUI3DScene"] = { global="ISUI3DScene" },
+  ["ISUI/ISUI3DScene"] = { global="ISUI3DScene" },
   ["Vehicles/ISUI/ISVehicleMechanics"] = { global="ISVehicleMechanics" },
   ["Vehicles/ISUI/ISVehicleDashboard"] = { global="ISVehicleDashboard" },
   ["Vehicles/ISUI/ISVehicleSeatUI"] = { global="ISVehicleSeatUI" },
@@ -101,6 +102,7 @@ M.redirects = {
   ["Vehicles/TimedActions/ISAttachTrailerToVehicle"] = { global="ISAttachTrailerToVehicle" },
   ["Vehicles/TimedActions/ISDetachTrailerFromVehicle"] = { global="ISDetachTrailerFromVehicle" },
   ["Vehicles/TimedActions/ISPathFindAction"] = { global="ISPathFindAction" },
+  ["TimedActions/ISPathFindAction"] = { global="ISPathFindAction" },
   ["Vehicles/TimedActions/ISRefuelFromGasPump"] = { global="ISRefuelFromGasPump" },
   ["ISUI/ISControllerTestPanel"] = { global="ISControllerTestPanel" },
   ["ISUI/ISVolumeControl"] = { global="ISVolumeControl" },

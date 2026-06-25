@@ -1,8 +1,8 @@
 {
-  "version": "0.6.0",
-  "last_updated": "2026-06-01",
+  "version": "0.7.0",
+  "last_updated": "2026-06-24",
   "verification_target": "B42.19",
-  "description": "Module path -> global name redirects for PZ B42. Entries with verified:true were confirmed live (originally B42.17, re-validated B42.18/B42.19; no breakage in the 42.18/42.19 modding changelogs). Farming/CFarmingSystem added and verified live B42.19.",
+  "description": "Module path -> global name redirects for PZ B42. Entries with verified:true were confirmed live (originally B42.17, re-validated B42.18/B42.19; no breakage in the 42.18/42.19 modding changelogs). Farming/CFarmingSystem added and verified live B42.19. v0.7.0 (issues #13/#14/#15): added alternate require paths ISUI/ISUI3DScene and TimedActions/ISPathFindAction (target globals already verified live via their Vehicles/-prefixed siblings); staged unverified probe candidates from Animals Everywhere and a ContainerButtons typo.",
   "redirects": [
     {
       "module": "ISUI/ISInventoryPaneContextMenu",
@@ -701,6 +701,14 @@
       "notes": "Verified live B42.17."
     },
     {
+      "module": "ISUI/ISUI3DScene",
+      "global": "ISUI3DScene",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Alternate require path (no Vehicles/ prefix). Target global ISUI3DScene already verified live (see Vehicles/ISUI/ISUI3DScene). Reported via issue #13."
+    },
+    {
       "module": "Vehicles/ISUI/ISVehicleMechanics",
       "global": "ISVehicleMechanics",
       "category": "vanilla_global",
@@ -771,6 +779,14 @@
       "since_pz": "42.0.0",
       "verified": true,
       "notes": "Verified live B42.17."
+    },
+    {
+      "module": "TimedActions/ISPathFindAction",
+      "global": "ISPathFindAction",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Alternate require path (no Vehicles/ prefix). Target global ISPathFindAction already verified live (see Vehicles/TimedActions/ISPathFindAction). Reported via issues #14/#15."
     },
     {
       "module": "Vehicles/TimedActions/ISRefuelFromGasPump",
@@ -1091,6 +1107,30 @@
       "since_pz": "42.0.0",
       "verified": false,
       "notes": "AutotsarMotorClub (Tchernobill B42 port). AMC_AquaConfig.lua does require 'AquaConfig' but actual file is AMC_AquaConfig. Workshop: 3404737883. Cannot verify without that mod installed."
+    },
+    {
+      "module": "Animals/MigrationGroupDefinitions",
+      "global": "MigrationGroupDefinitions",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "Reported via issues #13/#14/#15. Required right at Animals Everywhere mod load (B42.19). UNVERIFIED: probe rawget(_G,'MigrationGroupDefinitions') in-game before shipping. May be a vanilla B42 animal-system global or an AnimalsEverywhere-internal file."
+    },
+    {
+      "module": "Animals/RanchZoneDefinitions",
+      "global": "RanchZoneDefinitions",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "Reported via issues #13/#14/#15. Required right at Animals Everywhere mod load (B42.19). UNVERIFIED: probe rawget(_G,'RanchZoneDefinitions') in-game before shipping. May be a vanilla B42 animal-system global or an AnimalsEverywhere-internal file."
+    },
+    {
+      "module": "Definitions/ContainerButtonsIcons",
+      "global": "ContainerButtonsIcons",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "Reported via issues #14/#15. Require uses plural 'ContainerButtonsIcons'; vanilla global is singular 'ContainerButtonIcons' (already shipped). Likely a mod-side typo or a mod-internal file. Probe rawget for both spellings before deciding; do NOT assume the plural maps to the vanilla singular."
     },
     {
       "module": "ISUI/InventoryWindow/ISLootWindowControlHandler",
