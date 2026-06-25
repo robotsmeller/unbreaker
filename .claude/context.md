@@ -8,8 +8,8 @@ created: 2026-04-22
 session: 10
 last_updated: 2026-06-24
 verification_target: B42.19
-continue_with: Cut a v1.2.2 release to ship data v0.7.0 (137 redirects) to the Workshop, OR batch it with the 3 staged probe candidates after an in-game probe.
-blockers: 2 new redirects + 3 probe candidates sit in the repo unshipped. Workshop release is manual (no publish.yml). Workshop description still needs a manual restore in Steam.
+continue_with: Repo work for #12-#15 is done and merged to main. Next lever is a v1.2.2 Workshop release, but ROB runs the Steam push, never the agent (see HARD RULE below). Agent preps; Rob ships.
+blockers: 2 new redirects + 3 probe candidates sit on main unshipped. HARD RULE — the agent NEVER touches Steam/Workshop (no SteamCMD, no publish step); all Steam releasing is Rob's manual action. Workshop description still needs a manual restore in Steam (Rob).
 
 arch:
   stack: Lua (PZ mod), Python (tooling), GitHub Actions (CI/CD), GitHub Pages (diagnostic), PowerShell (Workshop build)
@@ -124,7 +124,7 @@ Reviewed B42.18 patch notes (MODDING purely additive, no breakage). Bumped data 
 
 ## Critical for Next Session
 
-1. **Ship data v0.7.0 to the Workshop.** Repo HEAD has 137 redirects (the 2 new alternate paths); the live build is still 135. Bump mod to v1.2.2 and run `build_workshop.ps1` (manual; no publish.yml). #15 stays open as the tracker until this ships.
+1. **Ship data v0.7.0 to the Workshop — ROB ONLY.** Main has 137 redirects (the 2 new alternate paths); the live build is still 135. HARD RULE: the agent NEVER touches Steam/Workshop (no SteamCMD, no publish step). The agent may prep (bump version, stage the build); Rob runs `build_workshop.ps1` and the Steam push himself. #15 stays open as the tracker until this ships. See memory `never-touch-steam`.
 2. **In-game probe the 3 staged candidates** (verified:false in vanilla_globals.json): `rawget(_G,'MigrationGroupDefinitions')`, `rawget(_G,'RanchZoneDefinitions')`, and both spellings of ContainerButton(s)Icons. Flip to verified:true and ship any that resolve; reclassify the rest.
 3. **Restore the Workshop description** in the Steam app — the v1.2.1 push reverted it to the launch copy. The pipeline no longer pushes it.
 4. Promotion: r/projectzomboid post (lead with the diagnostic tool), Indie Stone forums, PZ modding Discord. Outreach to authors of mods Unbreaker covers.
