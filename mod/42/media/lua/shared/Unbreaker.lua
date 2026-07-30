@@ -74,7 +74,7 @@ end
 require = unbreakerRequire
 
 _G.Unbreaker = {
-    version = "1.2.1",
+    version = "1.3.0",
     data_version = DATA.version,
     redirect_count = 0,
     stats = function()
