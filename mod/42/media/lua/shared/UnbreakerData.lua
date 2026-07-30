@@ -3,7 +3,7 @@
 -- Regenerate with: python scripts/generate_lua.py
 
 local M = {}
-M.version = "0.7.0"
+M.version = "0.8.0"
 M.redirects = {
   ["ISUI/ISInventoryPaneContextMenu"] = { global="ISInventoryPaneContextMenu" },
   ["ISUI/ISVehicleMenu"] = { global="ISVehicleMenu" },
@@ -133,7 +133,6 @@ M.redirects = {
   ["RainBarrel/BuildingObjects/RainCollectorBarrel"] = { global="RainCollectorBarrel" },
   ["NPCs/BodyLocations"] = { global="BodyLocations" },
   ["NPCs/ZombiesZoneDefinition"] = { global="ZombiesZoneDefinition" },
-  ["CharacterCustomisation/BodyDetailWindow/CharacterCustomisationPanel"] = { global="CharacterCustomisationPanel" },
   ["Vehicles/ISUI/ISCarMechanicsOverlay"] = { global="ISCarMechanicsOverlay" },
   ["Vehicles/TimedActions/ISLightbarUITimedAction"] = { global="ISLightbarUITimedAction" },
   ["Vehicles/VehicleDistributions"] = { global="VehicleDistributions" },
@@ -141,7 +140,14 @@ M.redirects = {
   ["Items/Distributions"] = { global="Distributions" },
   ["Items/ItemPicker"] = { global="ItemPicker" },
   ["Items/SuburbsDistributions"] = { global="SuburbsDistributions" },
-  ["CommonTemplates/CommonTemplates"] = { global="CommonTemplates" },
+  ["gamepadBinding"] = { global="gamepadBinding" },
+  ["TimedActions/ISWalkToTimedAction"] = { global="ISWalkToTimedAction" },
+  ["ISUI/ISItemDropBox"] = { global="ISItemDropBox" },
+  ["Items/ProceduralDistributions/ProceduralDistributions"] = { global="ProceduralDistributions" },
+  ["Animals/MigrationGroupDefinitions"] = { global="MigrationGroupDefinitions" },
+  ["Animals/RanchZoneDefinitions"] = { global="RanchZoneDefinitions" },
+  ["Definitions/ContainerButtonsIcons"] = { global="ContainerButtonIcons" },
+  ["Vehicles/VehicleUtils"] = { global="VehicleUtils" },
 }
 
 return M

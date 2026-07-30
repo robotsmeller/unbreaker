@@ -1,8 +1,8 @@
 {
-  "version": "0.7.0",
-  "last_updated": "2026-06-24",
-  "verification_target": "B42.19",
-  "description": "Module path -> global name redirects for PZ B42. Entries with verified:true were confirmed live (originally B42.17, re-validated B42.18/B42.19; no breakage in the 42.18/42.19 modding changelogs). Farming/CFarmingSystem added and verified live B42.19. v0.7.0 (issues #13/#14/#15): added alternate require paths ISUI/ISUI3DScene and TimedActions/ISPathFindAction (target globals already verified live via their Vehicles/-prefixed siblings); staged unverified probe candidates from Animals Everywhere and a ContainerButtons typo.",
+  "version": "0.8.0",
+  "last_updated": "2026-07-30",
+  "verification_target": "B42.20",
+  "description": "Module path -> global name redirects for PZ B42. v0.8.0 re-validates the whole set against an installed B42.20 Stable rather than against changelogs: every target global was checked for a top-level assignment in an auto-loaded media/lua file, with projectzomboid.jar checked as a fallback for Java-exposed globals (BodyLocations is the worked example, no lua assignment anywhere but a real runtime global from zombie/characters/WornItems/BodyLocations). 133 of the 137 previously shipped redirects still resolve. CharacterCustomisationPanel and CommonTemplates were confirmed removed upstream and demoted to unrecoverable. Vehicles/VehicleUtils was promoted out of unrecoverable (the old note conflated a missing file with a missing global). Added 4 redirects: gamepadBinding (the one genuinely new 42.20 move, per changelog), plus TimedActions/ISWalkToTimedAction, ISUI/ISItemDropBox and Items/ProceduralDistributions/ProceduralDistributions, all three observed failing in a real 42.20 session log. The Animals Everywhere and ContainerButtons candidates staged in v0.7.0 were resolved against the install and shipped. v0.8.0 also diffs the 42.19 community lua mirror (Project-Zomboid-Community-Modding/ProjectZomboid-Vanilla-Lua, commit 29df4fe) against the installed 42.20, which is the first time this project has had a true build-to-build file diff instead of a changelog reading. That diff confirms gamepadBinding as the only root move (shared -> client), surfaces one removal the changelog never mentions (Farming/BuildingObjects/ISFarmingCursor), and proves CharacterCustomisationPanel and CommonTemplates were already gone by 42.19.",
   "redirects": [
     {
       "module": "ISUI/ISInventoryPaneContextMenu",
@@ -1031,10 +1031,10 @@
     {
       "module": "CharacterCustomisation/BodyDetailWindow/CharacterCustomisationPanel",
       "global": "CharacterCustomisationPanel",
-      "category": "vanilla_global",
+      "category": "unrecoverable",
       "since_pz": "42.0.0",
-      "verified": true,
-      "notes": "Verified live B42.17."
+      "verified": false,
+      "notes": "Was verified live B42.17, ALREADY GONE BY B42.19. Pinned by diffing the 42.19 community lua mirror (commit 29df4fe) against the installed 42.20: zero occurrences of CharacterCustomisationPanel in either tree, and no matching class in projectzomboid.jar. So it died in 42.18 or 42.19 and the changelog-only reviews in sessions 8 and 9 missed it. Demoted from shipped in data v0.8.0."
     },
     {
       "module": "Vehicles/ISUI/ISCarMechanicsOverlay",
@@ -1095,10 +1095,42 @@
     {
       "module": "CommonTemplates/CommonTemplates",
       "global": "CommonTemplates",
+      "category": "unrecoverable",
+      "since_pz": "42.0.0",
+      "verified": false,
+      "notes": "Was verified live B42.17, ALREADY GONE BY B42.19. Pinned by diffing the 42.19 community lua mirror (commit 29df4fe) against the installed 42.20: zero occurrences of CommonTemplates in either tree, and no matching class in projectzomboid.jar. So it died in 42.18 or 42.19 and the changelog-only reviews in sessions 8 and 9 missed it. Demoted from shipped in data v0.8.0."
+    },
+    {
+      "module": "gamepadBinding",
+      "global": "gamepadBinding",
+      "category": "vanilla_global",
+      "since_pz": "42.20.0",
+      "verified": true,
+      "notes": "NEW B42.20 breakage. The 42.20 changelog moved gamepadBinding.lua from /shared to /client 'to prevent client-side bindings from being overridden on server join'. Any mod requiring it from a shared or server context now fails. Confirmed in the 42.20 install: the file is at client/gamepadBinding.lua and line 62 sets gamepadBinding = {} at top level, so the global is live client-side."
+    },
+    {
+      "module": "TimedActions/ISWalkToTimedAction",
+      "global": "ISWalkToTimedAction",
+      "category": "filename_mismatch",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Observed failing live on B42.20. Vanilla dropped the IS prefix from the filename but kept it on the global: client/TimedActions/WalkToTimedAction.lua line 3 is ISWalkToTimedAction = ISBaseTimedAction:derive('ISWalkToTimedAction'). Mods requiring the old IS-prefixed path get nil."
+    },
+    {
+      "module": "ISUI/ISItemDropBox",
+      "global": "ISItemDropBox",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
       "verified": true,
-      "notes": "Verified live B42.17."
+      "notes": "Observed failing live on B42.20. The file moved out of ISUI/ into the radio UI tree: client/RadioCom/ISUIRadio/ISItemDropBox.lua line 3 is ISItemDropBox = ISPanel:derive('ISItemDropBox'). Global is live, only the require path is stale."
+    },
+    {
+      "module": "Items/ProceduralDistributions/ProceduralDistributions",
+      "global": "ProceduralDistributions",
+      "category": "vanilla_global",
+      "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Observed failing live on B42.20. Alternate path with a doubled segment. Target global already shipped and verified via the Items/ProceduralDistributions sibling; server/Items/ProceduralDistributions.lua line 1 sets it."
     },
     {
       "module": "AquaConfig",
@@ -1113,24 +1145,32 @@
       "global": "MigrationGroupDefinitions",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": "Reported via issues #13/#14/#15. Required right at Animals Everywhere mod load (B42.19). UNVERIFIED: probe rawget(_G,'MigrationGroupDefinitions') in-game before shipping. May be a vanilla B42 animal-system global or an AnimalsEverywhere-internal file."
+      "verified": true,
+      "notes": "Reported via issues #13/#14/#15. CONFIRMED against the B42.20 install: shared/Definitions/animal/MigrationGroupDefinitions.lua line 1 sets the global unconditionally (MigrationGroupDefinitions = MigrationGroupDefinitions or {}) and shared/ is auto-loaded, so the global is live at runtime. The mod's Animals/ path never existed; this redirect maps it to the real global."
     },
     {
       "module": "Animals/RanchZoneDefinitions",
       "global": "RanchZoneDefinitions",
       "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": "Reported via issues #13/#14/#15. Required right at Animals Everywhere mod load (B42.19). UNVERIFIED: probe rawget(_G,'RanchZoneDefinitions') in-game before shipping. May be a vanilla B42 animal-system global or an AnimalsEverywhere-internal file."
+      "verified": true,
+      "notes": "Reported via issues #13/#14/#15. CONFIRMED against the B42.20 install: shared/Definitions/animal/RanchZoneDefinitions.lua line 1 sets the global unconditionally (RanchZoneDefinitions = RanchZoneDefinitions or {}) and shared/ is auto-loaded, so the global is live at runtime. The mod's Animals/ path never existed; this redirect maps it to the real global."
     },
     {
       "module": "Definitions/ContainerButtonsIcons",
-      "global": "ContainerButtonsIcons",
-      "category": "vanilla_global",
+      "global": "ContainerButtonIcons",
+      "category": "filename_mismatch",
       "since_pz": "42.0.0",
+      "verified": true,
+      "notes": "Reported via issues #14/#15. RESOLVED against the B42.20 install: the plural spelling exists nowhere (no file, no global, no jar class), while shared/Definitions/ContainerButtonIcons.lua line 1 sets the singular global. A require for the plural under vanilla's own Definitions/ path can only be after that table, and it currently returns nil, so mapping it to the singular is strictly better than the status quo. Target global is already shipped under Definitions/ContainerButtonIcons."
+    },
+    {
+      "module": "Farming/BuildingObjects/ISFarmingCursor",
+      "global": "ISFarmingCursor",
+      "category": "unrecoverable",
+      "since_pz": "42.20.0",
       "verified": false,
-      "notes": "Reported via issues #14/#15. Require uses plural 'ContainerButtonsIcons'; vanilla global is singular 'ContainerButtonIcons' (already shipped). Likely a mod-side typo or a mod-internal file. Probe rawget for both spellings before deciding; do NOT assume the plural maps to the vanilla singular."
+      "notes": "REMOVED IN B42.20. Found by diffing the 42.19 lua mirror (commit 29df4fe) against the installed 42.20, not from the changelog, which never mentions it. server/Farming/BuildingObjects/ISFarmingCursor.lua existed in 42.19 and is deleted in 42.20; the global is gone. The surviving sibling ISFarmingCursorMouse is NOT a drop-in replacement: both derive ISBuildingObject and share create/new/render/getAPrompt/getLBPrompt/getRBPrompt, but the old class also had getObjectList, isValid, onJoypadPressButton and rotateKey, which ISFarmingCursorMouse does not. Redirecting would hand mods an object that fails on 4 of 10 methods, so this stays unrecoverable. Farming mod authors should migrate to ISFarmingCursorMouse."
     },
     {
       "module": "ISUI/InventoryWindow/ISLootWindowControlHandler",
@@ -1143,10 +1183,10 @@
     {
       "module": "Vehicles/VehicleUtils",
       "global": "VehicleUtils",
-      "category": "unrecoverable",
+      "category": "vanilla_global",
       "since_pz": "42.0.0",
-      "verified": false,
-      "notes": "NO FILE EXISTS in B42 vanilla. Cannot shim. Required by Realistic Dashboard and Gauges. Mod author must update."
+      "verified": true,
+      "notes": "PROMOTED from unrecoverable in data v0.8.0. The old note conflated file with global: no Vehicles/VehicleUtils.lua file exists, but server/Vehicles/Vehicles.lua line 1004 declares VehicleUtils = {} at top level and hangs its functions off it, so the global IS live. Required by Realistic Dashboard and Gauges. CAVEAT: the defining file lives under media/lua/server, which is loaded in single-player and on the server but not by an MP client, so this resolves in SP and no-ops safely in MP client context."
     },
     {
       "module": "Json",
