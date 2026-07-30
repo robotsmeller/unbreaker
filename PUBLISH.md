@@ -29,7 +29,7 @@ build/workshop/
 
 ### 2. Verify the VDF manifest
 
-Open `workshop_item.txt` and confirm:
+Edit `workshop_item.template.txt` at the repo root. There is no `workshop_item.txt` at the root; `build_workshop.ps1` copies the template to `build/workshop_item.txt`, and that generated file is what SteamCMD reads. Confirm:
 
 - `appid` is `108600` (Project Zomboid)
 - `publishedfileid` is `0` (this signals "create new" on first upload)
@@ -58,7 +58,7 @@ Successfully created item. PublishedFileId: 3480731959
 
 ### 4. Update the VDF for future use
 
-Edit `workshop_item.txt` and replace `"publishedfileid" "0"` with the numeric ID from step 3. Subsequent uploads use that ID to update the existing item instead of creating a new one.
+Edit `workshop_item.template.txt` and replace `"publishedfileid" "0"` with the numeric ID from step 3. Subsequent uploads use that ID to update the existing item instead of creating a new one. Already done: the live ID is `3721648770`.
 
 ### 5. Finish setup on the Workshop web page
 

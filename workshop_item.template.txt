@@ -6,13 +6,17 @@
 	"previewfile"		"C:\\xampp\\htdocs\\unbreaker\\build\\workshop\\preview.png"
 	"visibility"		"0"
 	"title"		"Unbreaker"
-	"changenote"		"v1.2.1 - Build 42.19 verified.
+	"changenote"		"v1.3.0 - Build 42.20 Stable verified.
 
-Re-validated all existing redirects against B42.19 Unstable. No breakage: the 42.18 and 42.19 modding changelogs were purely additive (new Java methods, no moved or renamed Lua files).
+Re-validated every redirect against an installed 42.20, plus a file-level diff of the vanilla Lua tree between 42.19 and 42.20. 133 of the 137 existing redirects survived unchanged. 42.20 is a quiet build for modders.
 
-Added: Farming/CFarmingSystem, verified live in B42.19. Fixes mods that require the client-side farming system module (require returns nil, but the CFarmingSystem global exists).
+Added: gamepadBinding (42.20 moved it from shared to client, the only file in the whole build that changed root), TimedActions/ISWalkToTimedAction, ISUI/ISItemDropBox, Items/ProceduralDistributions/ProceduralDistributions.
 
-Reclassified as unrecoverable after live probing (no vanilla global exists to redirect to, so they cannot be shimmed): Json, recipecode, Items/ItemFactory, Maps/ISMapDefinitions. The diagnostic tool now reports these as not-fixable instead of unknown.
+Fixed: Animals Everywhere (MigrationGroupDefinitions, RanchZoneDefinitions), a ContainerButtonsIcons spelling mismatch, and Vehicles/VehicleUtils, which was wrongly marked unfixable. The global does exist, the file just does not.
+
+Now unfixable: Farming/BuildingObjects/ISFarmingCursor, deleted in 42.20. CharacterCustomisationPanel and CommonTemplates, both already gone as of 42.19.
+
+135 to 143 verified redirects.
 
 Diagnostic tool: https://robotsmeller.github.io/unbreaker/"
 	"tags"		"Build 42,Misc,QoL"
