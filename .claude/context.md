@@ -8,7 +8,7 @@ created: 2026-04-22
 session: 13
 last_updated: 2026-08-05
 verification_target: B42.20.1
-continue_with: Nothing blocking. The Workshop DESCRIPTION is still the old text (advertises 42.19 and 135 redirects); Rob deliberately deferred it, wording is in the s13 transcript. Next code work is pz-mod-checker, whose own context.md is stale at session 10.
+continue_with: Nothing blocking and nothing outstanding on the Workshop. Next code work is pz-mod-checker, whose own context.md is stale at session 10 and records none of the s11 to s13 work.
 blockers: HARD RULE, the agent NEVER touches Steam/Workshop. No SteamCMD, no publish, not build_workshop.ps1 (the classifier blocks it, correctly). Rob confirmed the s13 push himself.
 
 workshop:
@@ -107,9 +107,12 @@ All four at v1.4.0. Confirm with the console line, never `mod.info` on disk. Do 
 
 ## Pending
 
-1. **Workshop description is stale** (says 42.19, 135 redirects; live is 42.20.1, 143 + a vanilla
-   patch). Rob chose to ship v1.4.0 without touching it. Wording drafted in the s13 transcript.
-2. **`mod.info` description overclaims** "renamed functions", never true. Deferred with the above.
+1. ~~Workshop description~~ DONE. Rob rewrote it himself in s13: names the tested build and the
+   current version, points at the changelog for per-release detail, so it no longer goes stale
+   every push. Do not re-flag this without looking at the live page first.
+2. **`mod.info` description overclaims** "renamed functions", which Unbreaker has never done, and
+   omits the vanilla-patch capability. This one ships INSIDE the mod, so it is a repo edit plus a
+   re-push, not a Steam-side edit. Still outstanding.
 3. **pz-mod-checker `.claude/context.md` is stale** at session 10 and records none of s11 to s13.
 4. **pz-mod-checker has an uncommitted feature** (`README.md`, `gui/server.py`,
    `gui/static/index.html`, untracked `unbreaker.py`). Still the only work across the three repos
