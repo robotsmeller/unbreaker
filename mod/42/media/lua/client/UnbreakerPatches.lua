@@ -37,10 +37,22 @@ local applied = {}
 -- The writer is correct and is left alone. Only the read side needs fixing: split
 -- on the FIRST colon and keep the entire remainder as the value.
 
+-- Vanilla's OUTFITS_VERSION is a FILE-LOCAL (CharacterCreationMain.lua:453), so it
+-- is not reachable from here and reads as nil. The first version of this patch
+-- compared against it anyway, so `version == nil` was false for every line, the
+-- reader returned an empty table, and the preset dropdown went blank. Caught by
+-- loading the game, which no amount of reading the code had caught.
+--
+-- Mirrored here by value. If vanilla ever bumps the format, this patch does not
+-- guess: it hands the file back to the original implementation it replaced.
+local KNOWN_OUTFITS_VERSION = 1
+
 local function patchSavedOutfitReader()
     if CharacterCreationMain == nil or CharacterCreationMain.readSavedOutfitFile == nil then
         return false, "CharacterCreationMain.readSavedOutfitFile not found"
     end
+
+    local originalReader = CharacterCreationMain.readSavedOutfitFile
 
     CharacterCreationMain.readSavedOutfitFile = function()
         local retVal = {}
@@ -54,7 +66,12 @@ local function patchSavedOutfitReader()
         while line ~= nil do
             if luautils.stringStarts(line, "VERSION=") then
                 version = tonumber(string.split(line, "=")[2])
-            elseif version == OUTFITS_VERSION then
+                if version ~= KNOWN_OUTFITS_VERSION then
+                    -- Unknown format. Do not touch it.
+                    saveFile:close()
+                    return originalReader()
+                end
+            elseif version == KNOWN_OUTFITS_VERSION then
                 -- First colon only. The value keeps every colon it contains,
                 -- which is what modded body location names depend on.
                 local sep = string.find(line, ":", 1, true)
