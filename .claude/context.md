@@ -1,15 +1,15 @@
 # Unbreaker Context
 
 ```yaml
-version: 1.3.0
+version: 1.4.0
 data_version: 0.8.0
-status: v1.3.0 / data v0.8.0 (143 redirects) is LIVE on the Workshop and confirmed loading in game. Verified against an installed B42.20 Stable plus a 42.19-to-42.20 file diff.
+status: Repo is at v1.4.0 (143 redirects + first vanilla-lua patch), committed and pushed. NOT yet on the Workshop; live build is still v1.3.0. Verified against an installed B42.20 Stable.
 created: 2026-04-22
-session: 11
-last_updated: 2026-07-30
+session: 12
+last_updated: 2026-08-04
 verification_target: B42.20
-continue_with: Workshop page text only. The description still advertises 42.19 and 135 redirects; wording is ready in the session-11 transcript. Also add the pz-shims link and drop the false "renamed functions" claim from mod.info.
-blockers: HARD RULE, the agent NEVER touches Steam/Workshop. No SteamCMD, no publish, and not build_workshop.ps1 (the permission classifier blocks it, correctly). All releasing is Rob's manual action.
+continue_with: Rob pushes v1.4.0 to the Workshop (build script + SteamCMD, both his). Description and mod.info wording are drafted in the session-12 transcript and unapplied.
+blockers: HARD RULE, the agent NEVER touches Steam/Workshop. No SteamCMD, no publish, not build_workshop.ps1. All releasing is Rob's manual action.
 
 workshop:
   id: 3721648770
@@ -19,134 +19,129 @@ workshop:
 
 ## To Resume
 
-Session 12. Unbreaker main at v1.3.0 / data v0.8.0, 143 redirects, 0 open issues.
-Sibling repos: `pz-mod-checker` (rules now cover 42.0 to 42.20), `pz-shims` (new, public).
+Session 13. Unbreaker main at v1.4.0 / data v0.8.0, 143 redirects, 0 open issues.
+Siblings: `pz-mod-checker` (rules cover 42.0 to 42.20), `pz-shims` (public, 4 shims).
 
 THIS WINDOW:
-1. Nothing is blocked. Unbreaker is done for 42.20.
-2. If Rob asks about the Workshop page: description wording + shims link + mod.info fix (see `pending`).
+1. Nothing is blocked. v1.4.0 is ready to publish whenever Rob wants.
+2. If Rob asks about the Workshop: evergreen description + `mod.info` fix (see Pending 1 and 2).
 3. When the next B42.x lands, FIRST action is the build diff (see Method).
 
 ## Method: diff builds, do not read changelogs
-
-Clone the community mirror and diff it against the installed game:
 
 ```
 git clone --depth 1 https://github.com/Project-Zomboid-Community-Modding/ProjectZomboid-Vanilla-Lua
 ```
 
-Commits are named by version (`29df4fe` = 42.19). Diff its `client/server/shared` against
+Commits are named by version (`29df4fe` = 42.19). Diff `client/server/shared` against
 `<PZ install>/media/lua`. Check `projectzomboid.jar` too: some globals are Java-exposed with no
-Lua assignment anywhere (`BodyLocations` is the worked example).
+Lua assignment anywhere (`BodyLocations` is the worked example). This caught two removals no
+changelog mentions. Do this every patch.
 
-This caught two removals no changelog mentions, including two globals dead since 42.18/42.19 that
-changelog-only reviews in sessions 8 and 9 called clean. Do this every patch.
+**Limit, learned in s12:** a file diff cannot see Java-side changes. 42.20 also narrowed
+`getFileWriter` to an extension whitelist, and no tree diff would ever surface that.
 
-## Core Pattern (v1.3.0)
+## Two kinds of fix (decided s12)
 
-`require` is overridden; on failure it looks up `REDIRECTS[module]` and returns `rawget(_G, entry.global)`.
+- **Redirects** (`data/vanilla_globals.json` to `UnbreakerData.lua`): broken `require()` to a
+  vanilla global. `rawget` only, so it can never make anything worse. 143 shipped.
+- **Vanilla patches** (`mod/42/media/lua/client/UnbreakerPatches.lua`): bugs in the BASE GAME's
+  lua. High bar: must be a vanilla bug with no third-party version to track. Applies on
+  `OnGameBoot`, prints `[Unbreaker] vanilla patches applied: N/M`.
+- **NOT here:** mod-specific patches. They go stale the moment the author ships a fix and
+  Unbreaker cannot know when. Those live in `pz-shims`.
 
-**B42 quirk:** require returns nil silently for missing modules, so check `(ok and result ~= nil)`.
-Discovery for a candidate: does a top-level `NAME =` assignment exist in an auto-loaded vanilla file,
-or a matching class in the jar?
+## Core Pattern
+
+`require` is overridden; on failure it returns `rawget(_G, entry.global)`. B42 returns nil
+silently for missing modules, so check `(ok and result ~= nil)`.
 
 **Triage note:** PZ logs `require(...) failed` even for modules Unbreaker successfully redirects.
-A "failed" line is not proof of breakage. Latest 42.20 session: 29 unique failures, 18 covered,
+A "failed" line is not proof of breakage. Last full 42.20 session: 29 unique failures, 18 covered,
 3 correctly unrecoverable, 8 uncovered and all mod-internal. Zero new redirect candidates.
 
 ## What It Cannot Fix
 
 Deep API rewrites; mod-internal modules; modules with no vanilla global (`Json`, `recipecode`,
-`Items/ItemFactory`, `Maps/ISMapDefinitions`, `ISLootWindowControlHandler`); translations;
-Brita/Arsenal/True Actions; multiplayer (untested).
+`Items/ItemFactory`, `Maps/ISMapDefinitions`, `ISLootWindowControlHandler`); Brita/Arsenal/True
+Actions; multiplayer (untested).
 
-Removed upstream: `CharacterCustomisationPanel` and `CommonTemplates` (gone by 42.19),
-`Farming/BuildingObjects/ISFarmingCursor` (deleted in 42.20, undocumented).
+Removed upstream: `CharacterCustomisationPanel`, `CommonTemplates` (both gone by 42.19),
+`Farming/BuildingObjects/ISFarmingCursor` (deleted 42.20, undocumented).
 
-**NOT this list any more: `VehicleUtils`.** The old entry confused a missing FILE with a missing
-GLOBAL. Watch for that confusion; a redirect only needs the global.
-
-### Worked example of the "translations" exclusion (noted 2026-08-04)
-
-Seen on Rob's live install while working on pz-head-for-the-hills. Character creation lists dozens
-of clothing slots labelled with their raw key rather than a name: `UI_ClothingType_KATTAJ1:BackFanny`,
-`UI_ClothingType_SPNCC:Face`, `UI_ClothingType_SpnOpenCloth:JACKET_OPEN`,
-`UI_ClothingType_custombodylocation:LowerBack`, `UI_ClothingType_ALICE:Sheath`.
-
-Five mods register the slots and ship no translation entry for them: KATTAJ1 Clothes Core (and its
-Military Pack), Spongie's Character Customisation, Spongie's Open Jackets, Skully's Duffels and Rigs,
-and Better Vanilla ALICE Backpacks. PZ falls back to printing the key when
-`UI_ClothingType_<name>` has no entry, so nothing is broken; the labels are just ugly and the
-dropdowns all read None.
-
-Recorded because it looks fixable and is not Unbreaker's shape. A redirect fixes a `require()` that
-resolves to nothing. This needs display strings for five other mods' body locations, growing every
-time one of them adds a slot, which is a maintenance commitment rather than a finite list. If it is
-ever worth doing it belongs in its own small mod, not here.
-
-The right fix is upstream: one line on each mod's Workshop page.
+**Translations, still excluded.** 40 custom body locations are registered across installed mods
+(KATTAJ1 24, SPNCC 9, SpnOpenCloth 3, custombodylocation 2, ALICE 1) and NONE has a
+`UI_ClothingType_` entry, so character creation shows raw keys. Verified count, s12. It is a
+finite list, not open-ended, but it is display strings for other people's mods. Right fix is
+upstream. If ever done, its own small mod.
 
 ## Files Worth Knowing
 
-- `mod/42/media/lua/shared/Unbreaker.lua` — override + miss ring buffer
-- `data/vanilla_globals.json` — v0.8.0, 143 shipped (+ unrecoverable / verified:false, not shipped)
-- `scripts/generate_lua.py` — JSON to Lua (skips unrecoverable + unverified)
-- `scripts/build_workshop.ps1` — folder + VDF. ROB RUNS THIS, never the agent.
-- `docs/index.html` — GitHub Pages diagnostic tool
-- `PUBLISH.md` — runbook (fixed in s11: it referenced a `workshop_item.txt` that does not exist;
-  it is `workshop_item.template.txt`, copied to `build/workshop_item.txt` at build time)
+- `mod/42/media/lua/shared/Unbreaker.lua` — require override
+- `mod/42/media/lua/client/UnbreakerPatches.lua` — vanilla-bug patches (new s12)
+- `data/vanilla_globals.json` — v0.8.0, 143 shipped
+- `scripts/generate_lua.py` — JSON to Lua
+- `scripts/build_workshop.ps1` — ROB RUNS THIS, never the agent
+- `workshop_item.template.txt` — VDF. Has NO `description` field, by design. Changenote is at v1.4.0.
+- `PUBLISH.md` — runbook
 
 ## GOTCHA: four copies of Unbreaker exist
-
-PZ loads whichever it likes and it bit us for most of session 11.
 
 | Path | Role |
 |---|---|
 | `c:\xampp\htdocs\unbreaker\mod` | repo source |
 | `~/Zomboid/mods/Unbreaker` | local dev copy |
-| `~/Zomboid/Workshop/Unbreaker/Contents/mods/Unbreaker` | PZ publisher staging — **PZ loaded THIS one** |
+| `~/Zomboid/Workshop/Unbreaker/Contents/mods/Unbreaker` | PZ publisher staging — **PZ loads THIS one** |
 | Steam `workshop/content/108600/3721648770` | subscription |
 
-Always confirm with the console line: `[Unbreaker] loaded v1.3.0 — 143 redirects (data v0.8.0)`.
-Never trust `mod.info` on disk. Do not touch `workshop.txt` in the staging folder; it holds the tags.
+All four synced to v1.4.0 in s12. Always confirm with the console line, never `mod.info` on disk.
+Do not touch `workshop.txt` in the staging folder; it holds the tags.
 
-## Pending (all Rob, none blocking)
+## Pending (all Rob)
 
-1. **Workshop description** still says 42.19 / 135 redirects. Wording ready in the s11 transcript.
-2. **Add the pz-shims link** to the description, `docs/index.html` (highest value: near the
-   "unknown" bucket) and the README. Not to `mod.info` `url=`, which should stay on the repo.
-3. **`mod.info` description overclaims** "renamed functions". Unbreaker does not do that. Needs a
-   repo edit and a re-push, not a Steam-side edit.
-4. **Changenote published stale** (v1.2.1 text). Template is corrected for the next release.
-5. **`Vehicles/VehicleUtils` unproven in practice.** Promoted on static evidence; its file is under
+1. **Push v1.4.0 to the Workshop.** Changenote is already correct in the template.
+2. **Workshop description**: evergreen rewrite drafted in the s12 transcript. Version detail moved
+   to the changenote so the description stops going stale. Includes the pz-shims link.
+3. **`mod.info` description** still claims "renamed functions" (never true) and omits the new
+   vanilla-patch capability. Replacement wording drafted, not applied. Ships inside the mod.
+4. **Rob's 4 damaged character presets** (Zane, Theo, Hunter, Billy) must be rebuilt once. The
+   v1.4.0 fix stops further loss but cannot recover data already gone from the file.
+5. **`Vehicles/VehicleUtils` unproven in practice.** Promoted on static evidence; file is under
    `media/lua/server`. A driving session with Realistic Dashboard and Gauges settles it.
+6. **pz-mod-checker has an uncommitted feature** (`README.md`, `gui/server.py`,
+   `gui/static/index.html`, untracked `unbreaker.py`). Rob's work from an earlier session, never
+   committed. The only thing across the three repos not backed up.
 
 ## Recent Sessions
 
-### Session 11 (2026-07-30): B42.20 Stable, data v0.8.0, shipped + two sibling repos advanced
-PZ went B42.20 Stable 2026-07-29. Re-validated everything against an installed 42.20 plus a
-42.19 file diff: 133 of 137 redirects survived untouched. Added 4 (`gamepadBinding`, the only
-root move in the build; `TimedActions/ISWalkToTimedAction`; `ISUI/ISItemDropBox`;
-`Items/ProceduralDistributions/ProceduralDistributions`), resolved the 3 candidates staged in
-v0.7.0, promoted `VehicleUtils`, demoted two dead ones. 137 to 143. Rob pushed v1.3.0 to the
-Workshop; closed #15 with a reply to falkon311; 0 open issues.
+### Session 12 (2026-08-04): found a vanilla bug destroying saved presets, shipped v1.4.0
+Chased the s11 translations note and found something worse next to it. Rob reported KATTAJ1 items
+vanishing from saved character templates. Root cause is vanilla:
+`CharacterCreationMain.readSavedOutfitFile` does `luautils.split(line, ":")` then keeps only
+`s[2]`, but the format is `PresetName:key=value;...`, so the payload is truncated at the first
+colon inside it. B42's own convention puts a colon in every custom slot name
+(`ItemBodyLocation.register("KATTAJ1:BackFanny")`), so any preset with a modded slot loses
+everything from that slot on, including trailing vanilla slots, and the truncation is written back
+on save. Confirmed on Rob's live file: 4 of 5 presets already destroyed, the intact one loses 346
+of 1052 chars under vanilla and 0 under the patch, which round-trips byte-identical.
 
-Off-repo but same session: live-diagnosed Auto Key Rings B42.20 (33,642 exceptions/session, and
-it was breaking multi-item inventory drags via the timed action queue), wrote a shim, took it to
-**zero** and the log from 7.6 MB to 955 KB. Spun the shims into a new public repo,
-**https://github.com/robotsmeller/pz-shims**. In pz-mod-checker: added 42.19/42.20 rule files,
-implemented `no_lua_in_media_root` (declared in session 8, never implemented, so that rule had
-never once fired), fixed pattern rules matching inside Lua comments, and added a rule for Java
-reflection gated since the 42.14 security patch, which catches 4 mods that were previously
-invisible including StarlitLibrary.
+Added `UnbreakerPatches.lua` for this, establishing vanilla-bug patches as a second category and
+drawing the boundary: vanilla bugs here, mod-specific patches in pz-shims. v1.4.0, all four copies
+synced. Also fixed the `no_lua_in_media_root` check added in s11, which flagged `media/registries.lua`
+(29 mods use it) and `media/maps/*/spawnpoints.lua` (vanilla ships 14). Exemptions derived from the
+base game; 20 false positives down to 1 genuine. Counted the translation gap properly: 40 slots, 0
+translations.
+
+### Session 11 (2026-07-30): B42.20 Stable, data v0.8.0, shipped
+Re-validated everything against an installed 42.20 plus a 42.19 file diff: 133 of 137 redirects
+survived. Added 4, resolved the 3 staged candidates, promoted `VehicleUtils`, demoted two dead
+ones. 137 to 143. Rob pushed v1.3.0; closed #15; 0 open issues. Off-repo: diagnosed Auto Key Rings
+(33,642 exceptions/session, also breaking multi-item inventory drags), shimmed it to zero, and spun
+the shims into **https://github.com/robotsmeller/pz-shims**. In pz-mod-checker: 42.19/42.20 rules,
+comment-stripping fix, and a Java-reflection rule catching 4 previously invisible mods.
 
 ### Session 10 (2026-06-24): Triaged diagnostic-tool reports #12–#15, data v0.7.0
-First inbound community reports, all from falkon311 (17 modules across 4 issues). Added 2 verified
-alternate-path redirects, staged 3 unverified candidates, closed #12–#14. Not released.
-
-### Session 9 (2026-06-01): B42.19 verification + CFarmingSystem fix, shipped v1.2.1
-Added `Farming/CFarmingSystem`, reclassified 4 modules as unrecoverable, shipped v1.2.1 / data
-v0.6.0 (135 redirects). Removed the description from the publish pipeline after a push clobbered
-Rob's manual Steam edits.
+First inbound community reports, all from falkon311. Added 2 verified alternate-path redirects,
+staged 3 unverified candidates, closed #12–#14. Not released.
 
 @.claude/rules/code-architecture.md
