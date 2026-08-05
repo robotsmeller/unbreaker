@@ -92,7 +92,9 @@ Removed upstream: `CharacterCustomisationPanel`, `CommonTemplates` (gone by 42.1
 - `mod/42/media/lua/shared/Unbreaker.lua` — require override
 - `mod/42/media/lua/client/UnbreakerPatches.lua` — vanilla-bug patches
 - `data/vanilla_globals.json` — v0.8.0
-- `scripts/watch.py` + `scripts/notify.ps1` — Workshop/GitHub comment watcher (s14)
+- `scripts/watch.py` + `scripts/notify.ps1` — Workshop/GitHub comment watcher (s14).
+  **Test it with `--simulate N`, never by editing the state file**: editing state sends a
+  real Telegram containing a months-old comment and leaves the id armed to fire again.
 - `scripts/build_workshop.ps1` — ROB RUNS THIS, never the agent
 - `workshop_item.template.txt` — VDF. NO `description` field, by design.
 - `PUBLISH.md` — runbook
@@ -115,8 +117,8 @@ All four at v1.4.0. Confirm with the console line, never `mod.info` on disk. Do 
    and omits the vanilla-patch capability. Ships INSIDE the mod, so it is a repo edit plus a
    re-push.
 2. **pz-mod-checker `.claude/context.md` is stale** at session 10 (none of s11 to s14).
-3. **pz-mod-checker has an uncommitted feature** (`README.md`, `gui/server.py`,
-   `gui/static/index.html`, untracked `unbreaker.py`). Still the only unbacked-up work.
+3. **pz-mod-checker has an uncommitted feature** (4 files under `pz_mod_checker/`, including an
+   untracked `unbreaker.py`). Still the only unbacked-up work.
 4. **Rob's 4 damaged presets** (Zane, Theo, Hunter, Billy) need rebuilding once. v1.4.0 stops
    further loss but cannot recover data already gone. Backup at
    `~/Zomboid/Lua/saved_outfits.txt.bak.pre-v140`.
@@ -135,6 +137,10 @@ Then cleared 42.20.2 statically: no files added or removed, 9 changed, only `ISV
 is a redirect target and its global still assigns, `CharacterCreationMain.lua` byte-identical so
 the saved-preset bug remains unfixed upstream. Found that the hotfix's real change is `getText`
 arity, not `%%`, which revives the rule declined in s13. Filed #19 for the one launch needed.
+Two follow-ups after the first handoff (same window, so no s15 was created): the watcher pushed
+its own filed issue #19 to Rob's phone, so self-authored items are now tagged `OWN` and
+suppressed; and hand-editing state to test was replaced by `--dry-run` / `--simulate N`, since
+the old method sent real months-old comments and left ids armed to fire again.
 
 ### Session 13 (2026-08-05): 42.20.1 checked, outfit patch fixed in game, v1.4.0 shipped
 Verified against 42.20.1: Unbreaker unaffected, all 143 targets resolve, and the hotfix did NOT
