@@ -66,6 +66,26 @@ Removed upstream: `CharacterCustomisationPanel` and `CommonTemplates` (gone by 4
 **NOT this list any more: `VehicleUtils`.** The old entry confused a missing FILE with a missing
 GLOBAL. Watch for that confusion; a redirect only needs the global.
 
+### Worked example of the "translations" exclusion (noted 2026-08-04)
+
+Seen on Rob's live install while working on pz-head-for-the-hills. Character creation lists dozens
+of clothing slots labelled with their raw key rather than a name: `UI_ClothingType_KATTAJ1:BackFanny`,
+`UI_ClothingType_SPNCC:Face`, `UI_ClothingType_SpnOpenCloth:JACKET_OPEN`,
+`UI_ClothingType_custombodylocation:LowerBack`, `UI_ClothingType_ALICE:Sheath`.
+
+Five mods register the slots and ship no translation entry for them: KATTAJ1 Clothes Core (and its
+Military Pack), Spongie's Character Customisation, Spongie's Open Jackets, Skully's Duffels and Rigs,
+and Better Vanilla ALICE Backpacks. PZ falls back to printing the key when
+`UI_ClothingType_<name>` has no entry, so nothing is broken; the labels are just ugly and the
+dropdowns all read None.
+
+Recorded because it looks fixable and is not Unbreaker's shape. A redirect fixes a `require()` that
+resolves to nothing. This needs display strings for five other mods' body locations, growing every
+time one of them adds a slot, which is a maintenance commitment rather than a finite list. If it is
+ever worth doing it belongs in its own small mod, not here.
+
+The right fix is upstream: one line on each mod's Workshop page.
+
 ## Files Worth Knowing
 
 - `mod/42/media/lua/shared/Unbreaker.lua` — override + miss ring buffer
