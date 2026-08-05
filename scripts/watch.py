@@ -2,10 +2,15 @@
 
 Run by Task Scheduler every 20 minutes. Stdlib only.
 
-    python scripts/watch.py            poll every source once
-    python scripts/watch.py --test     send a test message to the phone and exit
-    python scripts/watch.py --reset    forget all seen ids (next run re-baselines)
-    python scripts/watch.py --dump     print what each source returns, change nothing
+    python scripts/watch.py               poll every source once
+    python scripts/watch.py --test        send a test message to the phone and exit
+    python scripts/watch.py --reset       forget all seen ids (next run re-baselines)
+    python scripts/watch.py --dump        print what each source returns, change nothing
+    python scripts/watch.py --dry-run     detect and print, send nothing, save nothing
+    python scripts/watch.py --simulate 2  pretend the 2 newest per source are new (implies dry-run)
+
+Verify with --simulate, never by hand-editing the state file. Editing state sends
+a real message containing an old comment, and leaves the id armed to send again.
 
 Delivery is Telegram, reusing the bot the Claude channel already set up, with a
 local Windows toast as fallback. Three guarantees are deliberate:
@@ -288,7 +293,7 @@ FETCHERS = {
 # Main
 # --------------------------------------------------------------------------
 
-def poll(dump_only: bool = False) -> int:
+def poll(dump_only: bool = False, dry_run: bool = False, simulate: int = 0) -> int:
     state = load_state()
     fresh: list[tuple[dict[str, str], dict[str, str]]] = []
     # Held back until delivery is confirmed, so a failed send does not mark
@@ -320,6 +325,10 @@ def poll(dump_only: bool = False) -> int:
             continue
 
         known = set(seen)
+        if simulate:
+            # Pretend the newest few were never seen. In memory only: the state
+            # file is not touched, so this cannot arm a real send later.
+            known -= set(ids[:simulate])
         new_items = [item for item in items if item["id"] not in known]
         for item in new_items:
             own = item["who"].lower() in SELF_AUTHORS
@@ -341,7 +350,13 @@ def poll(dump_only: bool = False) -> int:
     now = datetime.now(timezone.utc)
 
     if fresh:
-        delivered = notify(build_message(fresh))
+        message = build_message(fresh)
+        if dry_run:
+            log(f"  DRY RUN: would send {len(fresh)} item(s). Nothing sent, state untouched.")
+            for line in message.splitlines():
+                log(f"    | {line}")
+            return 0
+        delivered = notify(message)
         if delivered:
             meta["last_send"] = now.isoformat()
             state.update(pending)
@@ -353,6 +368,10 @@ def poll(dump_only: bool = False) -> int:
                     state[key] = ids
             log("! not delivered, those items stay unseen and retry next run")
         log(f"  {len(fresh)} new")
+    elif dry_run:
+        due = " Heartbeat would fire." if heartbeat_due(meta, now) else ""
+        log(f"  DRY RUN: nothing new.{due} State untouched.")
+        return 0
     else:
         state.update(pending)
         log("  nothing new")
@@ -394,6 +413,10 @@ def main() -> int:
     parser.add_argument("--test", action="store_true", help="fire a test toast and exit")
     parser.add_argument("--reset", action="store_true", help="forget all seen ids")
     parser.add_argument("--dump", action="store_true", help="show each source, change nothing")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="run detection and print the message, send nothing, save nothing")
+    parser.add_argument("--simulate", type=int, metavar="N", default=0,
+                        help="treat the N newest items per source as unseen; implies --dry-run")
     args = parser.parse_args()
 
     if args.test:
@@ -407,7 +430,9 @@ def main() -> int:
         log("  state cleared, next run re-baselines")
         return 0
 
-    return poll(dump_only=args.dump)
+    return poll(dump_only=args.dump,
+                dry_run=args.dry_run or args.simulate > 0,
+                simulate=args.simulate)
 
 
 if __name__ == "__main__":
