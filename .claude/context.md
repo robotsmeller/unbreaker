@@ -6,8 +6,8 @@ data_version: 0.8.0
 status: Repo is at v1.4.0 (143 redirects + first vanilla-lua patch), committed and pushed. NOT yet on the Workshop; live build is still v1.3.0. Verified against an installed B42.20 Stable.
 created: 2026-04-22
 session: 12
-last_updated: 2026-08-04
-verification_target: B42.20
+last_updated: 2026-08-05
+verification_target: B42.20.1
 continue_with: Rob pushes v1.4.0 to the Workshop (build script + SteamCMD, both his). Description and mod.info wording are drafted in the session-12 transcript and unapplied.
 blockers: HARD RULE, the agent NEVER touches Steam/Workshop. No SteamCMD, no publish, not build_workshop.ps1. All releasing is Rob's manual action.
 
@@ -38,8 +38,15 @@ Commits are named by version (`29df4fe` = 42.19). Diff `client/server/shared` ag
 Lua assignment anywhere (`BodyLocations` is the worked example). This caught two removals no
 changelog mentions. Do this every patch.
 
-**Limit, learned in s12:** a file diff cannot see Java-side changes. 42.20 also narrowed
-`getFileWriter` to an extension whitelist, and no tree diff would ever surface that.
+**Limit, learned in s12:** a file diff cannot see Java-side changes. 42.20 narrowed
+`getFileWriter` to an extension whitelist, and no tree diff would ever surface that. The 42.20.1
+hotfix then reversed it ("Added the ability for mods to write .json files"), which is why
+pz-mod-checker rules now carry an optional `fixed_in` upper bound.
+
+**42.20.1 hotfix (2026-08-05) checked, Unbreaker unaffected.** All 143 targets still resolve,
+`gamepadBinding` still client-side, `ISFarmingCursor` still gone. Critically the hotfix did NOT
+fix the saved-preset bug: `CharacterCreationMain.lua:572` still reads `retVal[s[1]] = s[2]`, so
+the v1.4.0 patch is still needed and still correct.
 
 ## Two kinds of fix (decided s12)
 
