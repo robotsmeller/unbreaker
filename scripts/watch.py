@@ -41,6 +41,10 @@ from typing import Any
 
 STEAM_OWNER_ID = "76561198032541351"  # robotsmeller
 
+# Rob's own accounts. His replies and the issues this repo's tooling files under
+# his token are not news to him. Still logged, just never pushed to the phone.
+SELF_AUTHORS = {"robotsmeller", "rob-kingsbury"}
+
 SOURCES: list[dict[str, str]] = [
     {"kind": "steam", "key": "steam:unbreaker", "label": "Unbreaker (Workshop)",
      "file_id": "3721648770"},
@@ -318,10 +322,12 @@ def poll(dump_only: bool = False) -> int:
         known = set(seen)
         new_items = [item for item in items if item["id"] not in known]
         for item in new_items:
-            log(f"NEW {source['key']} {item['who']}: {item['what'][:100]}  {item['url']}")
+            own = item["who"].lower() in SELF_AUTHORS
+            tag = "OWN" if own else "NEW"
+            log(f"{tag} {source['key']} {item['who']}: {item['what'][:100]}  {item['url']}")
+            if own:
+                continue
             fresh.append((source, item))
-
-        if new_items:
             sources_with_news.add(source["key"])
 
         # dict.fromkeys dedupes while keeping order. Without it every poll
