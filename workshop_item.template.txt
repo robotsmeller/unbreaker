@@ -6,18 +6,21 @@
 	"previewfile"		"C:\\xampp\\htdocs\\unbreaker\\build\\workshop\\preview.png"
 	"visibility"		"0"
 	"title"		"Unbreaker"
-	"changenote"		"v1.3.0 - Build 42.20 Stable verified.
+	"changenote"		"v1.4.0 - Fixes a vanilla bug that was quietly destroying saved character presets.
 
-Re-validated every redirect against an installed 42.20, plus a file-level diff of the vanilla Lua tree between 42.19 and 42.20. 133 of the 137 existing redirects survived unchanged. 42.20 is a quiet build for modders.
+If you use any mod that adds custom clothing slots (KATTAJ1 Clothes Core, Spongie's, ALICE Backpacks and others), your saved presets have been losing items. This fixes it.
 
-Added: gamepadBinding (42.20 moved it from shared to client, the only file in the whole build that changed root), TimedActions/ISWalkToTimedAction, ISUI/ISItemDropBox, Items/ProceduralDistributions/ProceduralDistributions.
+The cause is in the base game. Saved presets are stored as PresetName:key=value;key=value in saved_outfits.txt, and the reader splits on every colon but keeps only the second field. B42's own modding convention registers custom clothing slots with a colon in the name, like KATTAJ1:BackFanny, so the moment a preset contains one, everything from that slot onward is thrown away. The shortened version is then written back on the next save, so each load and save destroyed a little more, including vanilla slots that happened to come after a modded one.
 
-Fixed: Animals Everywhere (MigrationGroupDefinitions, RanchZoneDefinitions), a ContainerButtonsIcons spelling mismatch, and Vehicles/VehicleUtils, which was wrongly marked unfixable. The global does exist, the file just does not.
+Unbreaker now replaces the reader so it splits on the first colon only. The file format is unchanged and the save side is untouched.
 
-Now unfixable: Farming/BuildingObjects/ISFarmingCursor, deleted in 42.20. CharacterCustomisationPanel and CommonTemplates, both already gone as of 42.19.
+Note: presets already damaged cannot be recovered, because the lost data is no longer in the file. Rebuild those once and they will stick from then on.
 
-135 to 143 verified redirects.
+This is a new kind of fix for Unbreaker. Redirects handle broken require() calls; this handles bugs in vanilla lua itself. Mod-specific patches stay out of this mod and live at https://github.com/robotsmeller/pz-shims
+
+Redirect data is unchanged at 143 entries (data v0.8.0), still verified against B42.20 Stable.
 
 Diagnostic tool: https://robotsmeller.github.io/unbreaker/"
+
 	"tags"		"Build 42,Misc,QoL"
 }
