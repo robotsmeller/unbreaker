@@ -3,13 +3,13 @@
 ```yaml
 version: 1.4.0
 data_version: 0.8.0
-status: v1.4.0 LIVE on the Workshop. 143 redirects + 1 vanilla-lua patch. Verified in game on 42.20.1; 42.20.2 checked statically only, no action needed.
+status: v1.4.0 LIVE on the Workshop. 143 redirects + 1 vanilla-lua patch. Unaffected by the 42.20.4 security hotfix. Last in-game verification was 42.20.1; 42.20.2 cleared statically; 42.20.4 not yet diffed.
 created: 2026-04-22
-session: 14
-last_updated: 2026-08-05
-verification_target: B42.20.2 (static). Last in-game verification was 42.20.1.
-continue_with: Issue #19 — one game launch on 42.20.2 to confirm the 143 redirects resolve and to capture the new translation error-log format.
-blockers: HARD RULE, the agent NEVER touches Steam/Workshop. No SteamCMD, no publish, not build_workshop.ps1 (the classifier blocks it, correctly).
+session: 15
+last_updated: 2026-08-26
+verification_target: B42.20.4 (nothing checked yet). Last in-game verification was 42.20.1.
+continue_with: Re-diff a 42.20.4 install for added or deleted vanilla files, then Issue #19 (one game launch), which now targets 42.20.4 instead of 42.20.2.
+blockers: pz-test-pilot's run_lua is dead in 42.20.4 (loadstring removed), so smoke_probe.py cannot run and #19 cannot be verified in game until the snippet fallback carries it. Plus the standing HARD RULE, the agent NEVER touches Steam/Workshop. No SteamCMD, no publish, not build_workshop.ps1 (the classifier blocks it, correctly).
 
 workshop:
   id: 3721648770
@@ -19,14 +19,22 @@ workshop:
 
 ## To Resume
 
-Session 15. Unbreaker main at v1.4.0 / data v0.8.0, 143 redirects, 1 open issue (#19), live on Workshop.
-Siblings: `pz-mod-checker`, `pz-shims` (public, 4 shims).
+Session 16. Unbreaker main at v1.4.0 / data v0.8.0, 143 redirects, 1 open issue (#19), live on Workshop.
+Siblings: `pz-mod-checker`, `pz-shims` (public, 4 shims), `pz-test-pilot`, `pz-head-for-the-hills`.
 
 THIS WINDOW:
-1. **#19 needs the game, not the agent.** Launch once on 42.20.2, probe the 143 redirects,
-   and grab the new translation error-log lines. Nothing else here is blocked.
-2. The error-log format feeds a **pz-mod-checker getText rule** (see Two Kinds of Fix below).
-3. pz-mod-checker still has a stale `context.md` (session 10) and an uncommitted feature.
+1. **Fix pz-test-pilot first.** 42.20.4 removed `loadstring`, so `run_lua`'s inline path errors out
+   (`harness/42/media/lua/client/TestPilot/CmdMod.lua:22-46`). Every in-game check of Unbreaker runs
+   through it, `scripts/smoke_probe.py` included. The named-snippet fallback already exists in
+   `Registry.lua`; the work is porting the probe payload onto it.
+2. **Then re-diff a 42.20.4 install** for added or deleted vanilla files. 42.20.2 was clean, but a
+   hotfix has silently deleted a redirect target before (`ISFarmingCursor`, 42.20).
+3. **Then #19**, one launch, retargeted to 42.20.4.
+4. Rob has two Workshop notes to paste by hand, Unbreaker and Head for the Hills. Drafts are in the
+   session 15 entry below.
+5. pz-mod-checker still has a stale `context.md` (session 10) and an uncommitted feature, and now
+   also wants a `loadstring`/`loadstream` rule.
+6. The error-log format feeds a **pz-mod-checker getText rule** (see Two Kinds of Fix below).
 
 ## Method: diff builds, do not read changelogs
 
@@ -125,6 +133,45 @@ All four at v1.4.0. Confirm with the console line, never `mod.info` on disk. Do 
 5. **`Vehicles/VehicleUtils` unproven in practice.** Promoted on static evidence.
 
 ## Recent Sessions
+
+### Session 15 (2026-08-26): 42.20.4 removes loadstring, both live mods unaffected
+TIS shipped 42.20.4 stable as an emergency security fix. The only modding-facing change is that
+`loadstring` and `loadstream` are gone from the Kahlua host. Grepped both live mods: neither
+Unbreaker's shipped Lua nor Head for the Hills touches either, so both are clean. Unbreaker's one
+hit is `scripts/smoke_probe.py`, tooling that never ships.
+
+**Unbreaker cannot fix this for other mods, and should not try.** The require() override hands back
+a vanilla global that still exists; `loadstring` no longer exists at the host level, you cannot
+write a Lua compiler in Lua, and restoring it means restoring the hole TIS just patched. The answer
+to anyone who asks is no, with that reason.
+
+The casualty is `pz-test-pilot`: `run_lua` compiles inline code with `loadstring`, so the entire
+in-game verification path for Unbreaker is down until the named-snippet fallback in `Registry.lua`
+carries the probe. `pz-head-for-the-hills`, `deadwire` and `pz-shims` grep clean.
+
+Fetching note: the Indie Stone forum post is guest-restricted, and its body does not survive
+markdown conversion. Fetch raw and read the `og:description` meta tag, which carries the notes
+verbatim. Steam's mirrored discussion thread reads normally and has the community fallout.
+
+Workshop notes drafted for Rob to paste by hand (agent never touches Steam):
+
+```
+42.20.4 - Unbreaker is unaffected by this hotfix.
+
+The update removed loadstring and loadstream from the game's Lua for security
+reasons. Unbreaker has never used either, so nothing here changes.
+
+If other mods are erroring since the update, that removal is why. It has to be
+fixed by those mod authors. Unbreaker cannot patch around it, and putting the
+functions back would put the security hole back with them.
+```
+
+```
+42.20.4 - Head for the Hills is unaffected by this hotfix.
+
+The update removed loadstring and loadstream from the game's Lua for security
+reasons. This mod has never used either.
+```
 
 ### Session 14 (2026-08-05): comment watcher built, 42.20.2 cleared statically
 Built a Workshop/GitHub comment watcher: `scripts/watch.py` + `scripts/notify.ps1`, polling two
