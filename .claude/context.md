@@ -1,15 +1,15 @@
 # Unbreaker Context
 
 ```yaml
-version: 1.4.0
+version: 1.4.1
 data_version: 0.8.0
-status: v1.4.0 LIVE on the Workshop. 143 redirects + 1 vanilla-lua patch. Unaffected by the 42.20.4 security hotfix. Last in-game verification was 42.20.1; 42.20.2 cleared statically; 42.20.4 not yet diffed.
+status: v1.4.1 LIVE on the Workshop (updated 2026-09-25 10:36). 143 redirects + 1 vanilla-lua patch. Verified in game on 42.21.0 unstable; 42.20.4 stable cleared statically (preset reader byte-identical between the two).
 created: 2026-04-22
-session: 15
-last_updated: 2026-08-26
-verification_target: B42.20.4 (nothing checked yet). Last in-game verification was 42.20.1.
-continue_with: Re-diff a 42.20.4 install for added or deleted vanilla files, then Issue #19 (one game launch), which now targets 42.20.4 instead of 42.20.2.
-blockers: pz-test-pilot's run_lua is dead in 42.20.4 (loadstring removed), so smoke_probe.py cannot run and #19 cannot be verified in game until the snippet fallback carries it. Plus the standing HARD RULE, the agent NEVER touches Steam/Workshop. No SteamCMD, no publish, not build_workshop.ps1 (the classifier blocks it, correctly).
+session: 16
+last_updated: 2026-09-25
+verification_target: B42.21.0 unstable (verified in game) and B42.20.4 stable (static). Rob's install is now on the unstable branch.
+continue_with: Nothing is blocked. Next real work is pz-mod-checker's getText arity rule and committing its old uncommitted feature. Re-diff when 42.21 reaches stable or 42.22 lands.
+blockers: Standing HARD RULE, the agent NEVER touches Steam/Workshop. No SteamCMD, no publish, not build_workshop.ps1. Rob runs those.
 
 workshop:
   id: 3721648770
@@ -19,190 +19,106 @@ workshop:
 
 ## To Resume
 
-Session 16. Unbreaker main at v1.4.0 / data v0.8.0, 143 redirects, 1 open issue (#19), live on Workshop.
+Session 17. Unbreaker main at v1.4.1 / data v0.8.0, 143 redirects, 0 open issues, live on Workshop.
 Siblings: `pz-mod-checker`, `pz-shims` (public, 4 shims), `pz-test-pilot`, `pz-head-for-the-hills`.
 
 THIS WINDOW:
-1. **Fix pz-test-pilot first.** 42.20.4 removed `loadstring`, so `run_lua`'s inline path errors out
-   (`harness/42/media/lua/client/TestPilot/CmdMod.lua:22-46`). Every in-game check of Unbreaker runs
-   through it, `scripts/smoke_probe.py` included. The named-snippet fallback already exists in
-   `Registry.lua`; the work is porting the probe payload onto it.
-2. **Then re-diff a 42.20.4 install** for added or deleted vanilla files. 42.20.2 was clean, but a
-   hotfix has silently deleted a redirect target before (`ISFarmingCursor`, 42.20).
-3. **Then #19**, one launch, retargeted to 42.20.4.
-4. Rob has two Workshop notes to paste by hand, Unbreaker and Head for the Hills. Drafts are in the
-   session 15 entry below.
-5. pz-mod-checker still has a stale `context.md` (session 10) and an uncommitted feature, and now
-   also wants a `loadstring`/`loadstream` rule.
-6. The error-log format feeds a **pz-mod-checker getText rule** (see Two Kinds of Fix below).
+1. **pz-mod-checker**: commit or discard the long-uncommitted feature (`gui/server.py`,
+   `gui/static/index.html`, `README.md`, untracked `unbreaker.py`), then refresh its stale
+   `context.md` (session 10).
+2. **pz-mod-checker getText arity rule** (see Two Kinds of Fix below).
+3. When TIS moves 42.21 to stable or ships 42.22: diff against `C:\pz-baselines\` (copy the old
+   `media/lua` there FIRST, before Steam updates), then `python scripts/smoke_probe.py` in a world.
+
+## Supporting both branches (decided s16)
+
+Players run stable and unstable at once. Never key behaviour on branch or version number; test
+whether the thing exists. Redirects already do (`rawget`). The preset patch runs vanilla's reader
+and ours on every read and only uses ours when vanilla's output matches the known truncation, else
+steps aside (`tests/lua/test_outfit_guard.lua`, run with `lua`). Version ranges belong only in
+pz-mod-checker, which has no live game to probe (`since` + `fixed_in`).
 
 ## Method: diff builds, do not read changelogs
 
-```
-git clone --filter=blob:none https://github.com/Project-Zomboid-Community-Modding/ProjectZomboid-Vanilla-Lua
-```
-
-Commits are named by version (`15300b1` = 42.20). Diff `client/server/shared` against
-`<PZ install>/media/lua`.
-
-**Use `diff -rq --strip-trailing-cr`.** Without it, s14 got 291 changed files; with it, 9.
-The other 282 were line endings. Check `Only in` lines separately: a DELETED file breaks a
-redirect, which is how `ISFarmingCursor` bit us in 42.20.
-
-**Three limits, learned the hard way.** The repo lags: it had no 42.20.1 or 42.20.2 commit,
-so the install itself became the source of truth. A file diff cannot see Java-side changes
-(42.20 narrowed `getFileWriter`, 42.20.1 reversed it, neither visible in a tree diff). And a
-hotfix can undo a finding, which is why pz-mod-checker rules carry an optional `fixed_in`.
+Baselines live in `C:\pz-baselines\<version>\` (42.20.4 saved s16; diff list to 42.21 in
+`C:\pz-baselines\diff-42.20.4-42.21.txt`). Use `diff -rq --strip-trailing-cr`, and check `Only in`
+lines separately: a DELETED file breaks a redirect (`ISFarmingCursor`, 42.20). A file diff cannot
+see Java-side changes. The community vanilla-lua repo lags; the install is the source of truth.
+For logic that only moved or was reformatted, a token-level diff (comments and whitespace stripped)
+separates real changes from noise; s16 used it on `ISMoveableSpriteProps.lua`.
 
 ## Two kinds of fix
 
 - **Redirects** (`data/vanilla_globals.json` to `UnbreakerData.lua`): broken `require()` to a
-  vanilla global. `rawget` only, so it can never make anything worse. 143 shipped, 152 rows
-  total (9 unverified/unrecoverable are staged, not generated).
-- **Vanilla patches** (`mod/42/media/lua/client/UnbreakerPatches.lua`): bugs in the BASE GAME's
-  lua. Applies on `OnGameBoot`, prints `[Unbreaker] vanilla patches applied: N/M`. High bar.
+  vanilla global. 143 shipped, 152 rows (9 unverified/unrecoverable staged).
+- **Vanilla patches** (`mod/42/media/lua/client/UnbreakerPatches.lua`): bugs in BASE GAME lua.
+  Boot line: `[Unbreaker] vanilla patches applied: N/M (game <build>)`, then
+  `[Unbreaker] saved-outfit reader: <verdict>` on first use. MUST be tested in game before
+  publishing (s13 blanked the preset dropdown on a file-local it could not see).
 - **NOT here:** mod-specific patches go to `pz-shims`.
 
-**A vanilla patch MUST be tested in game before publishing.** s13 proved it: the outfit patch
-compared against `OUTFITS_VERSION`, a FILE-LOCAL in `CharacterCreationMain.lua:453`, so it read
-nil from another file and blanked the preset dropdown. Static review missed it; one launch found
-it. Redirects are safe on static evidence. Function replacements are not.
-
-**42.20.2's real change is `getText` arity, not `%%`.** The notes say mods should use `%%`; the
-diff shows 76 call sites swept from `getText("KEY")` to `getText("KEY", "")` / `("KEY","","")`.
-The engine now wants one argument per format specifier. That is a tractable pz-mod-checker rule
-(call arity vs specifier count, both inside the mod, no encoding guesswork) and it supersedes the
-`%%` file-scan declined in s13. The both-forms workaround is explicitly temporary.
+**getText arity (42.20.2)**: 76 vanilla call sites swept from `getText("KEY")` to
+`getText("KEY", "")`. The engine wants one argument per format specifier. Tractable
+pz-mod-checker rule: call arity vs specifier count, both inside the mod.
 
 ## Core Pattern
 
-`require` is overridden; on failure it returns `rawget(_G, entry.global)`. B42 returns nil
-silently for missing modules, so check `(ok and result ~= nil)`.
-
-**Triage note:** PZ logs `require(...) failed` even for modules Unbreaker successfully redirects.
-A "failed" line is not proof of breakage. Last full sweep: 29 unique failures, 18 covered, 3
-correctly unrecoverable, 8 uncovered and all mod-internal.
+`require` is overridden; on failure returns `rawget(_G, entry.global)`. B42 returns nil silently for
+missing modules, so check `(ok and result ~= nil)`. PZ logs `require(...) failed` even for modules
+Unbreaker redirects; a "failed" line is not proof of breakage.
 
 ## What It Cannot Fix
 
 Deep API rewrites; mod-internal modules; modules with no vanilla global (`Json`, `recipecode`,
 `Items/ItemFactory`, `Maps/ISMapDefinitions`, `ISLootWindowControlHandler`); Brita/Arsenal/True
-Actions; multiplayer (untested).
-
-Removed upstream: `CharacterCustomisationPanel`, `CommonTemplates` (gone by 42.19),
-`Farming/BuildingObjects/ISFarmingCursor` (deleted 42.20, undocumented).
-
-**Translations, still excluded.** 40 custom body locations across installed mods with no
-`UI_ClothingType_` entry. Display strings for other people's mods; right fix is upstream.
+Actions; multiplayer (untested); `loadstring` (host-level, and restoring it restores the hole).
+Removed upstream: `CharacterCustomisationPanel`, `CommonTemplates`, `ISFarmingCursor` (42.20).
 
 ## Files Worth Knowing
 
-- `mod/42/media/lua/shared/Unbreaker.lua` — require override
-- `mod/42/media/lua/client/UnbreakerPatches.lua` — vanilla-bug patches
-- `data/vanilla_globals.json` — v0.8.0
-- `scripts/watch.py` + `scripts/notify.ps1` — Workshop/GitHub comment watcher (s14).
-  **Test it with `--simulate N`, never by editing the state file**: editing state sends a
-  real Telegram containing a months-old comment and leaves the id armed to fire again.
-- `scripts/build_workshop.ps1` — ROB RUNS THIS, never the agent
-- `workshop_item.template.txt` — VDF. NO `description` field, by design.
-- `PUBLISH.md` — runbook
+- `mod/42/media/lua/shared/Unbreaker.lua` (require override), `.../client/UnbreakerPatches.lua`
+- `scripts/smoke_probe.py`: needs Test Pilot enabled AND a loaded world (heartbeat is `OnTick`),
+  and `loadstring` (42.21+). Now sweeps all redirects (`full_sweep`); SimpleSilencers misses are
+  expected without that mod.
+- `scripts/watch.py` + `notify.ps1`: comment watcher. Test with `--simulate N`, never edit state.
+- `scripts/build_workshop.ps1` + SteamCMD: ROB RUNS THESE. PZ's in-game uploader refuses the
+  1024px `preview.png` (wants 256x256), so SteamCMD is the publish path. See `PUBLISH.md`.
+- `workshop_item.template.txt`: VDF, NO `description` field by design.
 
-## GOTCHA: four copies of Unbreaker exist
+## GOTCHA: four copies of Unbreaker
 
-| Path | Role |
-|---|---|
-| `c:\xampp\htdocs\unbreaker\mod` | repo source |
-| `~/Zomboid/mods/Unbreaker` | local dev copy |
-| `~/Zomboid/Workshop/Unbreaker/Contents/mods/Unbreaker` | **PZ loads THIS one** |
-| Steam `workshop/content/108600/3721648770` | subscription |
-
-All four at v1.4.0. Confirm with the console line, never `mod.info` on disk. Do not touch
-`workshop.txt` in the staging folder; it holds the tags.
+repo `mod/`; `~/Zomboid/mods/Unbreaker` (dev); `~/Zomboid/Workshop/Unbreaker/Contents/mods/Unbreaker`
+(**PZ loads this**); Steam `workshop/content/108600/3721648770`. First three at v1.4.1. Confirm
+with the console line, never `mod.info`. Do not touch `workshop.txt` in staging.
 
 ## Pending
 
-1. **`mod.info` description overclaims** "renamed functions", which Unbreaker has never done,
-   and omits the vanilla-patch capability. Ships INSIDE the mod, so it is a repo edit plus a
-   re-push.
-2. **pz-mod-checker `.claude/context.md` is stale** at session 10 (none of s11 to s14).
-3. **pz-mod-checker has an uncommitted feature** (4 files under `pz_mod_checker/`, including an
-   untracked `unbreaker.py`). Still the only unbacked-up work.
-4. **Rob's 4 damaged presets** (Zane, Theo, Hunter, Billy) need rebuilding once. v1.4.0 stops
-   further loss but cannot recover data already gone. Backup at
+1. **pz-mod-checker uncommitted feature + stale context** (To Resume 1).
+2. **Rob's 4 damaged presets** (Zane, Theo, Hunter, Billy) need rebuilding once. Backup at
    `~/Zomboid/Lua/saved_outfits.txt.bak.pre-v140`.
-5. **`Vehicles/VehicleUtils` unproven in practice.** Promoted on static evidence.
+3. **`Vehicles/VehicleUtils` unproven in practice.** Promoted on static evidence.
 
 ## Recent Sessions
 
+### Session 16 (2026-09-25): 42.21 unstable, v1.4.1 shipped for both branches
+42.21 went to unstable 2026-09-23 and re-enabled `loadstring`/`loadstream`. Decided Unbreaker must
+work on stable and unstable at once without version checks, which exposed that the preset patch
+replaced vanilla's reader wholesale. Added the compare-both-readers guard, the build number in the
+boot line, and a corrected `mod.info` description; v1.4.1. Verified in game on 42.21.0: patch
+applied, fixed reader used, five presets listed, `saved_outfits.txt` unchanged, 141/143 redirects
+resolve live (2 SimpleSilencers misses, mod absent). 42.21 diff: 641 files changed, one moved
+(`ISRadioAction` client to shared, global intact), none deleted. Rob published via SteamCMD.
+Siblings: Test Pilot already feature-detects `loadstring`, only its CLAUDE.md note changed;
+pz-mod-checker gained `b42-20-4-loadstring-removed` (fixed_in 42.21.0); Head for the Hills clean
+(its mirrored door/stairs logic did not change, it calls Java directly).
+
 ### Session 15 (2026-08-26): 42.20.4 removes loadstring, both live mods unaffected
-TIS shipped 42.20.4 stable as an emergency security fix. The only modding-facing change is that
-`loadstring` and `loadstream` are gone from the Kahlua host. Grepped both live mods: neither
-Unbreaker's shipped Lua nor Head for the Hills touches either, so both are clean. Unbreaker's one
-hit is `scripts/smoke_probe.py`, tooling that never ships.
-
-**Unbreaker cannot fix this for other mods, and should not try.** The require() override hands back
-a vanilla global that still exists; `loadstring` no longer exists at the host level, you cannot
-write a Lua compiler in Lua, and restoring it means restoring the hole TIS just patched. The answer
-to anyone who asks is no, with that reason.
-
-The casualty is `pz-test-pilot`: `run_lua` compiles inline code with `loadstring`, so the entire
-in-game verification path for Unbreaker is down until the named-snippet fallback in `Registry.lua`
-carries the probe. `pz-head-for-the-hills`, `deadwire` and `pz-shims` grep clean.
-
-Fetching note: the Indie Stone forum post is guest-restricted, and its body does not survive
-markdown conversion. Fetch raw and read the `og:description` meta tag, which carries the notes
-verbatim. Steam's mirrored discussion thread reads normally and has the community fallout.
-
-Workshop notes drafted for Rob to paste by hand (agent never touches Steam):
-
-```
-42.20.4 - Unbreaker is unaffected by this hotfix.
-
-The update removed loadstring and loadstream from the game's Lua for security
-reasons. Unbreaker has never used either, so nothing here changes.
-
-If other mods are erroring since the update, that removal is why. It has to be
-fixed by those mod authors. Unbreaker cannot patch around it, and putting the
-functions back would put the security hole back with them.
-```
-
-```
-42.20.4 - Head for the Hills is unaffected by this hotfix.
-
-The update removed loadstring and loadstream from the game's Lua for security
-reasons. This mod has never used either.
-```
+Security hotfix removed `loadstring`/`loadstream`. Unbreaker and Head for the Hills never used
+either. Test Pilot's inline `run_lua` went dark on stable. Fetching note: the Indie Stone forum's
+`og:description` is truncated for long posts; Steam's news API
+(`ISteamNews/GetNewsForApp/v2/?appid=108600&maxlength=0`) gives full notes.
 
 ### Session 14 (2026-08-05): comment watcher built, 42.20.2 cleared statically
-Built a Workshop/GitHub comment watcher: `scripts/watch.py` + `scripts/notify.ps1`, polling two
-Steam comment threads and Unbreaker's GitHub issues and issue comments every 20 minutes, pushing
-to Telegram. Verified end to end against a real posted comment. **The scheduled task and
-`%LOCALAPPDATA%\pz-watch\` are machine state, not in git** — a fresh clone gets the script and
-nothing that runs it. Repo watching on `robotsmeller/unbreaker` was OFF (confirmed via
-`user/subscriptions`), so stranger-filed issues generated no notification at all; now on.
-Then cleared 42.20.2 statically: no files added or removed, 9 changed, only `ISVehicleMenu.lua`
-is a redirect target and its global still assigns, `CharacterCreationMain.lua` byte-identical so
-the saved-preset bug remains unfixed upstream. Found that the hotfix's real change is `getText`
-arity, not `%%`, which revives the rule declined in s13. Filed #19 for the one launch needed.
-Two follow-ups after the first handoff (same window, so no s15 was created): the watcher pushed
-its own filed issue #19 to Rob's phone, so self-authored items are now tagged `OWN` and
-suppressed; and hand-editing state to test was replaced by `--dry-run` / `--simulate N`, since
-the old method sent real months-old comments and left ids armed to fire again.
-
-### Session 13 (2026-08-05): 42.20.1 checked, outfit patch fixed in game, v1.4.0 shipped
-Verified against 42.20.1: Unbreaker unaffected, all 143 targets resolve, and the hotfix did NOT
-fix the saved-preset bug, so v1.4.0 was still worth shipping. The hotfix did reverse the 42.20
-`getFileWriter` .json block, so pz-mod-checker rules gained an optional `fixed_in` upper bound.
-The outfit patch then failed its first in-game test (`OUTFITS_VERSION` nil across files); fixed
-to mirror the constant and delegate to the original reader on an unknown format. Retested in
-game: five presets listed, `saved_outfits.txt` byte-identical. Rob pushed v1.4.0, live 15:14 UTC.
-
-### Session 12 (2026-08-04): found a vanilla bug destroying saved presets
-`CharacterCreationMain.readSavedOutfitFile` splits on `:` and keeps only field 2, but the format
-is `PresetName:key=value;...` and B42's own convention puts a colon in every custom slot name
-(`ItemBodyLocation.register("KATTAJ1:BackFanny")`). Any preset with a modded slot lost everything
-from that slot on, and the truncation was written back on save. Four of Rob's five presets were
-already destroyed. Added `UnbreakerPatches.lua`, establishing vanilla-bug patches as a second
-category. Also corrected the s11 `no_lua_in_media_root` check: 20 false positives down to 1.
-
-@.claude/rules/code-architecture.md
+Built `scripts/watch.py` + `notify.ps1` (Steam + GitHub comments to Telegram every 20 min; the
+scheduled task and `%LOCALAPPDATA%\pz-watch\` are machine state, not in git). Self-authored items
+tagged `OWN` and suppressed. Found 42.20.2's real change is `getText` arity.
