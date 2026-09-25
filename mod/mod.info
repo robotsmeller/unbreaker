@@ -1,6 +1,6 @@
 name=Unbreaker
 id=Unbreaker
-description=Polyfill for PZ mods broken by weekly patches. Fixes broken require() calls, renamed functions, moved globals. Real modules always win, stubs only fire when the original load fails.
-modversion=1.4.0
+description=Fixes broken require() calls in mods not yet updated for Build 42 by pointing them at the vanilla global that replaced the module, and patches a base-game bug that destroys saved character presets. Real modules always win; the fallback only fires when the original load fails.
+modversion=1.4.1
 versionMin=42.0.0
 url=https://github.com/robotsmeller/unbreaker

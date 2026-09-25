@@ -6,19 +6,15 @@
 	"previewfile"		"C:\\xampp\\htdocs\\unbreaker\\build\\workshop\\preview.png"
 	"visibility"		"0"
 	"title"		"Unbreaker"
-	"changenote"		"v1.4.0 - Fixes a vanilla bug that was quietly destroying saved character presets.
+	"changenote"		"v1.4.1 - Safe on both stable (42.20.4) and unstable (42.21).
 
-If you use any mod that adds custom clothing slots (KATTAJ1 Clothes Core, Spongie's, ALICE Backpacks and others), your saved presets have been losing items. This fixes it.
+The saved-preset fix from 1.4.0 now compares its result with the game's own preset reader every time it runs. If an update fixes or changes that reader, Unbreaker steps aside and the game's version runs, so it can never override a newer fix. That holds on whichever branch you play.
 
-The cause is in the base game. Saved presets are stored as PresetName:key=value;key=value in saved_outfits.txt, and the reader splits on every colon but keeps only the second field. B42's own modding convention registers custom clothing slots with a colon in the name, like KATTAJ1:BackFanny, so the moment a preset contains one, everything from that slot onward is thrown away. The shortened version is then written back on the next save, so each load and save destroyed a little more, including vanilla slots that happened to come after a modded one.
+The Unbreaker line in console.txt now shows your game version, which makes bug reports easier to match up.
 
-Unbreaker now replaces the reader so it splits on the first colon only. The file format is unchanged and the save side is untouched.
+The in-game mod description no longer claims Unbreaker renames functions. It never did. It redirects broken require() calls and patches one base-game bug.
 
-Note: presets already damaged cannot be recovered, because the lost data is no longer in the file. Rebuild those once and they will stick from then on.
-
-This is a new kind of fix for Unbreaker. Redirects handle broken require() calls; this handles bugs in vanilla lua itself. Mod-specific patches stay out of this mod and live at https://github.com/robotsmeller/pz-shims
-
-Redirect data is unchanged at 143 entries (data v0.8.0), still verified against B42.20 Stable.
+Redirect data is unchanged at 143 entries (data v0.8.0).
 
 Diagnostic tool: https://robotsmeller.github.io/unbreaker/"
 

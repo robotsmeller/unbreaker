@@ -73,6 +73,24 @@ for i, name in ipairs(probes) do
 end
 results.vanilla_global_probes = probeResults
 
+-- Every shipped redirect, not a sample. A redirect to a MOD's global (SimpleSilencers)
+-- only resolves when that mod is loaded, so a miss there is not a regression.
+local okData, D = pcall(require, "UnbreakerData")
+if okData and D and D.redirects then
+    local sweep = { total = 0, resolved = 0, missing = {} }
+    for mod, e in pairs(D.redirects) do
+        sweep.total = sweep.total + 1
+        local ok, r = pcall(require, mod)
+        local g = rawget(_G, e.global)
+        if ok and r ~= nil and r == g then
+            sweep.resolved = sweep.resolved + 1
+        else
+            table.insert(sweep.missing, mod .. " -> " .. e.global)
+        end
+    end
+    results.full_sweep = sweep
+end
+
 if _G.Unbreaker then
     results.unbreaker_stats_post = _G.Unbreaker.stats()
 end

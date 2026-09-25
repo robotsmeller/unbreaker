@@ -47,6 +47,77 @@ local applied = {}
 -- guess: it hands the file back to the original implementation it replaced.
 local KNOWN_OUTFITS_VERSION = 1
 
+-- Returns the presets split on the first colon, or nil if the file is in a
+-- format this patch does not know.
+local function readFirstColon()
+    local retVal = {}
+    local saveFile = getFileReader(CharacterCreationMain.savefile, true)
+    if saveFile == nil then
+        return retVal
+    end
+
+    local version = 0
+    local line = saveFile:readLine()
+    while line ~= nil do
+        if luautils.stringStarts(line, "VERSION=") then
+            version = tonumber(string.split(line, "=")[2])
+            if version ~= KNOWN_OUTFITS_VERSION then
+                saveFile:close()
+                return nil
+            end
+        elseif version == KNOWN_OUTFITS_VERSION then
+            -- First colon only. The value keeps every colon it contains,
+            -- which is what modded body location names depend on.
+            local sep = string.find(line, ":", 1, true)
+            if sep ~= nil and sep > 1 then
+                retVal[string.sub(line, 1, sep - 1)] = string.sub(line, sep + 1)
+            end
+        end
+        line = saveFile:readLine()
+    end
+    saveFile:close()
+
+    return retVal
+end
+
+-- The replacement must not assume which build it is running on. Players are on
+-- stable and unstable at the same time, and a later build may fix or rewrite the
+-- vanilla reader without bumping the file format. So every read runs BOTH readers
+-- and compares them, instead of checking a version number:
+--
+--   vanilla output == our output put through the known bug  ->  bug present, or
+--       no preset contains a second colon; ours is correct either way
+--   anything else  ->  vanilla has changed; step aside and return vanilla's
+--
+-- The file is small and is read only from the character creation screen.
+local outfitVerdict = nil
+
+local function setVerdict(v)
+    if v ~= outfitVerdict then
+        outfitVerdict = v
+        print("[Unbreaker] saved-outfit reader: " .. v)
+    end
+end
+
+-- What the 42.20 vanilla reader produces for this key and value.
+local function truncatedLikeVanilla(key, value)
+    return luautils.split(key .. ":" .. value, ":")[2]
+end
+
+local function matchesKnownBug(ours, vanilla)
+    for k, v in pairs(ours) do
+        if vanilla[k] ~= truncatedLikeVanilla(k, v) then
+            return false
+        end
+    end
+    for k, _ in pairs(vanilla) do
+        if ours[k] == nil then
+            return false
+        end
+    end
+    return true
+end
+
 local function patchSavedOutfitReader()
     if CharacterCreationMain == nil or CharacterCreationMain.readSavedOutfitFile == nil then
         return false, "CharacterCreationMain.readSavedOutfitFile not found"
@@ -55,35 +126,25 @@ local function patchSavedOutfitReader()
     local originalReader = CharacterCreationMain.readSavedOutfitFile
 
     CharacterCreationMain.readSavedOutfitFile = function()
-        local retVal = {}
-        local saveFile = getFileReader(CharacterCreationMain.savefile, true)
-        if saveFile == nil then
-            return retVal
+        local okOurs, ours = pcall(readFirstColon)
+        if not okOurs or ours == nil then
+            setVerdict("unknown file format, using vanilla")
+            return originalReader()
         end
 
-        local version = 0
-        local line = saveFile:readLine()
-        while line ~= nil do
-            if luautils.stringStarts(line, "VERSION=") then
-                version = tonumber(string.split(line, "=")[2])
-                if version ~= KNOWN_OUTFITS_VERSION then
-                    -- Unknown format. Do not touch it.
-                    saveFile:close()
-                    return originalReader()
-                end
-            elseif version == KNOWN_OUTFITS_VERSION then
-                -- First colon only. The value keeps every colon it contains,
-                -- which is what modded body location names depend on.
-                local sep = string.find(line, ":", 1, true)
-                if sep ~= nil and sep > 1 then
-                    retVal[string.sub(line, 1, sep - 1)] = string.sub(line, sep + 1)
-                end
-            end
-            line = saveFile:readLine()
+        local okVanilla, vanilla = pcall(originalReader)
+        if not okVanilla or type(vanilla) ~= "table" then
+            setVerdict("vanilla reader failed, using fixed reader")
+            return ours
         end
-        saveFile:close()
 
-        return retVal
+        if matchesKnownBug(ours, vanilla) then
+            setVerdict("using fixed reader")
+            return ours
+        end
+
+        setVerdict("vanilla reader has changed, using vanilla")
+        return vanilla
     end
 
     return true, "saved_outfits.txt reader no longer truncates at modded body locations"
@@ -114,11 +175,15 @@ local function applyAll()
         end
     end
 
-    print("[Unbreaker] vanilla patches applied: " .. tostring(n) .. "/" .. tostring(#patches))
+    -- The game build goes in the same line so a pasted log says which build it came from.
+    local okBuild, build = pcall(function() return getCore():getVersion() end)
+    print("[Unbreaker] vanilla patches applied: " .. tostring(n) .. "/" .. tostring(#patches)
+        .. " (game " .. (okBuild and tostring(build) or "unknown") .. ")")
 end
 
 Events.OnGameBoot.Add(applyAll)
 
 _G.UnbreakerPatches = {
     list = function() return applied end,
+    outfitVerdict = function() return outfitVerdict end,
 }
