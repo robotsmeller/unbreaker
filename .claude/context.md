@@ -8,7 +8,7 @@ created: 2026-04-22
 session: 16
 last_updated: 2026-09-25
 verification_target: B42.21.0 unstable (verified in game) and B42.20.4 stable (static). Rob's install is now on the unstable branch.
-continue_with: Nothing is blocked. Next is pz-mod-checker's getText arity rule, then its stale context.md. Re-diff when 42.21 reaches stable or 42.22 lands.
+continue_with: Nothing is blocked and nothing is queued for Unbreaker. Re-diff when 42.21 reaches stable or 42.22 lands. Sibling work lives in pz-mod-checker (#23, #2).
 blockers: Standing HARD RULE, the agent NEVER touches Steam/Workshop. No SteamCMD, no publish, not build_workshop.ps1. Rob runs those.
 
 workshop:
@@ -23,11 +23,10 @@ Session 17. Unbreaker main at v1.4.1 / data v0.8.0, 143 redirects, 0 open issues
 Siblings: `pz-mod-checker`, `pz-shims` (public, 4 shims), `pz-test-pilot`, `pz-head-for-the-hills`.
 
 THIS WINDOW:
-1. **pz-mod-checker**: refresh its stale `context.md` (session 10). Its diagnose-page feature was
-   committed s16 (`28e269f`), minus the Report-to-Unbreaker button (removed, invited won't-fix issues).
-2. **pz-mod-checker getText arity rule** (see Two Kinds of Fix below).
-3. When TIS moves 42.21 to stable or ships 42.22: diff against `C:\pz-baselines\` (copy the old
-   `media/lua` there FIRST, before Steam updates), then `python scripts/smoke_probe.py` in a world.
+1. When TIS moves 42.21 to stable or ships 42.22: copy the current `media/lua` to
+   `C:\pz-baselines\<version>\` FIRST, before Steam updates, then diff, then
+   `python scripts/smoke_probe.py` in a loaded world.
+2. Otherwise Unbreaker has no queued work. pz-mod-checker's next is #23 or #2 (its own context.md).
 
 ## Supporting both branches (decided s16)
 
@@ -56,9 +55,9 @@ separates real changes from noise; s16 used it on `ISMoveableSpriteProps.lua`.
   publishing (s13 blanked the preset dropdown on a file-local it could not see).
 - **NOT here:** mod-specific patches go to `pz-shims`.
 
-**getText arity (42.20.2)**: 76 vanilla call sites swept from `getText("KEY")` to
-`getText("KEY", "")`. The engine wants one argument per format specifier. Tractable
-pz-mod-checker rule: call arity vs specifier count, both inside the mod.
+**getText arity (42.20.2)** is a pz-mod-checker rule now (s16). The "76 call sites" figure in s14 did
+not hold up: 42.20.4 and 42.21 each have 10 `getText("KEY", "")` calls. A missing argument logs
+and shows the raw placeholder; it is not a crash.
 
 ## Core Pattern
 
@@ -92,10 +91,10 @@ with the console line, never `mod.info`. Do not touch `workshop.txt` in staging.
 
 ## Pending
 
-1. **pz-mod-checker stale context** (To Resume 1).
-2. **Rob's 4 damaged presets** (Zane, Theo, Hunter, Billy) need rebuilding once. Backup at
+1. **Rob's 3 damaged presets** (Zane, Hunter, Billy; checked 2026-09-25, each still ends mid-entry at
+   `;KATTAJ1` or `;ALICE`; Theo is whole) need rebuilding once. Backup at
    `~/Zomboid/Lua/saved_outfits.txt.bak.pre-v140`.
-3. **`Vehicles/VehicleUtils` unproven in practice.** Promoted on static evidence.
+2. **`Vehicles/VehicleUtils` unproven in practice.** Promoted on static evidence.
 
 ## Recent Sessions
 
@@ -109,7 +108,9 @@ resolve live (2 SimpleSilencers misses, mod absent). 42.21 diff: 641 files chang
 (`ISRadioAction` client to shared, global intact), none deleted. Rob published via SteamCMD.
 Siblings: Test Pilot already feature-detects `loadstring`, only its CLAUDE.md note changed;
 pz-mod-checker gained `b42-20-4-loadstring-removed` (fixed_in 42.21.0); Head for the Hills clean
-(its mirrored door/stairs logic did not change, it calls Java directly).
+(its mirrored door/stairs logic did not change, it calls Java directly). Later the same session:
+pz-mod-checker's getText rule (`gettext_arity`, 0 findings across 207 installed mods), its
+Unbreaker-coverage diagnose feature committed without the report button, its notes refreshed.
 
 ### Session 15 (2026-08-26): 42.20.4 removes loadstring, both live mods unaffected
 Security hotfix removed `loadstring`/`loadstream`. Unbreaker and Head for the Hills never used
