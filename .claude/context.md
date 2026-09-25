@@ -8,7 +8,7 @@ created: 2026-04-22
 session: 16
 last_updated: 2026-09-25
 verification_target: B42.21.0 unstable (verified in game) and B42.20.4 stable (static). Rob's install is now on the unstable branch.
-continue_with: Nothing is blocked. Next real work is pz-mod-checker's getText arity rule and committing its old uncommitted feature. Re-diff when 42.21 reaches stable or 42.22 lands.
+continue_with: Nothing is blocked. Next is pz-mod-checker's getText arity rule, then its stale context.md. Re-diff when 42.21 reaches stable or 42.22 lands.
 blockers: Standing HARD RULE, the agent NEVER touches Steam/Workshop. No SteamCMD, no publish, not build_workshop.ps1. Rob runs those.
 
 workshop:
@@ -23,9 +23,9 @@ Session 17. Unbreaker main at v1.4.1 / data v0.8.0, 143 redirects, 0 open issues
 Siblings: `pz-mod-checker`, `pz-shims` (public, 4 shims), `pz-test-pilot`, `pz-head-for-the-hills`.
 
 THIS WINDOW:
-1. **pz-mod-checker**: commit or discard the long-uncommitted feature (`gui/server.py`,
-   `gui/static/index.html`, `README.md`, untracked `unbreaker.py`), then refresh its stale
-   `context.md` (session 10).
+1. **pz-mod-checker**: refresh its stale `context.md` (session 10). Its diagnose-page feature was
+   committed s16 (`28e269f`). Open question for Rob: its "Report to Unbreaker" button invites issues
+   for mod-internal modules Unbreaker can never fix.
 2. **pz-mod-checker getText arity rule** (see Two Kinds of Fix below).
 3. When TIS moves 42.21 to stable or ships 42.22: diff against `C:\pz-baselines\` (copy the old
    `media/lua` there FIRST, before Steam updates), then `python scripts/smoke_probe.py` in a world.
@@ -93,7 +93,7 @@ with the console line, never `mod.info`. Do not touch `workshop.txt` in staging.
 
 ## Pending
 
-1. **pz-mod-checker uncommitted feature + stale context** (To Resume 1).
+1. **pz-mod-checker stale context + report-button question** (To Resume 1).
 2. **Rob's 4 damaged presets** (Zane, Theo, Hunter, Billy) need rebuilding once. Backup at
    `~/Zomboid/Lua/saved_outfits.txt.bak.pre-v140`.
 3. **`Vehicles/VehicleUtils` unproven in practice.** Promoted on static evidence.
