@@ -24,8 +24,7 @@ Siblings: `pz-mod-checker`, `pz-shims` (public, 4 shims), `pz-test-pilot`, `pz-h
 
 THIS WINDOW:
 1. **pz-mod-checker**: refresh its stale `context.md` (session 10). Its diagnose-page feature was
-   committed s16 (`28e269f`). Open question for Rob: its "Report to Unbreaker" button invites issues
-   for mod-internal modules Unbreaker can never fix.
+   committed s16 (`28e269f`), minus the Report-to-Unbreaker button (removed, invited won't-fix issues).
 2. **pz-mod-checker getText arity rule** (see Two Kinds of Fix below).
 3. When TIS moves 42.21 to stable or ships 42.22: diff against `C:\pz-baselines\` (copy the old
    `media/lua` there FIRST, before Steam updates), then `python scripts/smoke_probe.py` in a world.
@@ -93,7 +92,7 @@ with the console line, never `mod.info`. Do not touch `workshop.txt` in staging.
 
 ## Pending
 
-1. **pz-mod-checker stale context + report-button question** (To Resume 1).
+1. **pz-mod-checker stale context** (To Resume 1).
 2. **Rob's 4 damaged presets** (Zane, Theo, Hunter, Billy) need rebuilding once. Backup at
    `~/Zomboid/Lua/saved_outfits.txt.bak.pre-v140`.
 3. **`Vehicles/VehicleUtils` unproven in practice.** Promoted on static evidence.
