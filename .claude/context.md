@@ -3,12 +3,12 @@
 ```yaml
 version: 1.4.1
 data_version: 0.8.0
-status: v1.4.1 LIVE on the Workshop (updated 2026-09-25 10:36). 143 redirects + 1 vanilla-lua patch. Verified in game on 42.21.0 unstable; 42.20.4 stable cleared statically (preset reader byte-identical between the two).
+status: v1.4.1 LIVE on the Workshop. 143 redirects + 1 vanilla-lua patch. Verified in game on 42.22.2 stable 2026-11-15 (patch applied, fixed preset reader used, 141/143 redirects resolve, the 2 misses are SimpleSilencers with the mod absent). No release needed for 42.22.
 created: 2026-04-22
-session: 16
-last_updated: 2026-09-25
-verification_target: B42.21.0 unstable (verified in game) and B42.20.4 stable (static). Rob's install is now on the unstable branch.
-continue_with: Nothing is blocked and nothing is queued for Unbreaker. Re-diff when 42.21 reaches stable or 42.22 lands. Sibling work lives in pz-mod-checker (#23, #2).
+session: 17
+last_updated: 2026-11-15
+verification_target: B42.22.2 stable (verified in game). Rob's install is on the public branch. TIS renamed Unstable to Pre-Release with 42.22.
+continue_with: Nothing queued. Re-diff when the next pre-release lands, against C:\pz-baselines".22.2\. Sibling work lives in pz-mod-checker (#23, #2).
 blockers: Standing HARD RULE, the agent NEVER touches Steam/Workshop. No SteamCMD, no publish, not build_workshop.ps1. Rob runs those.
 
 workshop:
@@ -97,6 +97,16 @@ with the console line, never `mod.info`. Do not touch `workshop.txt` in staging.
 2. **`Vehicles/VehicleUtils` unproven in practice.** Promoted on static evidence.
 
 ## Recent Sessions
+
+### Session 17 (2026-11-15): 42.22.2 stable, nothing to ship
+Steam updated before a 42.21 baseline was saved, so the diff ran 42.20.4 to 42.22.2
+(`C:\pz-baselines\diff-42.20.4-42.22.2.txt`): 760 files changed, Last Stand deleted (replaced by
+Challenges), no redirect source file or global lost, preset reader and writer byte-identical.
+`getGameMode()` now returns a `zombie.core.GameMode` object (read from projectzomboid.jar), so string
+compares in mods silently go false; pz-mod-checker got rules for both (e490189). In game on 42.22.2:
+Unbreaker 141/143, Test Pilot harness up with loadstring true, Head for the Hills cabin spawn clean.
+Test Pilot's boot Spike self-test fails on `require("Json")`, same as on 2026-09-25 and 2026-11-03, so
+not new. First launch sat about 110 s at "Loading Mods" with 209 Workshop mods before moving on.
 
 ### Session 16 (2026-09-25): 42.21 unstable, v1.4.1 shipped for both branches
 42.21 went to unstable 2026-09-23 and re-enabled `loadstring`/`loadstream`. Decided Unbreaker must
