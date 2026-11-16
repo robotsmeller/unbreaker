@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-TEST_PILOT_ROOT = Path("C:/xampp/htdocs/pz-test-pilot")
+TEST_PILOT_ROOT = Path("D:/Dev/htdocs/pz-test-pilot")
 sys.path.insert(0, str(TEST_PILOT_ROOT / "scripts"))
 
 from config import load as load_config

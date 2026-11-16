@@ -39,7 +39,7 @@ Before ANY work, use `/session-start` skill OR manually:
 
 | Property | Value |
 |----------|-------|
-| Folder | `c:\xampp\htdocs\unbreaker` |
+| Folder | `D:\Dev\htdocs\unbreaker` |
 | Tech | Lua (PZ mod), Python (tooling), GitHub Actions (CI/CD) |
 | Purpose | Fix broken require() calls in popular B42-incompatible mods |
 | Target | Project Zomboid Build 42.x |
